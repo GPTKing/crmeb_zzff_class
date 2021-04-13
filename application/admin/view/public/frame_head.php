@@ -11,6 +11,7 @@
 <script src="{__FRAME_PATH}js/jquery.min.js"></script>
 <script src="{__FRAME_PATH}js/bootstrap.min.js"></script>
 <script src="{__PLUG_PATH}layui/layui.all.js"></script>
+
 <script>
 $eb = parent._mpApi;
 window.controlle="{:getController()}";
