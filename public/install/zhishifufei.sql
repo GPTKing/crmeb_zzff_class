@@ -1627,7 +1627,7 @@ CREATE TABLE `eb_store_product_reply` (
   `pics` text COMMENT '评论图片',
   `add_time` int(11) NOT NULL DEFAULT '0' COMMENT '评论时间',
   `merchant_reply_content` varchar(300) NOT NULL DEFAULT '' COMMENT '管理员回复内容',
-  `merchant_reply_time` int(11) NOT NULL DEFAULT '' COMMENT '管理员回复时间',
+  `merchant_reply_time` int(11) NOT NULL DEFAULT '0' COMMENT '管理员回复时间',
   `is_del` tinyint(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '0未删除1已删除',
   `is_reply` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0未回复1已回复'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='评论表';
