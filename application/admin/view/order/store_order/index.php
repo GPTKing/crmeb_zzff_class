@@ -1,6 +1,6 @@
 {extend name="public/container"}
 {block name="content"}
-<div class="layui-fluid" >
+<div class="layui-fluid">
     <div class="layui-row layui-col-space15" id="app">
         <div class="layui-col-md12">
             <div class="layui-card">
