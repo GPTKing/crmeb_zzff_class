@@ -7,13 +7,13 @@
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
-//
+// +----------------------------------------------------------------------
+
 
 namespace app\wap\model\user;
 
 
 use app\admin\model\wechat\WechatQrcode;
-use app\wap\model\store\StoreOrder;
 use basic\ModelBasic;
 use service\SystemConfigService;
 use think\Cookie;
@@ -22,10 +22,15 @@ use think\response\Redirect;
 use think\Session;
 use think\Url;
 use traits\ModelTrait;
+use app\wap\model\user\WechatUser;
+use service\WechatTemplateService;
+use app\wap\model\routine\RoutineTemplate;
 
 class User extends ModelBasic
 {
     use ModelTrait;
+
+    const userType='wechat';
 
     protected $insert = ['add_time', 'add_ip', 'last_time', 'last_ip'];
 
@@ -52,7 +57,7 @@ class User extends ModelBasic
     public static function ResetSpread($openid)
     {
         $uid = WechatUser::openidToUid($openid);
-        if (self::be(['uid' => $uid, 'is_promoter' => 0, 'is_senior' => 0])) self::where('uid', $uid)->update(['spread_uid' => 0]);
+        if (self::be(['uid' => $uid, 'is_promoter' => 0])) self::where('uid', $uid)->update(['spread_uid' => 0]);
     }
 
     /**
@@ -85,11 +90,26 @@ class User extends ModelBasic
             self::getDb('store_pink')->where('uid', $uid)->update(['uid' => $newUid]);
             //修改手机用户表记录
             self::getDb('phone_user')->where('uid', $uid)->update(['uid' => $newUid]);
+            //修改会员记录表记录
+            self::getDb('member_record')->where('uid', $uid)->update(['uid' => $newUid]);
+            //修改搜索记录表记录
+            self::getDb('search_history')->where('uid', $uid)->update(['uid' => $newUid]);
+            //修改用户报名表记录
+            self::getDb('event_sign_up')->where('uid', $uid)->update(['uid' => $newUid]);
             //删除用户表H5用户记录
             $user = self::where('uid', $uid)->find();
             if ($isDel) self::where('uid', $uid)->delete();
             //修改上级推广关系和绑定手机号码
-            self::where('uid', $newUid)->update(['phone' => $bindingPhone, 'spread_uid' => $user['spread_uid'], 'valid_time' => $user['valid_time']]);
+            self::where('uid', $newUid)->update(['phone' => $bindingPhone,
+                'spread_uid' => $user['spread_uid'],
+                'valid_time' => $user['valid_time'],
+                'now_money' => $user['now_money'],
+                'gold_num' => $user['gold_num'],
+                'brokerage_price' => $user['brokerage_price'],
+                'is_permanent' => $user['is_permanent'],
+                'member_time' => $user['member_time'],
+                'overdue_time' => $user['overdue_time']
+            ]);
             if ($qcodeId) WechatQrcode::where('id', $qcodeId)->update(['scan_id' => $newUid]);
             self::commit();
             \think\Session::clear('wap');
@@ -120,7 +140,7 @@ class User extends ModelBasic
             'pwd' => md5(123456),
             'nickname' => $wechatUser['nickname'] ?: '',
             'avatar' => $wechatUser['headimgurl'] ?: '',
-            'user_type' => 'wechat'
+            'user_type' => self::userType
         ];
         //处理推广关系
         if ($spread_uid) $data = self::manageSpread($spread_uid, $data);
@@ -142,7 +162,17 @@ class User extends ModelBasic
      */
     public static function manageSpread($spread_uid, $data = [], $isForever = false)
     {
-        $data['spread_uid'] = $spread_uid;
+        $spreadUserinfo = self::where('uid', $spread_uid)->find();
+        $storeBrokerageStatu = SystemConfigService::get('store_brokerage_statu') ?: 1;//获取后台分销类型
+        if ($storeBrokerageStatu == 1) {
+            if($spreadUserinfo['is_promoter']) {
+                $data['spread_uid'] = $spread_uid;
+            }else{
+                $data['spread_uid'] = 0;
+            }
+        }else{
+            $data['spread_uid'] = $spread_uid;
+        }
         $data['spread_time'] = time();
         return $data;
     }
@@ -171,10 +201,7 @@ class User extends ModelBasic
             Session::set('__login_phone_number', $userinfo['phone'], 'wap');
         }
         //有推广人直接更新
-        $editData = [
-            'nickname' => $wechatUser['nickname'] ?: '',
-            'avatar' => $wechatUser['headimgurl'] ?: '',
-        ];
+        $editData = [];
         //不是推广人，并且有上级id绑定关系
         if (!$userinfo->is_promoter && $spread_uid && !$userinfo->spread_uid && $spread_uid != $uid) $editData = self::manageSpread($spread_uid, $editData);
         return self::edit($editData, $uid, 'uid');
@@ -213,7 +240,11 @@ class User extends ModelBasic
         if (!$uid) exit(exception('请登陆!'));
         return $uid;
     }
-
+    /**
+     * 一级推广 专题
+     * @param $orderInfo
+     * @return bool
+     */
     public static function backOrderBrokerage($orderInfo)
     {
         $userInfo = User::getUserInfo($orderInfo['uid']);
@@ -226,10 +257,31 @@ class User extends ModelBasic
         if ($brokerageRatio <= 0) return true;
         $brokeragePrice = bcmul($orderInfo['pay_price'], $brokerageRatio, 2);
         if ($brokeragePrice <= 0) return true;
-        $mark = $userInfo['nickname'] . '成功消费' . floatval($orderInfo['pay_price']) . '元,奖励推广佣金' . floatval($brokeragePrice);
+        $mark = '一级推广人' .$userInfo['nickname'] . '消费' . floatval($orderInfo['pay_price']) . '元购买专题,奖励推广佣金' . floatval($brokeragePrice);
         self::beginTrans();
-        $res1 = UserBill::income('获得推广佣金', $userInfo['spread_uid'], 'now_money', 'brokerage', $brokeragePrice, $orderInfo['id'], 0, $mark);
+        $res1 = UserBill::income('购买专题返佣', $userInfo['spread_uid'], 'now_money', 'brokerage', $brokeragePrice, $orderInfo['id'], 0, $mark);
         $res2 = self::bcInc($userInfo['spread_uid'], 'brokerage_price', $brokeragePrice, 'uid');
+        $User = User::getUserInfo($userInfo['spread_uid']);
+        if ($openid = WechatUser::where('uid', $userInfo['spread_uid'])->value('openid')) {
+            $wechat_notification_message = SystemConfigService::get('wechat_notification_message');
+            if($wechat_notification_message==1){
+                WechatTemplateService::sendTemplate($openid, WechatTemplateService::USER_BALANCE_CHANGE, [
+                    'first' => '叮！您收到一笔专题返佣，真是太优秀了！',
+                    'keyword1' => '返佣金额',
+                    'keyword2' => $brokeragePrice,
+                    'keyword3' => date('Y-m-d H:i:s', time()),
+                    'keyword4' => $User['brokerage_price'],
+                    'remark' => '点击查看详情'
+                ], Url::build('wap/spread/commission', [], true, true));
+            }else{
+                $dat['thing8']['value'] =  '返佣金额';
+                $dat['date4']['value'] =  date('Y-m-d H:i:s',time());
+                $dat['amount1']['value'] =  $brokeragePrice;
+                $dat['amount2']['value'] =  $User['brokerage_price'];
+                $dat['thing5']['value'] =  '您收到一笔专题返佣!';
+                RoutineTemplate::sendAccountChanges($dat,$userInfo['spread_uid'],Url::build('wap/spread/commission', [],true, true));
+            }
+        }
         $res = $res1 && $res2;
         self::checkTrans($res);
         if ($res) self::backOrderBrokerageTwo($orderInfo);
@@ -237,7 +289,7 @@ class User extends ModelBasic
     }
 
     /**
-     * 二级推广
+     * 二级推广 专题
      * @param $orderInfo
      * @return bool
      */
@@ -254,10 +306,31 @@ class User extends ModelBasic
         if ($brokerageRatio <= 0) return true;
         $brokeragePrice = bcmul($orderInfo['pay_price'], $brokerageRatio, 2);
         if ($brokeragePrice <= 0) return true;
-        $mark = '二级推广人' . $userInfo['nickname'] . '成功消费' . floatval($orderInfo['pay_price']) . '元,奖励推广佣金' . floatval($brokeragePrice);
+        $mark = '二级推广人' . $userInfo['nickname'] . '消费' . floatval($orderInfo['pay_price']) . '元购买专题,奖励推广佣金' . floatval($brokeragePrice);
         self::beginTrans();
-        $res1 = UserBill::income('获得推广佣金', $userInfoTwo['spread_uid'], 'now_money', 'brokerage', $brokeragePrice, $orderInfo['id'], 0, $mark);
+        $res1 = UserBill::income('购买专题返佣', $userInfoTwo['spread_uid'], 'now_money', 'brokerage', $brokeragePrice, $orderInfo['id'], 0, $mark);
         $res2 = self::bcInc($userInfoTwo['spread_uid'], 'brokerage_price', $brokeragePrice, 'uid');
+        $User = User::getUserInfo($userInfoTwo['spread_uid']);
+        if ($openid = WechatUser::where('uid', $userInfoTwo['spread_uid'])->value('openid')) {
+            $wechat_notification_message = SystemConfigService::get('wechat_notification_message');
+            if($wechat_notification_message==1){
+                WechatTemplateService::sendTemplate($openid, WechatTemplateService::USER_BALANCE_CHANGE, [
+                    'first' => '叮！您收到一笔专题返佣，真是太优秀了！',
+                    'keyword1' => '返佣金额',
+                    'keyword2' => $brokeragePrice,
+                    'keyword3' => date('Y-m-d H:i:s', time()),
+                    'keyword4' => $User['brokerage_price'],
+                    'remark' => '点击查看详情'
+                ], Url::build('wap/spread/commission', [], true, true));
+            }else{
+                $dat['thing8']['value'] =  '返佣金额';
+                $dat['date4']['value'] =  date('Y-m-d H:i:s',time());
+                $dat['amount1']['value'] =  $brokeragePrice;
+                $dat['amount2']['value'] =  $User['brokerage_price'];
+                $dat['thing5']['value'] =  '您收到一笔专题返佣!';
+                RoutineTemplate::sendAccountChanges($dat,$userInfo['spread_uid'],Url::build('wap/spread/commission', [],true, true));
+            }
+        }
         $res = $res1 && $res2;
         self::checkTrans($res);
         return $res;

@@ -1,5 +1,4 @@
 <?php
-
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
@@ -15,7 +14,6 @@ namespace app\admin\controller\special;
 use app\admin\controller\AuthController;
 use app\admin\model\special\SpecialCourse;
 use service\JsonService;
-use service\UtilService;
 use service\FormBuilder as Form;
 use app\admin\model\special\Special;
 use think\response\Json;
@@ -72,7 +70,7 @@ class Course extends AuthController
     public function save_course($special_id = 0, $id = 0)
     {
         if (!$special_id) return JsonService::fail('缺少参数');
-        $post = UtilService::postMore([
+        $post = parent::postMore([
             ['course_name', ''],
             ['sort', 0],
             ['is_show', 1],
@@ -96,7 +94,7 @@ class Course extends AuthController
      */
     public function course_list()
     {
-        $where = UtilService::getMore([
+        $where = parent::getMore([
             ['special_id', 0],
             ['is_show', ''],
             ['course_name', ''],

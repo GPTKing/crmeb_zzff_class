@@ -270,6 +270,7 @@ use app\admin\model\user\UserBill;
       * @return array
       */
      public static function agentSystemPage($where = array()){
+         $where['is_time']=1;
          $model=self::setSpreadWhere($where);
          $status =SystemConfigService::get('store_brokerage_statu');
          if(isset($where['excel']) && $where['excel'] == 1){
@@ -308,7 +309,10 @@ use app\admin\model\user\UserBill;
                  //可提现佣金
                  $item['new_money']          = $item['brokerage_price'];
                  //总共佣金
-                 $item['brokerage_money']    = self::getModelTime($where,UserBill::where(['uid'=>$item['uid'],'category'=>'now_money','type'=>'brokerage','pm'=>1,'status'=>1]))->sum('number');
+                 $income=self::getModelTime($where,UserBill::where(['uid'=>$item['uid'],'category'=>'now_money','type'=>'brokerage','pm'=>1,'status'=>1]))->sum('number');
+                 $return=self::getModelTime($where,UserBill::where(['uid'=>$item['uid'],'category'=>'now_money','type'=>'brokerage_return','pm'=>0,'status'=>1]))->sum('number');
+
+                 $item['brokerage_money']    = bcsub($income,$return,2);
                  $item['spread_name']='暂无';
                  if($spread_uid=User::where('uid',$item['uid'])->value('spread_uid')) {
                      if($user=User::where('uid',$spread_uid)->field(['uid','nickname'])->find()){
@@ -379,8 +383,11 @@ use app\admin\model\user\UserBill;
                      $item['spread_name']=$user['nickname'].'/'.$user['uid'];
                  }
              }
+             $income=self::getModelTime($where,UserBill::where(['uid'=>$item['uid'],'category'=>'now_money','type'=>'brokerage','pm'=>1,'status'=>1]))->sum('number');
+             $return=self::getModelTime($where,UserBill::where(['uid'=>$item['uid'],'category'=>'now_money','type'=>'brokerage_return','pm'=>0,'status'=>1]))->sum('number');
+
              //总共佣金
-             $item['brokerage_money']    = self::getModelTime($where,UserBill::where(['uid'=>$item['uid'],'category'=>'now_money','type'=>'brokerage','pm'=>1,'status'=>1]))->sum('number');
+             $item['brokerage_money']    = bcsub($income,$return,2);
              //可提现佣金
              $item['new_money']          = $item['brokerage_price'];
              $item['stair']              = self::getUserSpreadUidCount($item['uid'],0,$where);//一级推荐人
@@ -535,7 +542,9 @@ use app\admin\model\user\UserBill;
                  $item['avatar']     = $userInfo->avatar;
              }
              $item['spread_info'] = $Info->nickname."|".($Info->phone ? $Info->phone."|" : '').$Info->uid;
-             $item['number_price'] = UserBill::where(['category'=>'now_money','type'=>'brokerage','link_id'=>$item['id']])->value('number');
+             $brokerage = UserBill::where(['category'=>'now_money','type'=>'brokerage','link_id'=>$item['id'],'uid'=>$where['uid']])->value('number');
+             $brokerage_return = UserBill::where(['category'=>'now_money','type'=>'brokerage_return','link_id'=>$item['id'],'uid'=>$where['uid']])->value('number');
+             $item['number_price'] =bcsub($brokerage,$brokerage_return,2);
              $item['_pay_time'] = date('Y-m-d H:i:s',$item['pay_time']);
              $item['_add_time'] = date('Y-m-d H:i:s',$item['add_time']);
              $item['take_time'] = ($change_time = StoreOrderStatus::where(['change_type'=>'user_take_delivery','oid'=>$item['id']])->value('change_time')) ?
@@ -587,7 +596,7 @@ use app\admin\model\user\UserBill;
              }
          }
          if(isset($where['data']) && $where['data']) $model = self::getModelTime($where,$model,"{$alias}add_time");
-         return $model->where("{$alias}is_del",0)->where($alias.'paid',1);
+         return $model->where("{$alias}is_del",0)->where($alias.'paid',1)->order($alias.'add_time desc');
      }
 
      /*
@@ -602,7 +611,11 @@ use app\admin\model\user\UserBill;
          $data['order_price'] = self::setSairOrderWhere($where,new StoreOrder())->sum('pay_price');
          $ids = self::setSairOrderWhere($where,new StoreOrder())->where(['paid'=>1,'is_del'=>0,'refund_status'=>0])->where('status','>',1)->column('id');
          $data['number_price'] = 0;
-         if(count($ids)) $data['number_price'] = UserBill::where(['category'=>'now_money','type'=>'brokerage','uid'=>$where['uid']])->where('link_id','in',$ids)->sum('number');
+         if(count($ids)){
+             $brokerage = UserBill::where(['category'=>'now_money','type'=>'brokerage','uid'=>$where['uid']])->where('link_id','in',$ids)->sum('number');
+             $brokerage_return = UserBill::where(['category'=>'now_money','type'=>'brokerage_return','uid'=>$where['uid']])->where('link_id','in',$ids)->sum('number');
+             $data['number_price'] =bcsub($brokerage,$brokerage_return,2);
+         }
          $where['type'] = 1;
          $data['one_price'] = self::setSairOrderWhere($where,new StoreOrder())->sum('pay_price');
          $data['one_count'] = self::setSairOrderWhere($where,new StoreOrder())->count();

@@ -1,5 +1,4 @@
 <?php
-
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
@@ -14,13 +13,14 @@ namespace app\admin\model\article;
 
 use traits\ModelTrait;
 use basic\ModelBasic;
+
 /**
  * 关键词 Model
  * Class WechatNews
  * @package app\admin\model\article
  */
-class Search extends ModelBasic {
-
+class Search extends ModelBasic
+{
     use ModelTrait;
 
     public static function saveSearch($name){

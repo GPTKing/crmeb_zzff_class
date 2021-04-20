@@ -1,5 +1,4 @@
 <?php
-
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
@@ -14,6 +13,7 @@ namespace app\admin\model\user;
 
 use traits\ModelTrait;
 use basic\ModelBasic;
+
 
 class UserSign extends ModelBasic
 {

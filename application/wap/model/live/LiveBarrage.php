@@ -1,5 +1,4 @@
 <?php
-
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
@@ -8,18 +7,19 @@
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
-//
+// +----------------------------------------------------------------------
+
 namespace app\wap\model\live;
 
 /**
  * 直播间评论表
  */
-
 use app\admin\model\system\SystemGroupData;
 use basic\ModelBasic;
 use service\SystemConfigService;
 use traits\ModelTrait;
 use app\wap\model\user\User;
+use app\admin\model\live\LiveGift;
 
 class LiveBarrage extends ModelBasic
 {
@@ -33,6 +33,7 @@ class LiveBarrage extends ModelBasic
         if($uids) $model = $model->where('uid','in',$uids);
         $list = $model->field('type,barrage as content,uid,live_id,id')->order('add_time desc')->page($page,$limit)->select();
         $list = count($list) ? $list->toArray() : [];
+        $commentList=[];
         foreach ($list as &$item){
             $userinfo = User::where('uid',$item['uid'])->field(['nickname','avatar'])->find();
             if($userinfo){
@@ -50,16 +51,21 @@ class LiveBarrage extends ModelBasic
             if ($item['type'] == 4) {
                 $live_reward_list = LiveReward::where(['id' => $item['content']])->find();
                 if ($live_reward_list ? $live_reward_list = $live_reward_list->toArray(): []){
-                    $live_gift = SystemGroupData::getDateValue($live_reward_list['gift_id']);
-                    $item['content'] = "赠送给主播";
-                    $item['gift_num'] = $live_reward_list['gift_num'];
-                    $item['gift_image'] = $live_gift ? $live_gift['live_gift_show_img'] : "";
-                    $item['gift_name'] = $live_reward_list['gift_name'];
+                    $live_gift = LiveGift::liveGiftOne($live_reward_list['gift_id']);
+                    if($live_gift){
+                        $item['content'] = "赠送给主播";
+                        $item['gift_num'] = $live_reward_list['gift_num'];
+                        $item['gift_image'] = $live_gift ? $live_gift['live_gift_show_img'] : "";
+                        $item['gift_name'] = $live_reward_list['gift_name'];
+                        array_push($commentList,$item);
+                    }
                }
+            }else{
+                array_push($commentList,$item);
             }
         }
         $page--;
-        if(count($list) == 0 || count($list) < $limit){
+        if(count($commentList) == 0 || count($commentList) < $limit){
             $ystemConfig = SystemConfigService::more(['site_name','site_logo']);
             $data = [
                 'nickname' => $ystemConfig['site_name'],
@@ -70,9 +76,9 @@ class LiveBarrage extends ModelBasic
                 'type'=>1,
                 'uid'=>0
             ];
-            array_push($list,$data);
+            array_push($commentList,$data);
         }
-        return ['list'=>$list,'page'=> $page];
+        return ['list'=>$commentList,'page'=> $page];
     }
 
 

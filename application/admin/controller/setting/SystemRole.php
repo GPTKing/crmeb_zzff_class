@@ -1,5 +1,4 @@
 <?php
-
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
@@ -13,7 +12,6 @@
 namespace app\admin\controller\setting;
 
 use app\admin\model\system\SystemMenus;
-use service\UtilService as Util;
 use service\JsonService as Json;
 use think\Request;
 use think\Url;
@@ -35,7 +33,7 @@ class SystemRole extends AuthController
      */
     public function index()
     {
-        $where = Util::getMore([
+        $where = parent::getMore([
             ['status', ''],
             ['role_name', ''],
         ], $this->request);
@@ -65,7 +63,7 @@ class SystemRole extends AuthController
      */
     public function save(Request $request)
     {
-        $data = Util::postMore([
+        $data = parent::postMore([
             'role_name',
             'sign',
             ['status', 0],
@@ -79,7 +77,7 @@ class SystemRole extends AuthController
         }
         if (!is_array($data['rules']) || !count($data['rules']))
             return Json::fail('请选择最少一个权限');
-        foreach ($data['rules'] as $v) {
+        foreach ($data['rules'] as &$v) {
             $pid = SystemMenus::where('id', $v)->value('pid');
             if (!in_array($pid, $data['rules'])) $data['rules'][] = $pid;
         }
@@ -91,7 +89,6 @@ class SystemRole extends AuthController
 
     /**
      * 显示指定的资源
-     *
      * @param  int $id
      * @return \think\Response
      */
@@ -122,7 +119,7 @@ class SystemRole extends AuthController
      */
     public function update(Request $request, $id)
     {
-        $data = Util::postMore([
+        $data = parent::postMore([
             'role_name',
             ['status', 0],
             ['checked_menus', [], '', 'rules']
@@ -130,7 +127,7 @@ class SystemRole extends AuthController
         if (!$data['role_name']) return Json::fail('请输入身份名称');
         if (!is_array($data['rules']) || !count($data['rules']))
             return Json::fail('请选择最少一个权限');
-        foreach ($data['rules'] as $v) {
+        foreach ($data['rules'] as &$v) {
             $pid = SystemMenus::where('id', $v)->value('pid');
             if (!in_array($pid, $data['rules'])) $data['rules'][] = $pid;
         }

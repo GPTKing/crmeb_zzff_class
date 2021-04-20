@@ -88,7 +88,7 @@
                             </div>
                         </div>
                         <div class="layui-form-item submit">
-                            <label class="layui-form-label">封面图</label>
+                            <label class="layui-form-label">封面图(px)<br/>(200*200)</label>
                             <div class="layui-input-block" id="image">
                                 {if isset($data) && $data.pic}
                                 <div class="upload-image-box">
@@ -149,7 +149,7 @@
             '                                <select name="' + name + '" lay-filter="' + name + '">\n';
         if (type == 1) {
             $.each(cateList, function (key,item) {
-                html += '<option value="' + item.id + '" '+(select_id == item.id ? 'selected': '')+'>' + item.title + '</option>\n'
+                html += '<option value="' + item.id + '" '+(select_id == item.id ? 'selected': '')+'>' + item.name + '</option>\n'
             })
         } else {
             $.each(specialList, function (key,item) {
@@ -189,7 +189,6 @@
     Help.getTypeHtml(dataType);
 
     layList.search('save', function (data) {
-        console.log(data);
         layList.basePost(layList.U({a: 'save_group_data',p:{ name : "home_activity" }}), data, function (res) {
             layList.msg(res.msg, function () {
                 parent.layer.close(windowindex);

@@ -1,5 +1,4 @@
 <?php
-
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
@@ -15,7 +14,6 @@ namespace app\admin\controller\finance;
 use app\admin\controller\AuthController;
 use app\admin\model\user\UserRecharge as UserRechargeModel;
 use app\wap\model\user\UserBill;
-use service\UtilService as Util;
 use service\JsonService as Json;
 use think\Url;
 use service\FormBuilder as Form;
@@ -37,7 +35,7 @@ class UserRecharge extends AuthController
      */
     public function index()
     {
-        $where = Util::getMore([
+        $where = parent::getMore([
             ['order_id', ''],
         ], $this->request);
         $list = UserRechargeModel::systemPage($where);
@@ -73,7 +71,7 @@ class UserRecharge extends AuthController
      */
     public function updateRefundY(Request $request, $id)
     {
-        $data = Util::postMore([
+        $data = parent::postMore([
             'refund_price',
         ], $request);
         if (!$id) return $this->failed('数据不存在');
@@ -93,14 +91,6 @@ class UserRecharge extends AuthController
             return Json::fail($e->getMessage());
         }
         UserRechargeModel::edit($data, $id);
-        WechatTemplateService::sendTemplate(WechatUserWap::uidToOpenid($UserRecharge['uid']), WechatTemplateService::ORDER_REFUND_STATUS, [
-            'first' => '亲，您充值的金额已退款,本次退款' .
-                $data['refund_price'] . '金额',
-            'keyword1' => $UserRecharge['order_id'],
-            'keyword2' => $UserRecharge['price'],
-            'keyword3' => date('Y-m-d H:i:s', $UserRecharge['add_time']),
-            'remark' => '点击查看订单详情'
-        ], Url::build('wap/My/balance', '', true, true));
         UserBill::expend('系统退款', $UserRecharge['uid'], 'now_money', 'user_recharge_refund', $refund_price, $id, $UserRecharge['price'], '退款给用户' . $refund_price . '元');
         return Json::successful('退款成功!');
     }

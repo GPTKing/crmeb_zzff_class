@@ -7,17 +7,20 @@
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
-//
+// +----------------------------------------------------------------------
+
 namespace app\wap\model\special;
 
 use app\admin\model\special\SpecialSource;
 use app\wap\model\store\StoreOrder;
-use app\wap\model\store\StorePink;
 use app\wap\model\user\User;
 use basic\ModelBasic;
 use service\SystemConfigService;
 use think\Url;
 use traits\ModelTrait;
+use think\Db;
+use app\wap\model\live\LiveStudio;
+use app\wap\model\live\LivePlayback;
 
 class Special extends ModelBasic
 {
@@ -84,15 +87,10 @@ class Special extends ModelBasic
         $special = self::PreWhere()->where('id', StoreOrder::where('order_id', $order_id)->value('cart_id'))
             ->field(['image', 'title', 'abstract', 'money', 'label', 'id', 'is_pink', 'pink_money'])->find();
         if (!$special) return [];
-        $special['image'] .= get_oss_process($special['image'], 4);
+        $special['image'] = get_oss_process($special['image'], 4);
         $special['link'] = SystemConfigService::get('site_url') . Url::build('special/details') . '?id=' . $special['id'] . '&pinkId=' . $pinkId . '&partake=1#partake';
         $special['abstract'] = self::HtmlToMbStr($special['abstract']);
         return $special;
-    }
-
-    public static function getPinkList($pink_id)
-    {
-
     }
 
     /**
@@ -113,33 +111,19 @@ class Special extends ModelBasic
      * @param $id 专题id
      * @param $pinkId 拼团id
      * */
-    public static function getOneSpecial($uid, $id, $pinkId)
+    public static function getOneSpecial($uid, $id)
     {
         $special = self::PreWhere()->find($id);
         if (!$special) return self::setErrorInfo('您要查看的专题不存在!');
-        self::update(['browse_count' => $special->browse_count + 1], ['id' => $id]);
+        if ($special->is_show==0) return self::setErrorInfo('您要查看的专题已下架!');
+
         $title = $special->title;
-        $pinkUser = StorePink::getPinkAttend($id);
-        $pinkUserFase = StorePink::getPinkAttendFalse($id);
-        $pinkUser = array_merge($pinkUser, $pinkUserFase);
-        $pinkIngList = StorePink::getPinkAll($id, $pinkId, 3);
-        foreach ($pinkIngList as &$item) {
-            $item['difftime'] = [];
-            $pinkAll = StorePink::getPinkMember($item['k_id'] ? $item['k_id'] : $item['id']);
-            $pinkAll = StorePink::getPinkTFalseList($pinkAll, $item['k_id'] ? $item['k_id'] : $item['id'], $id);
-            $pinkAllCount = count($pinkAll);
-            $pinkT = $item['k_id'] ? StorePink::getPinkUserOne($item['k_id']) : $item;
-            $item['num'] = (int)$pinkT['people'] - ($pinkAllCount + 1);
-        }
-        $special->fake_sales += StoreOrder::where(['paid' => 1, 'cart_id' => $id, 'refund_status' => 0])->count();
         $special->collect = self::getDb('special_relation')->where(['link_id' => $id, 'type' => 0, 'uid' => $uid, 'category' => 1])->count() ? true : false;
         $special->content = htmlspecialchars_decode($special->profile->content);
         $special->profile->content = '';
         $swiperlist = json_encode($special->banner);
         $special = json_encode($special->toArray());
-        $pinkUser = json_encode($pinkUser);
-        $pinkIngList = json_encode($pinkIngList);
-        return compact('swiperlist', 'special', 'title', 'pinkUser', 'pinkIngList');
+        return compact('swiperlist', 'special', 'title');
     }
 
     /**
@@ -169,9 +153,7 @@ class Special extends ModelBasic
             if($type) $id=$item['id'];
             else $id=$item['special_id'];
             $item['s_id'] =$id;
-            $specialSourceId = SpecialSource::getSpecialSource($id);
-            if($specialSourceId) $item['count']=count($specialSourceId);
-            else $item['count']=0;
+            $item['count']=self::numberChapters($item['type'],$item['id']);
         }
         $page += 1;
         return compact('list', 'page');
@@ -198,7 +180,7 @@ class Special extends ModelBasic
      * */
     public static function getSpecialSpread($where, $uid)
     {
-        $is_promoter = User::where('uid', $uid)->value('is_senior');
+        $is_promoter = User::where('uid', $uid)->value('is_promoter');
         $store_brokerage_ratio = SystemConfigService::get('store_brokerage_ratio');
         $store_brokerage_two = SystemConfigService::get('store_brokerage_two');
         $store_brokerage_ratio = bcdiv($store_brokerage_ratio, 100, 2);
@@ -269,19 +251,54 @@ class Special extends ModelBasic
         } else {
             $field = ['browse_count', 'image', 'title','type', 'money', 'pink_money', 'is_pink', 'subject_id', 'label', 'id'];
         }
-
         $list = self::setWhere($where)
             ->field($field)
             ->page($where['page'], $where['limit'])
             ->select();
         $list = count($list) ? $list->toArray() : [];
         foreach ($list as &$item) {
-            $specialSourceId = SpecialSource::getSpecialSource($item['id']);
-            if($specialSourceId) $item['count']=count($specialSourceId);
-            else $item['count']=0;
+            $item['count']=self::numberChapters($item['type'],$item['id']);
             $item['subject_name'] = SpecialSubject::where('id', $item['subject_id'])->value('name');
+            $item['browse_count']=Db::name('learning_records')->where(['special_id'=>$item['id']])->count();
         }
         return $list;
     }
 
+    /**专题下章节数量
+     * @param int $type
+     * @param int $id
+     * @return int|string
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public static function numberChapters($type=0,$id=0){
+        $count=0;
+        if($type!=5 && $type!=4){
+            $specialSourceId = SpecialSource::getSpecialSource($id);
+            if($specialSourceId) $count=count($specialSourceId);
+        }else if($type==5){
+            $specialSourceId = SpecialSource::getSpecialSource($id);
+            if(count($specialSourceId)){
+                $specialSource=$specialSourceId->toArray();
+                foreach ($specialSource as $key=>$value){
+                    $specialSourcetaskId = SpecialSource::getSpecialSource($value['source_id']);
+                    $count=bcadd($count,count($specialSourcetaskId),0);
+                }
+            }
+            $count=(int)$count;
+        }else if($type==4){
+            $liveStudio = LiveStudio::where(['special_id' => $id])->find();
+            if (!$liveStudio) return $count=0;
+            if (!$liveStudio['stream_name']) return $count=0;
+            if ($liveStudio['is_playback'] == 1) {
+                $where['stream_name']=$liveStudio['stream_name'];
+                $where['start_time']='';
+                $where['end_time']='';
+                $count= LivePlayback::setUserWhere($where)->count();
+            }
+        }
+        return $count;
+    }
 }

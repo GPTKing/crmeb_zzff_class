@@ -7,7 +7,8 @@
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
-//
+// +----------------------------------------------------------------------
+
 namespace app\wap\model\live;
 
 /**
@@ -50,7 +51,7 @@ class LiveUser extends ModelBasic
         }
     }
 
-    /*
+    /**
      * 设置用户上下线
      * @param int $live_id 直播间号
      * @param int $uid 用户id
@@ -59,7 +60,6 @@ class LiveUser extends ModelBasic
      * */
     public static function setLiveUserOnline($live_id,$uid,$is_online =1 )
     {
-
         if(self::be(['live_id'=>$live_id,'uid'=>$uid,'is_online'=>$is_online])) return true;
         return self::where(['live_id'=>$live_id,'uid'=>$uid])->update(['is_online'=>$is_online]);
     }

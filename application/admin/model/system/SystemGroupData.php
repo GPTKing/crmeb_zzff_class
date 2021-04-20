@@ -33,21 +33,11 @@ class SystemGroupData extends ModelBasic
         $model = new self;
         if($params['gid'] !== '') $model = $model->where('gid',$params['gid']);
         if($params['status'] !== '') $model = $model->where('status',$params['status']);
+        $model = $model->order('sort desc,id ASC');
         return self::page($model,function($item,$key){
             $info = json_decode($item->value,true);
             foreach ($info as $index => $value) {
                 if($value["type"] == "checkbox")$info[$index]["value"] = implode(",",$value["value"]);
-                if($value["type"] == "upload" || $value["type"] == "uploads"){
-                    $html_img = '';
-                    if(is_array($value["value"])){
-                        foreach ($value["value"] as $img) {
-                            $html_img .= '<img class="image" data-image="'.$img.'" width="45" height="45" src="'.$img.'" /><br>';
-                        }
-                    }else{
-                        $html_img = '<img class="image" data-image="'.$value["value"].'" width="45" height="45" src="'.$value["value"].'" />';
-                    }
-                    $info[$index]["value"] = $html_img;
-                }
             }
             $item->value = $info;
         });

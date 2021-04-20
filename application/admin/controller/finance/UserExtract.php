@@ -9,6 +9,7 @@
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
 
+
 namespace app\admin\controller\finance;
 
 use app\admin\controller\AuthController;
@@ -16,7 +17,6 @@ use service\FormBuilder as Form;
 use app\admin\model\user\UserExtract as UserExtractModel;
 use service\JsonService;
 use think\Request;
-use service\UtilService as Util;
 use think\Url;
 
 /**
@@ -28,7 +28,7 @@ class UserExtract extends AuthController
 {
     public function index()
     {
-        $where = Util::getMore([
+        $where = parent::getMore([
             ['status', ''],
             ['nickname', ''],
             ['extract_type', ''],
@@ -49,12 +49,14 @@ class UserExtract extends AuthController
         $f[] = Form::number('extract_price', '提现金额', $UserExtract['extract_price'])->precision(2);
         if ($UserExtract['extract_type'] == 'alipay') {
             $f[] = Form::input('alipay_code', '支付宝账号', $UserExtract['alipay_code']);
-        } else {
+        } else if($UserExtract['extract_type'] == 'bank') {
             $f[] = Form::input('bank_code', '银行卡号', $UserExtract['bank_code']);
             $f[] = Form::input('bank_address', '开户行', $UserExtract['bank_address']);
+        }else if($UserExtract['extract_type'] == 'weixin'){
+            $f[] = Form::input('wechat', '微信号', $UserExtract['wechat']);
         }
         $f[] = Form::input('mark', '备注', $UserExtract['mark'])->type('textarea');
-        $form = Form::make_post_form('编辑', $f, Url::build('update', array('id' => $id)));
+        $form = Form::make_post_form('编辑', $f, Url::build('update', array('id' => $id)),2);
         $this->assign(compact('form'));
         return $this->fetch('public/form-builder');
 
@@ -65,7 +67,7 @@ class UserExtract extends AuthController
         $UserExtract = UserExtractModel::get($id);
         if (!$UserExtract) return JsonService::fail('数据不存在!');
         if ($UserExtract['extract_type'] == 'alipay') {
-            $data = Util::postMore([
+            $data = parent::postMore([
                 'real_name',
                 'mark',
                 'extract_price',
@@ -74,8 +76,18 @@ class UserExtract extends AuthController
             if (!$data['real_name']) return JsonService::fail('请输入姓名');
             if ($data['extract_price'] <= -1) return JsonService::fail('请输入提现金额');
             if (!$data['alipay_code']) return JsonService::fail('请输入支付宝账号');
+        }else if ($UserExtract['extract_type'] == 'weixin') {
+            $data = parent::postMore([
+                'real_name',
+                'mark',
+                'extract_price',
+                'wechat',
+            ], $request);
+            if (!$data['real_name']) return JsonService::fail('请输入姓名');
+            if ($data['extract_price'] <= -1) return JsonService::fail('请输入提现金额');
+            if (!$data['wechat']) return JsonService::fail('请输入wechat');
         } else {
-            $data = Util::postMore([
+            $data = parent::postMore([
                 'real_name',
                 'extract_price',
                 'mark',

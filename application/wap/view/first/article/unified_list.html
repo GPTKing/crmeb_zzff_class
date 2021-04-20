@@ -41,11 +41,14 @@
         -webkit-transform: translate(-50%, -50%);
         transform: translate(-50%, -50%);
     }
+
+    .swiper-list2 .item .pictrue img {
+        object-fit: cover;
+    }
 </style>
 {/block}
 {block name="content"}
 <div class="course-list index" id="app" v-cloak="" ref="index" style="-webkit-overflow-scrolling: touch;">
-
     <div class="nav" v-if="category.length">
         <div class="item" :class="where.cid==0 ? 'on':''" @click="where.cid=0">全部</div>
         <div class="item" v-for="item in category" :class="where.cid==item.id ? 'on':''" @click="where.cid=item.id">
@@ -58,17 +61,12 @@
                 <div class="pictrue">
                     <img :src="vo.image_input">
                 </div>
-                <div class="underline">
-                    <div class="text-pic acea-row row-column">
-                        <div class="name line1" v-text="vo.title"></div>
-                        <div class="acea-row row-middle info">
-                            <span class="iconfont"></span>
-                            访问量{{vo.visit ? vo.visit : '0'}}
-                        </div>
-                        <div class="acea-row row-middle info">
-                            <span class="iconfont"></span>
-                            添加时间{{vo.add_time}}
-                        </div>
+                <div class="underline text-pic acea-row row-column row-between">
+                    <div class="name line1" v-text="vo.title"></div>
+                    <div class="acea-row row-between-wrapper info" v-text="vo.synopsis"></div>
+                    <div class="acea-row row-between-wrapper">
+                        <div class="info">访问量：{{vo.visit ? vo.visit : '0'}}</div>
+                        <div class="info">{{vo.add_time}}</div>
                     </div>
                 </div>
             </a>
@@ -79,12 +77,13 @@
     </div>
     <div v-if="where.page > 2 && loadend" class="loaded">已全部加载</div>
     <div v-if="!List.length && !loading" class="nothing"></div>
+    <quick-menu></quick-menu>
 </div>
 {/block}
 {block name='foot'}
 <script>
     var category = {$category};
-    require(['vue', 'helper', 'store'], function (Vue, $h, storeApi) {
+    require(['vue', 'helper', 'store','{__WAP_PATH}zsff/js/quick.js'], function (Vue, $h, storeApi) {
         new Vue({
             el: '#app',
             data: {

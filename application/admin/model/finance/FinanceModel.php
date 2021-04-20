@@ -9,17 +9,24 @@
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
 
+
 namespace app\admin\model\finance;
+
 use traits\ModelTrait;
 use basic\ModelBasic;
 use service\ExportService;
 use app\wap\model\user\UserBill;
 use app\admin\model\user\User;
 use service\PHPExcelService;
-/*数据统计处理*/
+
+/**数据统计处理
+ * Class FinanceModel
+ * @package app\admin\model\finance
+ */
 class FinanceModel extends ModelBasic
 {
     protected $name = 'user_bill';
+
     use ModelTrait;
 
     /**
@@ -82,7 +89,12 @@ class FinanceModel extends ModelBasic
                 $value['add_time'],
             ];
         }
-        PHPExcelService::setExcelHeader(['会员ID','昵称','金额/积分','类型','备注','创建时间'])
+        if($where['category']=='now_money'){
+            $type='余额';
+        }else{
+            $type='金币';
+        }
+        PHPExcelService::setExcelHeader(['会员ID','昵称',$type,'类型','备注','创建时间'])
             ->setExcelTile('资金监控', '资金监控',date('Y-m-d H:i:s',time()))
             ->setExcelContent($export)
             ->ExcelSave();
@@ -122,15 +134,14 @@ class FinanceModel extends ModelBasic
                 $bill_where_op['category']['op'] = 'not in';
                 $bill_where_op['category']['condition'] = 'integral,gold_num';
                 $bill_where_op['type']['op'] = 'not in';
-                $bill_where_op['type']['condition'] = 'gain,system_sub,deduction,sign,recharge';
+                $bill_where_op['type']['condition'] = 'gain,deduction,sign,recharge,pay_vip,extract_success';
                 break;
             case "gold_num" :
                 $bill_where_op['category']['op'] = 'in';
                 $bill_where_op['category']['condition'] = 'gold_num';
                 $bill_where_op['type']['op'] = 'in';
-                $bill_where_op['type']['condition'] = 'sign,recharge,live_reward';
+                $bill_where_op['type']['condition'] = 'sign,recharge,live_reward,gain,return';
                 break;
-
         }
         return $bill_where_op;
     }
@@ -212,21 +223,6 @@ class FinanceModel extends ModelBasic
         return $consumption;
     }
     /**
-     * 获取拼团商品
-     */
-    public static function getPink($where)
-    {
-        $pink = self::getTimeWhere($where)->where('pink_id', 'neq', 0)->sum('pay_price');
-        return $pink;
-    }
-    /**
-     * 获取秒杀商品
-     */
-    public static function getSeckill($where){
-        $seckill=self::getTimeWhere($where)->where('seckill_id', 'neq', 0)->sum('pay_price');
-        return $seckill;
-    }
-    /**
      * 获取普通商品数
      */
     public static function getOrdinary($where)
@@ -248,7 +244,9 @@ class FinanceModel extends ModelBasic
      */
     public static function getExtension($where)
     {
-        $extension = self::getTime($where,new UserBill)->where('type', 'brokerage')->where('category','now_money')->sum('number');
+        $brokerage = self::getTime($where,new UserBill)->where('type', 'brokerage')->where('category','now_money')->sum('number');
+        $brokerage_return= self::getTime($where,new UserBill)->where('type', 'brokerage_return')->where('category','now_money')->sum('number');
+        $extension=bcsub($brokerage,$brokerage_return,2);
         return $extension;
     }
 

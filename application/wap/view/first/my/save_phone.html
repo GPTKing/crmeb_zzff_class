@@ -16,12 +16,13 @@
     </ul>
     <div class="bnt" v-text="but_name" @click="goNext">下一步</div>
     <!--完成-->
+    <quick-menu></quick-menu>
 </div>
 {/block}
 {block name='foot'}
 <script>
     var phone='{$user_phone}';
-    require(['vue','helper','store','reg-verify'],function(Vue,$h,app,$reg) {
+    require(['vue','helper','store','reg-verify', '{__WAP_PATH}zsff/js/quick.js'],function(Vue,$h,app,$reg) {
         new Vue({
             el: '#app',
             data: {

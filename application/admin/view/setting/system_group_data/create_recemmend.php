@@ -10,6 +10,7 @@
                             <label class="layui-form-label">导航名称</label>
                             <div class="layui-input-block">
                                 <input type="hidden" name="is_fixed" value="{if isset($recemmend)}{$recemmend.is_fixed}{else}{$is_fixed}{/if}">
+                                <input type="hidden" name="typesetting" value="5">
                                 <input type="text" name="title" lay-verify="title" value="{if isset($recemmend)}{$recemmend.title}{/if}" autocomplete="off" placeholder="导航名称" class="layui-input">
                             </div>
                         </div>
@@ -31,7 +32,7 @@
                             </div>
                         </div>
                         <div class="layui-form-item">
-                            <label class="layui-form-label">图标</label>
+                            <label class="layui-form-label">图标(px)<br/>(100*100)</label>
                             <div class="layui-input-block" id="icon">
                                 {if isset($recemmend) && $recemmend.icon}
                                 <div class="upload-image-box">
@@ -98,11 +99,9 @@
     layList.search('save',function(data){
         if(!data.title) return layList.msg('请输入标题');
         if(!data.icon || data.icon==undefined) return layList.msg('请上传图标');
-        // if(!data.type) return layList.msg('请选择类型');
-        // if(!data.typesetting) return layList.msg('请选择排版');
         layList.basePost(layList.U({a:'save_recemmend',q:{id:id}}),data,function (res) {
             layList.msg(res.msg,function () {
-                parent.layer.close(windowindex);
+                parent.layer.closeAll();
                 parent.$(".J_iframe:visible")[0].contentWindow.location.reload();
             })
         },function (res) {

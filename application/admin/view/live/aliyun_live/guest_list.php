@@ -8,17 +8,6 @@
                 <div class="layui-card-body">
                     <form class="layui-form layui-form-pane" action="">
                         <div class="layui-form-item">
-<!--                            <div class="layui-inline">-->
-<!--                                <label class="layui-form-label">是否显示</label>-->
-<!--                                <div class="layui-input-block">-->
-<!--                                    <select name="is_show">-->
-<!--                                        <option value="">是否显示</option>-->
-<!--                                        <option value="1">显示</option>-->
-<!--                                        <option value="0">不显示</option>-->
-<!--                                    </select>-->
-<!--                                </div>-->
-<!--                            </div>-->
-
                             <div class="layui-inline">
                                 <label class="layui-form-label">嘉宾名称</label>
                                 <div class="layui-input-block">
@@ -44,7 +33,7 @@
                 <div class="layui-card-body">
                     <div class="layui-btn-container">
                         {if $live_id}
-                        <button type="button" class="layui-btn layui-btn-sm" onclick="$eb.createModalFrame(this.innerText,'{:Url('add_course',['live_id'=>$live_id])}',{h:400})"><i class="layui-icon layui-icon-add-1"></i> 添加嘉宾</button>
+                        <button type="button" class="layui-btn layui-btn-sm" onclick="$eb.createModalFrame(this.innerText,'{:Url('add_course',['live_id'=>$live_id])}',{w:800,h:700})"><i class="layui-icon layui-icon-add-1"></i> 添加嘉宾</button>
                         <button class="layui-btn layui-btn-normal layui-btn-sm" onclick="window.location.reload()"><i class="layui-icon layui-icon-refresh"></i>  刷新</button>
 <!--                        <button class="layui-btn layui-btn-warm layui-btn-sm" onclick="window.location.href='{:Url('index')}';"><i class="layui-icon layui-icon-list"></i>  展示全部</button>-->
                         {/if}

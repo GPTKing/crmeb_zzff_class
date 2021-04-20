@@ -1,5 +1,4 @@
 <?php
-
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
@@ -15,7 +14,6 @@ namespace app\admin\controller\setting;
 use app\admin\controller\AuthController;
 use app\wap\model\user\User;
 use service\FormBuilder as Form;
-use service\UtilService as Util;
 use service\JsonService as Json;
 use think\Request;
 use app\admin\model\system\SystemRole;
@@ -38,7 +36,7 @@ class SystemAdmin extends AuthController
     public function index()
     {
         $admin = $this->adminInfo;
-        $where = Util::getMore([
+        $where = parent::getMore([
             ['name', ''],
             ['roles', ''],
             ['level', bcadd($admin->level, 1, 0)]
@@ -85,7 +83,7 @@ class SystemAdmin extends AuthController
      */
     public function save(Request $request)
     {
-        $data = Util::postMore([
+        $data = parent::postMore([
             'account',
             'conf_pwd',
             'pwd',
@@ -138,6 +136,7 @@ class SystemAdmin extends AuthController
             }
             return $options;
         })->multiple(1);
+        $f[] = Form::input('phone', '前端登录手机号', $admin->phone)->type('phone');
         $f[] = Form::radio('status', '状态', 1)->options([['label' => '开启', 'value' => 1], ['label' => '关闭', 'value' => 0]]);
         $form = Form::make_post_form('编辑管理员', $f, Url::build('update', compact('id')));
         $this->assign(compact('form'));
@@ -153,7 +152,7 @@ class SystemAdmin extends AuthController
      */
     public function update(Request $request, $id)
     {
-        $data = Util::postMore([
+        $data = parent::postMore([
             'account',
             'conf_pwd',
             'pwd',
@@ -164,15 +163,20 @@ class SystemAdmin extends AuthController
         ], $request);
         if (!$data['account']) return Json::fail('请输入管理员账号');
         if (!$data['roles']) return Json::fail('请选择至少一个管理员身份');
-        if (!$data['pwd'])
+        if (!$data['pwd']) {
             unset($data['pwd']);
-        else {
+        }else {
             if (isset($data['pwd']) && $data['pwd'] != $data['conf_pwd']) return Json::fail('两次输入密码不想同');
             $data['pwd'] = md5($data['pwd']);
         }
-        if (!$data['phone']) return Json::fail('请填写前端登录电话');
-        $user = User::where('phone',$data['phone'])->find();
-        if (!$user) return Json::fail('请至前端-个人中心-点击头像补充个人资料');
+        foreach ($data['roles'] as $v) {
+            $role = SystemRole::where('id',$v)->find();
+            if ($role && $role['sign'] == 'verification') {
+                if (!$data['phone']) return Json::fail('请填写前端登录电话');
+                $user = User::where('phone',$data['phone'])->find();
+                if (!$user) return Json::fail('请至前端-个人中心-点击头像补充个人资料');
+            }
+        }
         if (AdminModel::where('account', $data['account'])->where('id', '<>', $id)->count()) return Json::fail('管理员账号已存在');
         unset($data['conf_pwd']);
         AdminModel::edit($data, $id);
@@ -209,7 +213,7 @@ class SystemAdmin extends AuthController
     {
         $adminInfo = $this->adminInfo;//获取当前登录的管理员
         if ($request->isPost()) {
-            $data = Util::postMore([
+            $data = parent::postMore([
                 ['new_pwd', ''],
                 ['new_pwd_ok', ''],
                 ['pwd', ''],

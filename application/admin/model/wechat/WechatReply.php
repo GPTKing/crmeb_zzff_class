@@ -150,9 +150,8 @@ class WechatReply extends ModelBasic
      */
     public static function tidyNews($data,$key = '')
     {
-        if(!count($data)){
+        if(!count($data))
             return self::setErrorInfo('请选择图文消息');
-        }
         $siteUrl = SystemConfig::getValue('site_url');
         foreach ($data as $k=>$v){
             if(empty($v['url'])) $data[$k]['url'] = $siteUrl.Url::build('wap/article/details',['id'=>$v['id']]);
@@ -185,6 +184,7 @@ class WechatReply extends ModelBasic
         $res = self::where('key',$key)->where('status','1')->find();
         if(empty($res)) $res = self::where('key','default')->where('status','1')->find();
         if(empty($res)){
+            die("success");
             return WechatService::textMessage($default);
         }
         $res['data'] = json_decode($res['data'],true);

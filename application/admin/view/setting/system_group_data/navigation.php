@@ -1,35 +1,74 @@
 {extend name="public/container"}
+{block name="head"}
+<style>
+    .layui-nav {
+        padding: 0 10px;
+    }
+
+    .layui-bg-blue {
+        background-color: #0092DC !important;
+    }
+
+    .layui-nav-bar::after {
+        background-color: #5FB878;
+    }
+
+    .layui-nav .layui-nav-item {
+        line-height: 30px;
+    }
+
+    .layui-nav .layui-nav-item a {
+        color: #fff;
+    }
+
+    .layui-nav-child {
+        top: 35px;
+    }
+
+    .layui-nav .layui-nav-child a {
+        line-height: 36px;
+        color: #333;
+    }
+
+    .layui-nav .layui-nav-child dd.layui-this a {
+        background-color: #0092DC;
+    }
+</style>
+{/block}
 {block name="content"}
 <div class="layui-fluid">
     <div class="layui-row layui-col-space15"  id="app">
         <!--产品列表-->
         <div class="layui-col-md12">
             <div class="layui-card">
-                <div class="layui-card-header">导航列表</div>
+                <div class="layui-card-header">
+                    <div style="font-weight: bold;">导航配置</div>
+                </div>
                 <div class="layui-card-body">
-                    <div class="alert alert-info" role="alert">
-                        注:列表名称和排序可进行快速编辑;
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    </div>
-                    <div class="layui-btn-container">
-                        <button type="button" class="layui-btn layui-btn-sm" onclick="$eb.createModalFrame(this.innerText,'{:Url('create_recemmend')}',{w:800,h:500})">新建固定跳转导航</button>
-                        <button type="button" class="layui-btn layui-btn-sm" onclick="$eb.createModalFrame(this.innerText,'{:Url('create_recemmend_custom')}')">新建自定义跳转导航</button>
-                    </div>
-                    <table class="layui-hide" id="List" lay-filter="List"></table>
+                    <ul class="layui-nav layui-inline layui-bg-blue" lay-filter="nav">
+                        <li class="layui-nav-item">
+                            <a href="javascript:;">添加导航</a>
+                            <dl class="layui-nav-child">
+                                <dd><a href="javascript:;" data-type="1">固定跳转</a></dd>
+                                <dd><a href="javascript:;" data-type="2">自定义跳转</a></dd>
+                            </dl>
+                        </li>
+                    </ul>
+                    <table id="List" lay-filter="List"></table>
                     <script type="text/html" id="icon">
                         {{# if(d.icon) { }}
-                        <img style="cursor: pointer" lay-event='open_image' src="{{d.icon}}">
+                        <img lay-event='open_image' src="{{d.icon}}" height="50">
                         {{# } }}
                     </script>
                     <script type="text/html" id="is_show">
                         <input type='checkbox' name='id' lay-skin='switch' value="{{d.id}}" lay-filter='is_show' lay-text='显示|隐藏'  {{ d.is_show == 1 ? 'checked' : '' }}>
                     </script>
                     <script type="text/html" id="act">
-                        <button type="button" class="layui-btn layui-btn-xs" onclick="dropdown(this)">操作 <span class="caret"></span></button>
+                        <button type="button" class="layui-btn layui-btn-xs layui-btn-normal" onclick="dropdown(this)"><i class="layui-icon">&#xe625;</i>操作</button>
                         <ul class="layui-nav-child layui-anim layui-anim-upbit">
                             {{# if(d.type == 3) { }}
                             <li>
-                                <div onclick="$eb.createModalFrame('{{d.title}}-'+this.innerText,'{:Url('create_recemmend_custom')}?id={{d.id}}')">
+                                <div onclick="$eb.createModalFrame('{{d.title}}-'+this.innerText,'{:Url('create_recemmend_custom')}?id={{d.id}}&is_fixed=1')">
                                     <i class="fa fa-paste"></i> 编辑
                                 </div>
                             </li>
@@ -40,16 +79,6 @@
                                 </div>
                             </li>
                             {{# } }}
-                            <li>
-                                <a href="javascript:;" onclick="$eb.createModalFrame('{{d.title}}-'+this.innerText,'{:Url('recemmend_content')}?id={{d.id}}')">
-                                    <i class="fa fa-list-ul"></i> 内容管理
-                                </a>
-                            </li>
-                            <li>
-                                <div onclick="$eb.createModalFrame(this.innerText,'{:Url('recemmend_banner')}?id={{d.id}}',{w:900})">
-                                    <i class="fa fa-file-image-o"></i>  Banner
-                                </div>
-                            </li>
                             <li>
                                 <div lay-event='delete'>
                                     <i class="fa fa-trash"></i> 删除
@@ -66,21 +95,42 @@
 {block name="script"}
 <script src="{__ADMIN_PATH}js/layuiList.js"></script>
 <script>
+    // layui.use('element', function(){
+  var element = layui.element; //导航的hover效果、二级菜单等功能，需要依赖element模块
+  element.render();
+
+  //监听导航点击
+  element.on('nav(nav)', function(elem){
+    // //console.log(elem)
+    // // layer.msg(elem.text());
+    // console.log(elem)
+    var type = elem.data('type');
+    if (type == 1) {
+        $eb.createModalFrame('添加固定跳转导航','{:Url('create_recemmend')}',{w:800,h:500});
+    } else if (type == 2) {
+        $eb.createModalFrame('添加自定义跳转导航','{:Url('create_recemmend_custom')}?is_fixed=1');
+    }
+  });
+  
+  //监听导航点击
+//   element.on('nav(demo)', function(elem){
+//     //console.log(elem)
+//     layer.msg(elem.text());
+//   });
+// });
     //实例化form
     layList.form.render();
+
     //加载列表
     layList.tableList('List',"{:Url('recommend_list',['is_fixed' => 1])}",function (){
         return [
-            {field: 'title', title: '导航名称',edit:'title'},
-            {field: 'type_ting', title: '列表模式'},
-            {field: 'type_name', title: '导航类型'},
-            {field: 'icon', title: '图标',templet:'#icon'},
-            {field: 'sort', title: '排序',sort: true,event:'sort',edit:'sort'},
-            {field: 'grade_title', title: '一级分类名称'},
-            {field: 'number', title: '数量',width:'5%'},
-            {field: 'is_show', title: '是否显示',templet:'#is_show'},
-            {field: 'add_time', title: '创建时间'},
-            {field: 'right', title: '操作',align:'center',toolbar:'#act',width:'13%'},
+            {field: 'title', title: '导航名称',edit:'title',align:'center'},
+            {field: 'type_name', title: '导航类型',align:'center'},
+            {field: 'icon', title: '图标',templet:'#icon',align:'center'},
+            {field: 'sort', title: '排序',sort: true,event:'sort',edit:'sort',align:'center'},
+            {field: 'grade_title', title: '一级分类',align:'center'},
+            {field: 'is_show', title: '状态',templet:'#is_show',align:'center'},
+            {field: 'right', title: '操作',align:'center',toolbar:'#act'},
         ];
     });
     //自定义方法
@@ -172,5 +222,6 @@
                 break;
         }
     })
+
 </script>
 {/block}

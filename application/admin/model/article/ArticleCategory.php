@@ -8,6 +8,7 @@
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
+
 namespace app\admin\model\article;
 
 use traits\ModelTrait;
@@ -46,7 +47,7 @@ class ArticleCategory extends ModelBasic
     public static function delArticleCategory($id)
     {
         if(count(self::getArticle($id,'*'))>0)
-            return self::setErrorInfo('请先删除改分类下的文章!');
+            return self::setErrorInfo('请先删除该分类下的文章!');
         return self::edit(['is_del'=>1],$id,'id');
     }
 
@@ -66,7 +67,7 @@ class ArticleCategory extends ModelBasic
     public static function getTierList($model = null)
     {
         if($model === null) $model = new self();
-        return Util::sortListTier($model->select()->toArray());
+        return Util::sortListTier($model->where('is_del',0)->select()->toArray());
     }
 
     /**

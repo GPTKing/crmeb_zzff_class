@@ -1,5 +1,4 @@
 <?php
-
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
@@ -13,12 +12,17 @@
 namespace app\admin\controller\setting;
 
 use EasyWeChat\ShakeAround\Group;
-use service\UtilService as Util;
+
 use service\JsonService as Json;
+
 use think\Request;
+
 use think\Url;
+
 use app\admin\model\system\SystemGroup as GroupModel;
+
 use app\admin\model\system\SystemGroupData as GroupDataModel;
+
 use app\admin\controller\AuthController;
 
 
@@ -32,7 +36,6 @@ class SystemGroup extends AuthController
 
     /**
      * 显示资源列表
-     *
      * @return \think\Response
      */
     public function index()
@@ -70,7 +73,7 @@ class SystemGroup extends AuthController
      */
     public function save(Request $request)
     {
-        $params = Util::postMore([
+        $params = parent::postMore([
             ['id', ''],
             ['name', ''],
             ['config_name', ''],

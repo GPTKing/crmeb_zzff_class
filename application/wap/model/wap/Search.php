@@ -7,13 +7,16 @@
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
-//
+// +----------------------------------------------------------------------
+
 namespace app\wap\model\wap;
 
 use app\admin\model\special\SpecialSource;
 use app\wap\model\recommend\RecommendRelation;
 use app\wap\model\special\Special;
 use app\wap\model\special\SpecialTask;
+use service\SystemConfigService;
+use think\cache\driver\Redis;
 use traits\ModelTrait;
 use basic\ModelBasic;
 use app\wap\model\article\Article;
@@ -26,6 +29,8 @@ use think\Db;
 class Search extends ModelBasic
 {
     use ModelTrait;
+
+    const searchHistory='search_history_';
 
     public static function getHostSearch()
     {
@@ -45,33 +50,39 @@ class Search extends ModelBasic
     public static function getSearchContent($search, $limit = 3,$uid=0, $page = 0)
     {
         $specialModel = Special::PreWhere()->where('title|abstract', 'LIKE', "%$search%")->field(['is_pink', 'pink_money', 'label', 'id', 'title', 'abstract', 'image', 'money'])
-            ->order('sort desc');
+            ->order('sort desc,id desc');
         if ($page === 0)
             $special = $specialModel->limit($limit)->select();
         else
             $special = $specialModel->page((int)$page, (int)$limit)->select();
-        $tashModel = SpecialTask::where('a.is_show', 1)->where('a.title|a.abstract', 'LIKE', "%$search%")->alias('a')->join('__SPECIAL_COURSE__ c', 'c.id=a.coures_id')
-            ->field(['a.id', 'a.title', 'a.image', 'a.play_count', 'c.special_id'])->order('a.sort desc');
-        if ($page === 0)
-            $tash = $tashModel->limit($limit)->select();
-        else
-            $tash = $tashModel->page((int)$page, (int)$limit)->select();
         $special = count($special) ? $special->toArray() : [];
-        $tash = count($tash) ? $tash->toArray() : [];
         foreach ($special as &$item) {
             $item['image'] = get_oss_process($item['image'],4);
         }
-        foreach ($tash as &$item) {
-            $item['image'] = get_oss_process($item['image'],4);
-        }
         $searchList['special'] = $special;
-        $searchList['tash'] = $tash;
-        $data=[
-            'uid'=>$uid,
-            'search'=>$search,
-            'add_time'=>time()
-        ];
-        Db::name('search_history')->insert($data);
+        if($uid){
+            $data=[
+                'uid'=>$uid,
+                'search'=>$search,
+                'add_time'=>time()
+            ];
+            $history=Db::name('search_history')->where(['uid'=>$uid,'search'=>$search])->find();
+            if(!$history){
+                $id = Db::name('search_history')->insertGetId($data);
+            }else{
+                $id=0;
+            }
+        }
+        $redisModel = new Redis();
+        $site_url = SystemConfigService::get('site_url');
+        $subjectUrl=getUrlToDomain($site_url);
+        $exists_search_reids = $redisModel->HEXISTS($subjectUrl."wap_index_has",self::searchHistory.$uid);
+        if ($exists_search_reids && $id) {
+            $data['id'] = $id;
+            $search_list_redis = json_decode($redisModel->hget($subjectUrl."wap_index_has",self::searchHistory.$uid),true);
+            $redis_tmp = array_merge([$data], $search_list_redis);
+            $redisModel->hset($subjectUrl."wap_index_has",self::searchHistory.$uid, json_encode($redis_tmp));
+        }
         return $searchList;
     }
 
@@ -101,7 +112,7 @@ class Search extends ModelBasic
         switch ((int)$where['type']) {
             case 0:
             case 2:
-                $model = Special::PreWhere();
+                $model = Special::PreWhere()->where('is_show',1);
                 if (isset($where['subject_id']) && $where['subject_id']) $model = $model->where('subject_id', $where['subject_id']);
                 $field = ['title', 'abstract', 'image','type','label', 'money', 'id', 'is_pink', 'pink_money'];
                 break;
@@ -113,7 +124,7 @@ class Search extends ModelBasic
                 return ['list' => [], 'page' => 0];
                 break;
         }
-        $list = $model->where('id', 'in', $ids)->order('sort desc')->field($field)->page((int)$where['page'], (int)$where['limit'])->select();
+        $list = $model->where('id', 'in', $ids)->order('sort desc,id desc')->field($field)->page((int)$where['page'], (int)$where['limit'])->select();
         $list = count($list) ? $list->toArray() : [];
         foreach ($list as &$item) {
             if (!isset($item['money'])) $item['money'] = 0;

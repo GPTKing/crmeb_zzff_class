@@ -1,5 +1,4 @@
 <?php
-
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
@@ -10,14 +9,15 @@
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
 
-
 namespace app\admin\model\record;
+
 use traits\ModelTrait;
 use basic\ModelBasic;
 use service\ExportService;
 use app\wap\model\user\UserBill;
 use app\admin\model\user\User;
 use service\PHPExcelService;
+
 class StoreStatistics extends ModelBasic
 {
     protected $name = 'store_order';
@@ -167,7 +167,9 @@ class StoreStatistics extends ModelBasic
      */
     public static function getExtension($where)
     {
-        $extension = self::getTime($where,new UserBill)->where('type', 'brokerage')->where('category','now_money')->sum('number');
+        $rake_back = self::getTime($where,new UserBill)->where('type', 'brokerage')->where('category','now_money')->sum('number');
+        $return = self::getTime($where,new UserBill)->where('type', 'brokerage_return')->where('category','now_money')->sum('number');
+        $extension=bcsub($rake_back,$return,2);
         return $extension;
     }
 

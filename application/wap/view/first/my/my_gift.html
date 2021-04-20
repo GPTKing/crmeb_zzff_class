@@ -25,7 +25,6 @@
         left: 50%;
         width: 4rem;
         height: 4rem;
-        background: url("{__WAP_PATH}zsff/images/nothing.png") center/contain no-repeat;
         -webkit-transform: translate(-50%, -50%);
         transform: translate(-50%, -50%);
     }
@@ -55,19 +54,22 @@
                 </li>
             </ul>
             <template v-if="giftList.length">
-                <div v-if="loaded && page > 2" class="loaded">已全部加载</div>
+                <div v-if="loaded && page >= 2" class="loaded">已全部加载</div>
             </template>
             <template v-else>
                 <div v-show="loading" class="loading">
                     <span class="fa fa-spinner"></span>
                 </div>
-                <div v-if="!loading" class="nothing"></div>
+                <div v-if="!loading">
+                    <img class="nothing"  src="/wap/first/zsff/images/no_data_available.png">
+                </div>
             </template>
         </div>
     </div>
+    <quick-menu></quick-menu>
 </div>
 <script>
-    require(['vue', 'store', 'helper'], function (Vue, store, $h) {
+    require(['vue', 'store', 'helper', 'quick'], function (Vue, store, $h) {
         new Vue({
             el: '#app',
             data: {

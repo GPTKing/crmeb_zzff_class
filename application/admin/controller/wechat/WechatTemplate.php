@@ -1,5 +1,4 @@
 <?php
-
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
@@ -14,7 +13,6 @@ namespace app\admin\controller\wechat;
 
 use app\admin\controller\AuthController;
 use service\FormBuilder as Form;
-use service\UtilService as Util;
 use service\JsonService as Json;
 use service\WechatTemplateService;
 use think\Cache;
@@ -35,7 +33,7 @@ class WechatTemplate extends AuthController
 
     public function index()
     {
-        $where = Util::getMore([
+        $where = parent::getMore([
             ['name', ''],
             ['status', '']
         ], $this->request);
@@ -75,7 +73,7 @@ class WechatTemplate extends AuthController
 
     public function save(Request $request)
     {
-        $data = Util::postMore([
+        $data = parent::postMore([
             'tempkey',
             'tempid',
             'name',
@@ -115,7 +113,7 @@ class WechatTemplate extends AuthController
 
     public function update(Request $request, $id)
     {
-        $data = Util::postMore([
+        $data = parent::postMore([
             'tempid',
             ['status', 0]
         ], $request);

@@ -1,10 +1,10 @@
 {extend name="public/container"}
 {block name="title"}{$live_title}{/block}
 {block name="head_top"}
-<link rel="stylesheet" href="https://g.alicdn.com/de/prismplayer/2.8.2/skins/default/aliplayer-min.css">
-<script src="https://g.alicdn.com/de/prismplayer/2.8.2/aliplayer-min.js"></script>
+<link rel="stylesheet" href="https://g.alicdn.com/de/prismplayer/2.9.3/skins/default/aliplayer-min.css">
+<script src="https://g.alicdn.com/de/prismplayer/2.9.3/aliplayer-min.js"></script>
 <script src="{__WAP_PATH}zsff/layer_mobile/layer.js"></script>
-<script src="{__WAP_PATH}zsff/js/hls.js"></script>
+<script src="https://g.alicdn.com/de/prismplayer/2.9.3/hls/aliplayer-hls-min.js"></script>
 <script>
     window.room = {$room};
     window.workermanConfig = {$workerman};
@@ -61,6 +61,9 @@
         -webkit-transform: translate(-50%, -50%);
         transform: translate(-50%, -50%);
     }
+    .footer{
+        z-index:10;background-color: #fff;
+    }
 </style>
 {/block}
 {block name="content"}
@@ -68,7 +71,7 @@
     <div class="live">
         <div :style="{ height: playerHeight + 'px' }" class="header">
             <div v-show="liveInfo.is_play || PullUrl" class="prism-player" id="J_prismPlayer"></div>
-            <div v-show="!liveInfo.is_play || !PullUrl" class="text">
+            <div v-show="!liveInfo.is_play && !PullUrl" class="text">
                 <div>{{ liveText }}</div>
                 <count-down v-show="!live_status" :day-show="false" :sec-show="false" :time="datatime"></count-down>
             </div>
@@ -76,8 +79,10 @@
         <div class="nav">
             <div :class="{ active: navActive === 0 }" class="item" @click="navActive = 0">聊天</div>
             <div :class="{ active: navActive === 1 }" class="item" @click="navActive = 1">课堂</div>
+            <div :class="{ active: navActive === 2 }" class="item" @click="navActive = 2">推荐</div>
+            <div :class="{ active: navActive === 3 }" class="item" @click="navActive = 3">排行</div>
         </div>
-        <div class="main">
+        <div ref="main" class="main">
             <!-- 聊天 -->
             <div v-show="navActive === 0" class="section" @click="emojiKeyboardHide" @scroll="chatScroll">
                 <div ref="chat" class="chat">
@@ -105,9 +110,7 @@
                                     <img :src="item.content" class="cont" @click="preview(item.content)">
                                 </div>
                                 <div class="info" v-else-if="item.type==3">
-                                    <div class="cont" v-if="userInfo.uid == item.uid "
-                                        @click="play_audio(item,index,'OpenCommentList')">
-                                        {{item.duration || 0}}’’
+                                    <div class="cont" v-if="userInfo.uid == item.uid " @click="play_audio(item,index,'OpenCommentList')">{{item.duration || 0}}’’
                                         <img :src="item.is_play ? '/wap/first/zsff/images/signal2.gif':'/wap/first/zsff/images/signal.png'" class="signal signalR" style="margin-left:0.27rem;cursor: pointer">
                                     </div>
                                     <div class="conter acea-row row-middle" v-else @click="play_audio(item,index,'OpenCommentList')">
@@ -116,8 +119,7 @@
                                     <div class="spot" v-if="item.is_play"></div>
                                 </div>
                                 <div v-else-if="item.type === 4" class="info">
-                                    <div class="cont">{{ item.content }}{{ item.gift_name }}
-                                        <img :src="item.gift_image">×{{ item.gift_num }}</div>
+                                    <div class="cont">{{ item.content }}{{ item.gift_name }}<img :src="item.gift_image">×{{ item.gift_num }}</div>
                                 </div>
                             </div>
                         </div>
@@ -153,12 +155,10 @@
                                 <div class="info" v-else-if="item.type==3">
                                     <div class="cont" v-if="userInfo.uid == item.uid " @click="play_audio(item,index,'CommentList')">
                                         {{item.duration || 0}}’’
-                                        <img :src="item.is_play ? '/wap/first/zsff/images/signal2.gif':'/wap/first/zsff/images/signal.png'"
-                                            class="signal signalR" style="margin-left:0.27rem;cursor: pointer;">
+                                        <img :src="item.is_play ? '/wap/first/zsff/images/signal2.gif':'/wap/first/zsff/images/signal.png'" class="signal signalR" style="margin-left:0.27rem;cursor: pointer;">
                                     </div>
                                     <div class="cont" v-else @click="play_audio(item,index,'CommentList')">
-                                        <img :src="item.is_play ? '/wap/first/zsff/images/signal2.gif':'/wap/first/zsff/images/signal.png'"
-                                            class="signal" style="margin-left:0.27rem;cursor: pointer;">{{item.duration || 0}}’’
+                                        <img :src="item.is_play ? '/wap/first/zsff/images/signal2.gif':'/wap/first/zsff/images/signal.png'" class="signal" style="margin-left:0.27rem;cursor: pointer;">{{item.duration || 0}}’’
                                     </div>
                                     <div class="spot" v-if="item.is_play"></div>
                                 </div>
@@ -172,6 +172,7 @@
                 <div class="list">
                     <div v-for="(item, index) in updateRecomList" :key="item.id" class="item">
                         <div class="image">
+                            <div class="tag">{{ item.gfake_type ? '商品' : '专题' }}</div>
                             <img :src="item.image" class="img">
                         </div>
                         <div class="text">
@@ -182,7 +183,8 @@
                             <div class="money">
                                 <div class="sell">¥<span class="num">{{ item.money }}</span></div>
                             </div>
-                            <a :href="$h.U({c: 'special', a: 'details', q: {id: item.id}})" class="link">去订购</a>
+                            <a :href="$h.U({c: 'special', a: 'details', q: {id: item.id}})" v-if="item.gfake_type==0" class="link">去订购</a>
+                            <a :href="$h.U({c: 'store', a: 'detail', q: {id: item.id}})" v-else class="link">去订购</a>
                         </div>
                     </div>
                 </div>
@@ -191,20 +193,72 @@
                 </div>
                 <div v-if="!loadings && !recomList.length" class="nothing"></div>
             </div>
+            <!-- 排行 -->
+            <div v-show="navActive === 3" class="section rank">
+                <div v-if="rankList.length" class="list">
+                    <template v-for="(item, index) in rankList">
+                        <div v-if="item.uid === userInfo.uid" :key="index" class="item">
+                            <div class="type">
+                                <img v-if="index === 0" src="{__WAP_PATH}zsff/images/medal01.png" class="img">
+                                <img v-else-if="index === 1" src="{__WAP_PATH}zsff/images/medal02.png" class="img">
+                                <img v-else-if="index === 2" src="{__WAP_PATH}zsff/images/medal03.png" class="img">
+                                <template v-else>{{ index + 1 }}</template>
+                            </div>
+                            <div class="image">
+                                <img :src="item.avatar ? item.avatar : '{__WAP_PATH}zsff/images/avatar_default.png'" class="img">
+                            </div>
+                            <div class="name">{{ item.nickname }}</div>
+                            <div :style="{ backgroundImage: 'url(' + goldInfo.gold_image + ')' }" class="num">{{ item.total_price }}</div>
+                        </div>
+                    </template>
+                </div>
+                <div v-if="rankList.length" class="list">
+                    <div v-for="(item, index) in rankList" :key="index" class="item">
+                        <div class="type">
+                            <img v-if="index === 0" src="{__WAP_PATH}zsff/images/medal01.png" class="img">
+                            <img v-else-if="index === 1" src="{__WAP_PATH}zsff/images/medal02.png" class="img">
+                            <img v-else-if="index === 2" src="{__WAP_PATH}zsff/images/medal03.png" class="img">
+                            <template v-else>{{ index + 1 }}</template>
+                        </div>
+                        <div class="image">
+                            <img :src="item.avatar ? item.avatar : '{__WAP_PATH}zsff/images/avatar_default.png'" class="img">
+                        </div>
+                        <div class="name">{{ item.nickname }}</div>
+                        <div :style="{ backgroundImage: 'url(' + goldInfo.gold_image + ')' }" class="num">{{ item.total_price }}</div>
+                    </div>
+                </div>
+                <div v-show="loadings" class="loading">
+                    <span class="fa fa-spinner"></span>
+                </div>
+                <div v-if="!loadings && !rankList.length" class="nothing"></div>
+            </div>
             <!-- 欢迎语 -->
             <div :class="{ on: notice }" class="welcome"><span class="name">{{ notice }}</span> 直播间</div>
             <!-- 在线人数 -->
-            <div v-show="2 > navActive" class="online">{{ UserSum }} 人</div>
+            <div v-show="2 > navActive" ref="online" class="online">{{ UserSum }} 人</div>
             <!-- 右侧按钮 -->
-            <div v-show="2 > navActive" class="side-menu">
+            <div v-show="2 > navActive" ref="menu" class="side-menu">
                 <button v-show="navActive === 1" class="btn barrage-btn" type="button" @click="barrage = !barrage">
                     <img :src="barrage ? '{__WAP_PATH}zsff/images/barrage1.png' : '{__WAP_PATH}zsff/images/barrage2.png'">
                 </button>
+                <button v-show="giftList.length" class="btn" type="button" @click="giftShow = true">
+                    <img class="img" src="{__WAP_PATH}zsff/images/gift1.png">
+                </button>
             </div>
             <!-- 礼物特效 -->
-
+            <div v-if="giftFloat" :class="{ on: giftFloat }" class="gift-float">
+                <div class="cont">
+                <div :style="{ backgroundImage: 'url(' + giftFloat.user_avatar + ')' }" class="avatar"></div>
+                    <div class="text">
+                        <div class="name">{{ giftFloat.username }}</div>
+                        送出 {{ giftFloat.gift.live_gift_name }}
+                    </div>
+                    <div :style="{ backgroundImage: 'url(' + giftFloat.gift.live_gift_show_img + ')' }" class="image"></div>
+                </div>
+                <div class="num">×{{ giftFloat.live_gift_num }}</div>
+            </div>
             <!-- 弹幕 -->
-            <div v-show="navActive === 1" ref="barrage" :class="{ on: barrage }" class="barrage">
+            <div v-show="navActive === 1" ref="barrage" :class="{ on: barrage }" :style="{ top: barrageTop + 'px', bottom: barrageTottom + 10 + 'px' }" class="barrage">
                 <div class="item acea-row row-middle row-right" v-for="item in BarrageList">
                     <div class="text" v-html="item.content" v-if="item.type!=2"></div>
                     <div class="text" v-else>
@@ -225,11 +279,9 @@
                 <button v-if="user_type == 0 || user_type == 1" class="button" type="button" @click="push">
                     <img class="img" src="{__WAP_PATH}zsff/images/plus.png">
                 </button>
-                <form class="form" action="javascript:void(0)" @submit="push">
-                    <input ref="input" v-model="content" class="input" type="text">
-                    <button v-show="content" class="button" type="submit">
-                        <img class="img" src="{__WAP_PATH}zsff/images/push.png">
-                    </button>
+                <form class="form" @submit.prevent="push">
+                    <input ref="input" v-model="content" class="text" type="text">
+                    <input v-show="content" class="submit" type="submit" value="">
                 </form>
             </div>
 
@@ -248,7 +300,42 @@
                 <div id="emoji-pagination" class="swiper-pagination"></div>
             </div>
         </div>
+        <!-- 打赏 -->
+        <div :class="{ mask: giftShow }" @click="giftShow = false"></div>
+        <div v-show="giftShow" class="gift-wrapper">
+            <div id="gift" class="swiper-container gift">
+                <div class="swiper-wrapper">
+                    <div v-for="(item, index) in updateGiftList" :key="index" class="swiper-slide">
+                        <div v-for="(itm, idx) in item" :key="itm.id" :class="{ on: idx === giftIndexOn }" class="item" @click="giftIndexOn = idx; giftOn = itm">
+                            <div class="image">
+                                <img :src="itm.live_gift_show_img" class="img">
+                            </div>
+                            <div class="name">{{ itm.live_gift_name }}</div>
+                            <div :style="{ backgroundImage: 'url(' + goldInfo.gold_image + ')' }" class="num">{{ itm.live_gift_price }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div v-show="updateGiftList.length > 1" id="gift-pagination" class="swiper-pagination"></div>
+            </div>
+            <div class="foot">
+                <a :href="$h.U({c: 'special', a: 'recharge_index'}) + '?from=live&stream_name=' + liveInfo.stream_name + '&record_id=' + recordId" class="text-group">
+                    <span v-if="userInfo.gold_num" :style="{ backgroundImage: 'url(' + goldInfo.gold_image + ')' }" class="number">{{ userInfo.gold_num }}</span>
+                    <span v-else>充值</span>
+                    <span class="iconfont iconxiangyou"></span>
+                </a>
+                <div class="button-group">
+                    <button class="button select" type="button" @click="giftSelectShow = !giftSelectShow">
+                        {{ giftNumSelected }}<span :class="['iconfont', giftSelectShow ? 'iconxiangxia' : 'iconxiangshang']"></span>
+                        <ul v-show="giftSelectShow" class="list">
+                            <li v-for="(item, index) in giftOn.live_gift_num" :key="item" @click.prevent="giftNumSelected = item">{{ item }}</li>
+                        </ul>
+                    </button>
+                    <button class="button post" type="button" @click="giveGift">赠送</button>
+                </div>
+            </div>
+        </div>
     </div>
+    <quick-menu></quick-menu>
 </div>
 <script charset="utf-8" type="text/javascript" src="{__WAP_PATH}zsff/js/WebSocket.js"></script>
 <script>
@@ -269,7 +356,7 @@
     goldInfo = {$goldInfo};
 </script>
 <script>
-    require(['vue', 'store', 'helper', '{__WAP_PATH}zsff/face/emoji.js', '{__WAP_PATH}zsff/js/countdown.js'], function (Vue, store, $h, emoji) {
+    require(['vue', 'store', 'helper', '{__WAP_PATH}zsff/face/emoji.js', '{__WAP_PATH}zsff/js/countdown.js', '{__WAP_PATH}zsff/js/quick.js'], function (Vue, store, $h, emoji) {
         var vm = new Vue({
             el: '#app',
             data: {
@@ -325,14 +412,16 @@
                 giftIndexOn: 0,
                 giftOn: {},
                 giftSelectShow: false,
-                //giftShow: false,
+                giftShow: false,
                 giftNumSelected: 1,
                 giftFloat: null,
                 goldInfo: goldInfo,
                 recomList: [],
                 rankList: [],
                 navActive: 0,
-                loadings: false
+                loadings: false,
+                barrageTop: 0,
+                barrageTottom: 0
             },
             computed: {
                 playerHeight: function () {
@@ -427,10 +516,23 @@
                 },
                 navActive: function (value) {
                     switch (value) {
+                        case 1:
+                            this.$nextTick(function () {
+                                this.barrageTottom = this.$refs.main.offsetHeight - this.$refs.menu.offsetTop;
+                            });
+                            break;
                         case 2:
                             this.getRecomList();
                             break;
+                        case 3:
+                            this.getRankList();
+                            break;
                     }
+                },
+                giftList: function () {
+                    this.$nextTick(function () {
+                        this.barrageTottom = this.$refs.main.offsetHeight - this.$refs.menu.offsetTop;
+                    });
                 }
             },
             created: function () {
@@ -438,6 +540,8 @@
             },
             mounted: function () {
                 this.$nextTick(function () {
+                    this.barrageTop = this.$refs.online.offsetTop + this.$refs.online.offsetHeight;
+                    this.barrageTottom = this.$refs.main.offsetHeight - this.$refs.menu.offsetTop;
                     var that = this;
                     window.addEventListener('resize', function () {
                         that.windowWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
@@ -455,7 +559,6 @@
                         skinLayoutchildren = [
                             { name: "liveDisplay", align: "tlabs", x: 15, y: 6 },
                             { name: "fullScreenButton", align: "tr", x: 10, y: 10 },
-                            // { name: "subtitle", align: "tr", x: 15, y: 12 },
                             { name: "volume", align: "tr", x: 5, y: 10 }
                         ];
                     }
@@ -464,11 +567,11 @@
                             id: 'J_prismPlayer',
                             width: '100%',
                             height: '100%',
-                            autoplay: false,
+                            autoplay: true,
                             isLive: this.liveInfo.is_play ? true : false,
                             source: this.PullUrl,
                             skinLayout: [
-                                { name: "bigPlayButton", align: "cc"},
+                                { name: "bigPlayButton", align: "cc" },
                                 { name: "errorDisplay", align: "tlabs", x: 0, y: 0 },
                                 { name: "infoDisplay", align: "cc" },
                                 {
@@ -478,6 +581,11 @@
                             ]
                         }, function (player) {
                             console.log('播放器创建好了。')
+                            if (!!navigator.userAgent.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/) && that.liveInfo.is_play) {
+                                player.on('pause', function () {
+                                    player.play()
+                                })
+                            }
                         });
                         this.bindEvevt();
                     }
@@ -503,7 +611,7 @@
                         var file = this.files[0];
                         if (file) {
                             var formData = new FormData();
-                            formData.append('file', file);  /*获取上传的图片对象*/
+                            formData.append('file', file);
                             $.ajax({
                                 url: '{:Url("auth_api/upload")}',
                                 type: 'POST',
@@ -529,6 +637,9 @@
                     this.getOpenCommtList();
                     this.createEmojiSwiper();
                     this.createGiftSwiper();
+                    this.getGiftList();
+                    this.getRecomList();
+                    this.getRankList();
                 });
             },
             methods: {
@@ -582,13 +693,13 @@
                         gift = null,
                         type = 1;
                     if (!res.recharge_status) {
-                        return $h.pushMsgOnce('您的' + this.goldInfo.gold_name + '不足，请先去充值');
+                        return this.msg('您的' + this.goldInfo.gold_name + '不足，请先去充值');
                     }
                     gift = this.giftList.find(function (value) {
                         return value.id === res.live_gift_id;
                     });
                     if (!gift) {
-                        return $h.pushMsgOnce('gift异常');
+                        return this.msg('gift异常');
                     }
                     res.gift = gift
                     this.giftFloat = res;
@@ -607,8 +718,77 @@
                         user_type: res.user_type
                     });
                     if (res.uid === this.userInfo.uid) {
+                        this.isDown = true;
                         this.userInfo.gold_num = this.userInfo.gold_num - gift.live_gift_price * res.live_gift_num;
                     }
+                },
+                // 赠送
+                giveGift: function () {
+                    var data = {
+                        type: 'live_reward',
+                        uid: this.userInfo.uid,
+                        live_gift_id: this.giftOn.id,
+                        live_gift_num: this.giftNumSelected,
+                        live_id: window.room,
+                        special_id: this.liveInfo.special_id
+                    };
+                    if (!this.userInfo.gold_num) {
+                        return this.msg('您的' + this.goldInfo.gold_name + '不足，请先去充值');
+                    }
+                    if (this.giftNumSelected * this.giftOn.live_gift_price > this.userInfo.gold_num) {
+                        return this.msg('您的' + this.goldInfo.gold_name + '不足，请先去充值');
+                    }
+                    this.giftShow = false;
+                    socket.ws.send(JSON.stringify(data));
+                },
+                // 获取榜单
+                getRankList: function () {
+                    var that = this;
+                    that.loadings = true;
+                    store.basePost($h.U({ c: 'live', a: 'get_live_reward' }), {uid: that.userInfo.uid, live_id: that.liveInfo.id}, function (res) {
+                        var list = res.data.data.list;
+                        that.loadings = false;
+                        if (!list.length) {
+                            return;
+                        }
+                        that.rankList = list;
+                    }, function (res) {
+                        that.loadings = false;
+                        that.msg(res.data.data.msg);
+                    });
+                },
+                // 获取主播推荐
+                getRecomList: function () {
+                    var that = this;
+                    that.loadings = true;
+                    store.baseGet($h.U({ c: 'live', a: 'live_goods_list', q: {live_id: that.liveInfo.id}}), function (res) {
+                        var list = res.data.data.list;
+                        that.loadings = false;
+                        if (!list.length) {
+                            return;
+                        }
+                        that.recomList = list;
+                    }, function (res) {
+                        that.loadings = false;
+                        that.msg(res.data.data.msg);
+                    });
+                },
+                // 获取打赏礼物
+                getGiftList: function () {
+                    var that = this;
+                    store.baseGet($h.U({ c: 'live', a: 'live_gift_list' }), function (res) {
+                        var list = res.data.data;
+                        if (!list.length) {
+                            return;
+                        }
+                        list.forEach(function (value) {
+                            value.live_gift_num.reverse();
+                        });
+                        that.giftList = list;
+                        that.giftOn = list[0];
+                    }, function (res) {
+                        that.msg(res.msg);
+                    });
                 },
                 // 创建表情包面板
                 createEmojiSwiper: function () {

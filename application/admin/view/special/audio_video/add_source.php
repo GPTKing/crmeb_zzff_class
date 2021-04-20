@@ -44,80 +44,80 @@
     .edui-default .edui-for-image .edui-icon{
         background-position: -380px 0px;
     }
+    .file {
+        position: relative;
+        background: #0092DC;
+        border: 1px solid #99D3F5;
+        border-radius: 4px;
+        padding: 7px 12px;
+        overflow: hidden;
+        color: #fff;
+        text-decoration: none;
+        text-indent: 0;
+        line-height: 20px;
+        width: 120px;
+    }
+    .file input {
+        width: 100%;
+        position: absolute;
+        font-size: 5px;
+        right: 0;
+        top: 0;
+        opacity: 0;
+    }
+    .file:hover {
+        background: #AADFFD;
+        border-color: #78C3F3;
+        color: #004974;
+        text-decoration: none;
+    }
+    [v-cloak]{
+        display: none;
+    }
+    .layui-form-select dl {
+        z-index: 1000;
+    }
 </style>
 <script type="text/javascript" charset="utf-8" src="{__ADMIN_PATH}plug/ueditor/third-party/zeroclipboard/ZeroClipboard.js"></script>
 <script type="text/javascript" charset="utf-8" src="{__ADMIN_PATH}plug/ueditor/ueditor.config.js"></script>
 <script type="text/javascript" charset="utf-8" src="{__ADMIN_PATH}plug/ueditor/ueditor.all.min.js"></script>
-<script type="text/javascript" src="{__ADMIN_PATH}plug/ueditor/lang/zh-cn/zh-cn.js"></script>
-<script type="text/javascript" src="{__ADMIN_PATH}js/aliyun-oss-sdk-4.4.4.min.js"></script>
-<script type="text/javascript" src="{__ADMIN_PATH}js/request.js"></script>
-<script type="text/javascript" src="{__MODULE_PATH}widget/lib/plupload-2.1.2/js/plupload.full.min.js"></script>
-<script type="text/javascript" src="{__MODULE_PATH}widget/OssUpload.js"></script>
+<script src="{__ADMIN_PATH}plug/aliyun-upload-sdk/aliyun-upload-sdk-1.5.0.min.js"></script>
+<script src="{__ADMIN_PATH}plug/aliyun-upload-sdk/lib/es6-promise.min.js"></script>
+<script src="{__ADMIN_PATH}plug/aliyun-upload-sdk/lib/aliyun-oss-sdk-5.3.1.min.js"></script>
 {/block}
 {block name="content"}
 <div class="layui-fluid" style="background: #fff">
-    <div class="layui-row layui-col-space15"  id="app">
+    <div class="layui-row layui-col-space15"  id="app" v-cloak="">
         <form action="" class="layui-form">
             <div class="layui-col-md12">
                 <div class="layui-card" v-cloak="">
                     <div class="layui-card-header">基本信息</div>
                     <div class="layui-card-body" style="padding: 10px 150px;">
-                        <!--<div class="layui-form-item">
-                            <label class="layui-form-label">分类选择</label>
-                            <div class="layui-input-block">
-                                <select name="subject_id" v-model="formData.subject_id" lay-search="" lay-filter="subject_id">
-                                    <option value="0">请选分类</option>
-                                    <option :value="item.id" v-for="item in subject_list">{{item.name}}</option>
-                                </select>
-                            </div>
-                        </div>-->
                         <div class="layui-form-item">
-                            <label class="layui-form-label" >素材名称</label>
+                            <label class="layui-form-label" >素材名称：</label>
                             <div class="layui-input-block">
                                 <input type="text" name="title" v-model="formData.title" autocomplete="off" placeholder="请输入素材名称" class="layui-input">
                             </div>
                         </div>
-                        <!--<div class="layui-form-item">
-                            <label class="layui-form-label" v-text="is_live?'直播简介':'专题简介'"></label>
+                        <div class="layui-form-item submit">
+                            <label class="layui-form-label">素材分类</label>
                             <div class="layui-input-block">
-                                <textarea :placeholder="is_live?'请输入直播简介':'请输入专题简介'" v-model="formData.abstract" class="layui-textarea"></textarea>
+                                <select name="pid" v-model="formData.pid" lay-search="" lay-filter="pid" >
+                                    <option v-for="item in cateList"  :value="item.id" >{{item.html}}{{item.title}}</option>
+                                </select>
                             </div>
-                        </div>-->
-                       <!-- <div class="layui-form-item m-t-5">
-                            <label class="layui-form-label" v-text="is_live?'直播短语':'专题短语'"></label>
-                            <div class="layui-input-block">
-                                <textarea :placeholder="is_live ? '请输入直播短语':'请输入专题短语'" v-model="formData.phrase" class="layui-textarea"></textarea>
-                            </div>
-                        </div>-->
-                        <!--<div class="layui-form-item m-t-5" v-if="is_live">
-                            <label class="layui-form-label" v-text="'自动回复'"></label>
-                            <div class="layui-input-block">
-                                <textarea placeholder="用户首次进入直播间的欢迎语" v-model="formData.auto_phrase" class="layui-textarea"></textarea>
-                            </div>
-                        </div>-->
+                        </div>
                         <div class="layui-form-item m-t-5">
                             <label class="layui-form-label">素材排序</label>
                             <div class="layui-input-block">
                                 <input type="number" style="width: 20%" name="sort" v-model="formData.sort" autocomplete="off" class="layui-input">
                             </div>
                         </div>
-<!--                        <div class="layui-form-item m-t-5" v-cloak="">
-                            <div class="layui-inline">
-                                <label class="layui-form-label" style="margin-right: 28px" v-text="is_live?'直播标签':'专题标签'"></label>
-                                <div class="layui-input-inline" style="width: 300px;">
-                                    <input type="text" v-model="label" name="price_min" placeholder="最多4个字" autocomplete="off" class="layui-input" style="float: left;width: 200px">
-                                    <p class="special-label" @click="addLabrl"><i class="fa fa-plus" aria-hidden="true"></i></p>
-                                </div>
-                            </div>
-                            <div class="layui-input-block">
-                                <div class="label-box" v-for="(item,index) in formData.label" @click="delLabel(index)">
-                                    <p>{{item}}</p>
-                                </div>
-                            </div>
-                            <div class="layui-form-mid layui-word-aux">输入标签名称点击添加+号进行添加;最多写入6个字;点击标签可删除</div>
-                        </div>-->
                         <div class="layui-form-item m-t-5" v-cloak="">
-                            <label class="layui-form-label">素材封面</label>
+                            <label class="layui-form-label">
+                                <div>素材封面</div>
+                                <div>(710*400px)</div>
+                            </label>
                             <div class="layui-input-block">
                                 <div class="upload-image-box" v-if="formData.image" @mouseenter="mask.image = true" @mouseleave="mask.image = false">
                                     <img :src="formData.image" alt="">
@@ -131,19 +131,31 @@
                                 </div>
                             </div>
                             {if condition="$special_type eq 3"}
-                            <div class="layui-form-item m-t-5">
+                            <div class="layui-form-item m-t-5" >
                                 <label class="layui-form-label">插入视频</label>
                                 <div class="layui-input-block">
                                     <input type="text" name="title" v-model="link" style="width:50%;display:inline-block;margin-right: 10px;" autocomplete="off" placeholder="请输入视频链接" class="layui-input">
-                                    <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" @click="uploadVideo()">确认添加</button>
-                                    <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" id="ossupload">上传视频</button>
+                                    <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" @click="confirmAdd()" v-show="is_upload==false">确认添加</button>
+                                    <label style="display: inline;" class="file" v-show="is_upload==false">
+                                        <input style="display: none;" id="ossupload" type="file" class="layui-btn layui-btn-sm layui-btn-normal" >上传视频
+                                    </label>
+                                    <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" v-show="is_upload" @click="delVideo()">删除</button>
                                 </div>
-                                <input type="file" name="video" v-show="" ref="video">
                                 <div class="layui-input-block" style="width: 50%;margin-top: 20px" v-show="is_video">
                                     <div class="layui-progress" style="margin-bottom: 10px">
                                         <div class="layui-progress-bar layui-bg-blue" :style="'width:'+videoWidth+'%'"></div>
                                     </div>
-                                    <button type="button" class="layui-btn layui-btn-sm layui-btn-danger" @click="cancelUpload">取消</button>
+                                    <button type="button" class="layui-btn layui-btn-sm layui-btn-danger"
+                                            @click="cancelUpload" v-show="demand_switch==2 && is_video">取消
+                                    </button>
+                                    <button type="button" id="authUpload" class="layui-btn layui-btn-sm layui-btn-danger" v-show="demand_switch==1 && is_video">开始上传
+                                    </button>
+                                    <button type="button" class="layui-btn layui-btn-sm layui-btn-danger"
+                                            id="pauseUpload" v-show="demand_switch==1 && is_video">暂停
+                                    </button>
+                                    <button type="button" class="layui-btn layui-btn-sm layui-btn-danger" v-show="is_suspend"
+                                            id="resumeUpload">恢复上传
+                                    </button>
                                 </div>
                                 <div class="layui-form-mid layui-word-aux">输入链接将视为添加视频直接添加,请确保视频链接的正确性</div>
                             </div>
@@ -152,38 +164,51 @@
                                 <label class="layui-form-label">插入音频</label>
                                 <div class="layui-input-block">
                                     <input type="text" name="title" v-model="link" style="width:50%;display:inline-block;margin-right: 10px;" autocomplete="off" placeholder="请输入音频链接" class="layui-input">
-                                    <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" @click="uploadVideo()">确认添加</button>
-                                    <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" id="ossupload">上传音频</button>
+                                    <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" @click="confirmAdd()" v-show="is_upload==false">确认添加</button>
+                                    <label style="display: inline;" class="file" v-show="is_upload==false">
+                                        <input style="display: none;" id="ossupload" type="file" class="layui-btn layui-btn-sm layui-btn-normal" >上传音频
+                                    </label>
+                                    <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" v-show="is_upload" @click="delVideo()">删除</button>
                                 </div>
-                                <input type="file" name="video" v-show="" ref="video">
                                 <div class="layui-input-block" style="width: 50%;margin-top: 20px" v-show="is_video">
                                     <div class="layui-progress" style="margin-bottom: 10px">
                                         <div class="layui-progress-bar layui-bg-blue" :style="'width:'+videoWidth+'%'"></div>
                                     </div>
-                                    <button type="button" class="layui-btn layui-btn-sm layui-btn-danger" @click="cancelUpload">取消</button>
+                                    <button type="button" class="layui-btn layui-btn-sm layui-btn-danger"
+                                            @click="cancelUpload" v-show="demand_switch==2 && is_video">取消
+                                    </button>
+                                    <button type="button" id="authUpload" class="layui-btn layui-btn-sm layui-btn-danger" v-show="demand_switch==1 && is_video">开始上传
+                                    </button>
+                                    <button type="button" class="layui-btn layui-btn-sm layui-btn-danger"
+                                            id="pauseUpload" v-show="demand_switch==1 && is_video">暂停
+                                    </button>
+                                    <button type="button" class="layui-btn layui-btn-sm layui-btn-danger" v-show="is_suspend"
+                                            id="resumeUpload">恢复上传
+                                    </button>
                                 </div>
                                 <div class="layui-form-mid layui-word-aux">输入链接将视为添加音频直接添加,请确保音频链接的正确性</div>
                             </div>
                             {/if}
+                            <div class="layui-form-item m-t-5" >
+                                <label class="layui-form-label">素材内容</label>
+                                <div class="layui-input-block">
+                                    <textarea id="myEditorContent"  style="width:100%;height: 500px">{{formData.content}}</textarea>
+                                </div>
+                            </div>
                             <div class="layui-form-item m-t-5">
                                 <label class="layui-form-label">素材简介</label>
                                 <div class="layui-input-block">
                                     <textarea id="myEditorDetail" style="width:100%;height: 500px">{{formData.detail}}</textarea>
                                 </div>
                             </div>
-                            <div class="layui-form-item m-t-5">
-                                <label class="layui-form-label">素材内容</label>
-                                <div class="layui-input-block">
-                                    <textarea id="myEditorContent" style="width:100%;height: 500px">{{formData.content}}</textarea>
-                                </div>
-                            </div>
+
                         </div>
                     </div>
                 </div>
                 <div class="layui-col-md12">
                     <div class="layui-form-item submit" style="margin-bottom: 10px">
                         <div class="layui-input-block">
-                            <button class="layui-btn layui-btn-normal" type="button" @click="save">{$id ? '确认修改':'立即提交'}</button>
+                            <button class="layui-btn layui-btn-normal" style="margin-left: 10%;" type="button" @click="save">{$id ? '确认修改':'立即提交'}</button>
                             <button class="layui-btn layui-btn-primary clone" type="button" @click="clone_form">取消</button>
                         </div>
                     </div>
@@ -195,34 +220,37 @@
 {/block}
 {block name='script'}
 <script>
-    var id={$id},
+    var id={$id},alicloud_account_id="{$alicloud_account_id}",configuration_item_region="{$configuration_item_region}",demand_switch="{$demand_switch}",
         special=<?=isset($special) ? $special : "{}"?>,
         special_type= <?=isset($special_type) ? $special_type : 6?>;
-
-
-    require(['vue'],function(Vue) {
+    require(['vue','zh-cn','request','aliyun-oss','plupload','OssUpload'],function(Vue) {
         new Vue({
             el: "#app",
             data: {
-                subject_list:[],
                 special_type_name:special_type == 2 ? "音频" : "视频",
                 formData:{
                     title:special.title || '',
                     image:special.image ?  special.image['pic'] : '',
                     sort:special.sort || 0,
-                    content:special.content ? (special.content || '') : '',
+                    pid:special.pid || 0,
+                    content:special.link ? (special.content ? special.content : '') :'',
                     detail:special.detail ? (special.detail || '') : '',
                     link:special.link ? (special.link || '') : '',
+                    videoId:special.videoId ? (special.videoId || '') : '',
+                    file_type:special.file_type ? (special.file_type || '') : '',
+                    file_name:special.file_name ? (special.file_name || '') : '',
                 },
                 but_title:'上传音频',
                 link:'',
-               // label:'',
                 host: ossUpload.host + '/',
                 mask:{
                     image:false,
                 },
                 ue:null,
                 is_video:false,
+                is_suspend:false,
+                is_upload:false,
+                demand_switch:demand_switch,
                 //上传类型
                 mime_types:{
                     Image:"jpg,gif,png,JPG,GIF,PNG",
@@ -230,6 +258,7 @@
                 },
                 videoWidth:0,
                 uploader:null,
+                cateList:[]
             },
             methods:{
                 //取消
@@ -237,20 +266,21 @@
                     this.uploader.stop();
                     this.is_video = false;
                     this.videoWidth = 0;
+                    this.is_upload = false;
                 },
                 //删除图片
                 delect:function(key,index){
                     var that = this;
                     if(index != undefined){
                         that.formData[key].splice(index,1);
-                        that.$set( that.formData,key,that.formData[key]);
+                        that.$set(that.formData,key,that.formData[key]);
                     }else{
                         that.$set(that.formData,key,'');
                     }
                 },
                 //查看图片
                 look:function(pic){
-                    $eb.openImage(pic);
+                    parent.$eb.openImage(pic);
                 },
                 //鼠标移入事件
                 enter:function(item){
@@ -279,6 +309,15 @@
                         this.$set(this.formData,key,value);
                     }
                 },
+                confirmAdd:function(){
+                    var that = this;
+                    if(that.link.substr(0,7).toLowerCase() == "http://" || that.link.substr(0,8).toLowerCase() == "https://"){
+                        that.is_upload=true;
+                        that.uploadVideo();
+                    }else{
+                        layList.msg('请输入正确的'+that.special_type_name+'链接');
+                    }
+                },
                 uploadVideo:function(){
                     if(this.link.substr(0,7).toLowerCase() == "http://" || this.link.substr(0,8).toLowerCase() == "https://"){
                         this.setContent(this.link);
@@ -300,25 +339,31 @@
                 },
                 //上传图片
                 upload:function(key,count){
-                    ossUpload.createFrame('请选择图片',{fodder:key,max_count:count === undefined ? 0 : count});
+                    ossUpload.createFrame('请选择图片',{fodder:key,max_count:count === undefined ? 0 : count},{w:800,h:550});
                 },
-                get_subject_list:function(){
-                    var that=this;
-                    layList.baseGet(layList.U({a:'get_subject_list'}),function (res) {
-                        that.$set(that,'subject_list',res.data);
-                        that.$nextTick(function () {
-                            layList.form.render('select');
-                        })
-                    });
-                },
-
                 save:function () {
                     var that=this;
                     that.formData.content = that.ueC.getContent();
                     that.formData.detail = that.ueD.getContent();
                     if(!that.formData.title) return layList.msg('请输入素材标题');
-                   //if(!that.formData.content) return layList.msg('请编辑素材内容再进行保存');
+                    if(!that.formData.image) return layList.msg('请输入素材封面');
+                    if(!that.formData.content) return layList.msg('请编辑素材内容再进行保存');
                     if(!that.formData.detail) return layList.msg('请编辑素材简介再进行保存');
+                    if(that.demand_switch=='1' && that.formData.videoId){
+                        that.formData.link ='';
+                    }else if(that.demand_switch=='1' && that.formData.link){
+                        that.formData.videoId='';
+                        that.formData.file_type='';
+                        that.formData.file_name='';
+                    }else if(that.demand_switch=='2' && that.formData.videoId==''){
+                        if(!that.formData.link) return layList.msg('请上传素材');
+                        that.formData.videoId='';
+                        that.formData.file_type='';
+                        that.formData.file_name='';
+                    }else if(that.demand_switch=='2' && that.formData.videoId){
+                        that.formData.link ='';
+                    }
+                    if(that.formData.link =='' && that.formData.videoId=='') return layList.msg('上传音视频素材');
                     layList.loadFFF();
                     layList.basePost(layList.U({a:'save_source',q:{id:id,special_type:'{$special_type}'}}),that.formData,function (res) {
                         layList.loadClear();
@@ -347,10 +392,206 @@
                         parent.layer.closeAll();
                     }
                     parent.layer.closeAll();
+                },
+                //获取素材分类
+                get_subject_list: function () {
+                    var that = this;
+                    layList.baseGet(layList.U({c:'special.special_task_category',a: 'get_cate_list'}), function (res) {
+                        that.$set(that, 'cateList', res.data);
+                        that.$nextTick(function () {
+                            layList.form.render('select');
+                        })
+                    });
+                },
+                createUploader:function () {
+                    var that=this;
+                    var uploader = new AliyunUpload.Vod({
+                        timeout: 60000,//请求过期时间（配置项 timeout, 默认 60000）
+                        partSize: 1048576,//分片大小（配置项 partSize, 默认 1048576）
+                        parallel: 5,//上传分片数（配置项 parallel, 默认 5）
+                        retryCount:3,//网络失败重试次数（配置项 retryCount, 默认 3）
+                        retryDuration:2,//网络失败重试间隔（配置项 retryDuration, 默认 2）
+                        region: configuration_item_region,//配置项 region, 默认 cn-shanghai
+                        userId: alicloud_account_id,//阿里云账号ID
+                        // 添加文件成功
+                        addFileSuccess: function (uploadInfo) {
+                            if (alicloud_account_id=='') {
+                                return layList.msg('请配置阿里云账号ID！');
+                            }
+                            var type=uploadInfo.file.type;
+                            var arr=type.split('/');
+                            if(special_type==2 && arr[0]!='audio'){
+                                that.is_video=false;
+                                that.videoWidth = 0;
+                                return layList.msg('请上传音频');
+                            }else if(special_type==3 && arr[0]!='video'){
+                                that.is_video=false;
+                                that.videoWidth = 0;
+                                return layList.msg('请上传视频');
+                            }else{
+                                that.is_video=true;
+                                that.videoWidth = 0;
+                            }
+                        },
+                        // 开始上传
+                        onUploadstarted: function (uploadInfo) {
+                            var videoId='';
+                            if(uploadInfo.videoId){
+                                videoId= uploadInfo.videoId;
+                            }
+                            layList.basePost(layList.U({a: 'video_upload_address_voucher'}),
+                                {
+                                    FileName:uploadInfo.file.name,type:1,image:that.formData.image,videoId:videoId
+                                }, function (res) {
+                                    var url=res.msg;
+                                    $.ajax({
+                                        url:url,
+                                        data:{},
+                                        type:"GET",
+                                        dataType:'json',
+                                        success:function (data) {
+                                            if(data.RequestId){
+                                                var uploadAuth = data.UploadAuth;
+                                                var uploadAddress = data.UploadAddress;
+                                                var videoId = data.VideoId;
+                                                uploader.setUploadAuthAndAddress(uploadInfo, uploadAuth, uploadAddress,videoId)
+                                            }
+                                        },
+                                        error:function (err) {
+                                            return layList.msg(err.responseJSON.Message);
+                                        }
+                                    });
+                            });
+                        },
+                        // 文件上传成功
+                        onUploadSucceed: function (uploadInfo) {
+                            that.formData.videoId=uploadInfo.videoId;
+                            that.formData.file_name=uploadInfo.file.name;
+                            that.formData.file_type=uploadInfo.file.type;
+                            that.videoWidth = 0;
+                            that.is_video = false;
+                            that.is_suspend = false;
+                            that.is_upload = true;
+                            that.playbackAddress(uploadInfo.videoId);
+                        },
+                        // 文件上传失败
+                        onUploadFailed: function (uploadInfo, code, message) {
+                        },
+                        // 取消文件上传
+                        onUploadCanceled: function (uploadInfo, code, message) {
+                            that.formData.file_name='';
+                            that.is_suspend = false;
+                        },
+                        // 文件上传进度，单位：字节, 可以在这个函数中拿到上传进度并显示在页面上
+                        onUploadProgress: function (uploadInfo, totalSize, progress) {
+                            that.videoWidth = Math.ceil(progress * 100);
+                        },
+                        // 上传凭证超时
+                        onUploadTokenExpired: function (uploadInfo) {
+                            var videoId='';
+                            if(uploadInfo.videoId){
+                                videoId= uploadInfo.videoId;
+                            }
+                            layList.basePost(layList.U({a: 'video_upload_address_voucher'}),{
+                                FileName:uploadInfo.file.name,type:1,image:that.formData.image,videoId:videoId
+                            }, function (res) {
+                                var url=res.msg;
+                                $.ajax({
+                                    url:url,
+                                    data:{},
+                                    type:"GET",
+                                    dataType:'json',
+                                    success:function (data) {
+                                        if(data.RequestId){
+                                            var uploadAuth = data.UploadAuth;
+                                            uploader.resumeUploadWithAuth(uploadAuth);
+                                        }
+                                    },
+                                    error:function (err) {
+                                        return layList.msg(err.responseJSON.Message);
+                                    }
+                                });
+                            });
+                        },
+                        // 全部文件上传结束
+                        onUploadEnd: function (uploadInfo) {
+                            that.videoWidth = 0;
+                            that.is_video = false;
+                            that.is_suspend = false;
+                            that.is_upload = true;
+                            console.log("onUploadEnd: uploaded all the files")
+                        }
+                    });
+                    return uploader;
+                },
+                delVideo:function(){
+                    var that=this;
+                    if(that.demand_switch=='1' && that.formData.videoId){
+                        layList.basePost(layList.U({a: 'video_upload_address_voucher'}),{
+                            FileName:'',type:4,image:'',videoId:that.formData.videoId
+                        }, function (res) {
+                            var url=res.msg;
+                            $.ajax({
+                                url:url,
+                                data:{},
+                                type:"GET",
+                                dataType:'json',
+                                success:function (data) {
+                                    if(data.RequestId){
+                                        that.link='';
+                                        that.formData.content='';
+                                        that.formData.videoId='';
+                                        that.formData.file_type='';
+                                        that.formData.file_name='';
+                                        that.ueC.setContent('');
+                                        $("input[type='file']").val('');
+                                        that.is_upload = false;
+                                    }
+                                },
+                                error:function (err) {
+                                    return layList.msg(err.responseJSON.Message);
+                                }
+                            });
+                        });
+                    }else{
+                        that.formData.videoId='';
+                        that.link='';
+                        that.ueC.setContent('');
+                        that.is_upload = false;
+                    }
+                },
+                playbackAddress:function (videoId) {
+                       var that=this;
+                       if(videoId=='') return false;
+                        layList.basePost(layList.U({a: 'video_upload_address_voucher'}), {
+                            FileName: '', type: 3, image: '', videoId: videoId
+                        }, function (res) {
+                            var url = res.msg;
+                            $.ajax({
+                                url: url,
+                                data: {},
+                                type: "GET",
+                                dataType: 'json',
+                                success: function (data) {
+                                    that.link = data.PlayInfoList.PlayInfo[0].PlayURL;
+                                    that.uploadVideo();
+                                },
+                                error: function (err) {
+                                    that.link = '';
+                                    that.formData.content = '';
+                                    that.formData.videoId = '';
+                                    that.formData.file_type = '';
+                                    that.formData.file_name = '';
+                                    that.is_upload = false;
+                                    return layList.msg(err.responseJSON.Message);
+                                }
+                            });
+                        });
                 }
             },
             mounted:function () {
                 var that=this;
+                that.get_subject_list();
                 window.changeIMG = that.changeIMG;
                 //实例化form
                 layList.date({
@@ -361,7 +602,6 @@
                         that.formData.live_time = value;
                     }
                 });
-
                 //选择图片
                 function changeIMG(index,pic){
                     $(".image_img").css('background-image',"url("+pic+")");
@@ -369,12 +609,19 @@
                     $('#image_input').val(pic);
                 }
                 //选择图片插入到编辑器中
-                window.insertEditor = function(list){
-                    console.log(list);
-                    that.ueC.execCommand('insertimage', list);
-                    that.ueD.execCommand('insertimage', list);
+                window.insertEditor = function(list,fodder){
+                    that.editorActive.execCommand('insertimage', list);
+                };
+                if(that.formData.link && that.formData.videoId==''){
+                    that.is_upload=true;
+                    that.link = that.formData.link;
+                }else if(that.formData.videoId && that.formData.link== ''){
+                    that.is_upload=true;
+                    that.playbackAddress(that.formData.videoId);
                 }
-
+                layList.select('pid', function (obj) {
+                    that.formData.pid = obj.value;
+                });
                 this.$nextTick(function () {
                     layList.form.render();
                     //实例化编辑器
@@ -382,45 +629,81 @@
                         var $btn = new UE.ui.Button({
                             name : 'image',
                             onclick : function(){
-                                ossUpload.createFrame('选择图片',{fodder:'editor'});
+                                console.log(editor);
+                                that.editorActive = editor;
+                                ossUpload.createFrame('选择图片',{fodder:'editor'},{w:800,h:550});
                             },
                             title: '选择图片'
                         });
-
                         return $btn;
-
                     });
                     that.ueC = UE.getEditor('myEditorContent');
                     that.ueD = UE.getEditor('myEditorDetail');
                 });
-                //获取科目
-                that.get_subject_list();
                 //图片上传和视频上传
-                that.$nextTick(function () {
-                    that.uploader = ossUpload.upload({
-                        id:'ossupload',
-                        FilesAddedSuccess:function(){
-                            that.is_video = true;
-                        },
-                        uploadIng:function (file) {
-                            that.videoWidth = file.percent;
-                        },
-                        success:function (res) {
-                            layList.msg('上传成功');
-                            that.videoWidth = 0;
-                            that.is_video = false;
-                            that.setContent(res.url);
-                        },
-                        fail:function (err) {
-                            that.videoWidth = 0;
-                            that.is_video = false;
-                            layList.msg(err);
+                    var uploader = null;
+                    if(that.demand_switch=='1'){
+                        $('#ossupload').on('change', function (e) {
+                            var file = e.target.files[0];
+                            if (!file) {
+                                return layList.msg('请先选择需要上传的文件！');
+                            }
+                            var Title = file.name;
+                            var userData = '{"Vod":{}}';
+                            uploader = that.createUploader();
+                            uploader.addFile(file, null, null, null, userData);
+                        });
+                    }else{
+                        that.uploader = ossUpload.upload({
+                            id: 'ossupload',
+                            FilesAddedSuccess: function () {
+                                that.is_video = true;
+                            },
+                            uploadIng: function (file) {
+                                that.videoWidth = file.percent;
+                            },
+                            success: function (res) {
+                                layList.msg('上传成功');
+                                that.videoWidth = 0;
+                                that.is_video = false;
+                                that.formData.videoId='';
+                                that.is_upload = true;
+                                that.link = res.url;
+                                that.uploadVideo();
+                            },
+                            fail: function (err) {
+                                that.videoWidth = 0;
+                                that.is_video = false;
+                                that.is_upload = false;
+                                layList.msg(err);
+                            }
+                        })
+                    }
+                    // 第一种方式 UploadAuth 上传
+                    $('#authUpload').on('click', function () {
+                        if (uploader !== null) {
+                            uploader.startUpload();
                         }
-                    })
-                })
+                    });
+                    // 暂停上传
+                    $('#pauseUpload').on('click', function () {
+                        if (uploader !== null) {
+                            uploader.stopUpload();
+                            that.is_suspend = true;
+                            that.formData.file_name='';
+                            layList.msg('暂停上传！');
+                        }
+                    });
+                    //恢复上传
+                    $('#resumeUpload').on('click', function () {
+                        if (uploader !== null) {
+                            uploader.startUpload();
+                            that.is_suspend = false;
+                            layList.msg('恢复上传成功！');
+                        }
+                    });
             }
         })
     })
-
 </script>
 {/block}

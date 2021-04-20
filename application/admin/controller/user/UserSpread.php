@@ -1,5 +1,4 @@
 <?php
-
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
@@ -14,13 +13,13 @@ namespace app\admin\controller\user;
 
 use app\admin\controller\AuthController;
 use service\JsonService;
-use service\UtilService;
 use service\QrcodeService;
 use traits\CurdControllerTrait;
 use app\admin\model\user\User;
 use app\admin\model\user\UserBill;
 use app\admin\model\wechat\WechatUser as UserModel;
 use app\admin\model\order\StoreOrder;
+
 /**
  * 用户推广员管理
  * Class UserSpread
@@ -38,12 +37,13 @@ class UserSpread extends AuthController
 
     public function spread_list()
     {
-        $where=UtilService::getMore([
+        $where=parent::getMore([
             ['nickname',''],
             ['start_time',''],
             ['end_time',''],
             ['sex',''],
             ['excel',''],
+            ['data',''],
             ['subscribe',''],
             ['order',''],
             ['page',1],
@@ -55,7 +55,7 @@ class UserSpread extends AuthController
 
     public function get_badge_list()
     {
-        $where = UtilService::postMore([
+        $where = parent::postMore([
             ['data',''],
             ['nickname',''],
             ['excel',''],
@@ -85,7 +85,7 @@ class UserSpread extends AuthController
     }
 
     public function get_stair_order_list(){
-        $where = UtilService::getMore([
+        $where = parent::getMore([
             ['uid',$this->request->param('uid',0)],
             ['data',''],
             ['order_id',''],
@@ -98,7 +98,7 @@ class UserSpread extends AuthController
 
     public function get_stair_order_badge()
     {
-        $where = UtilService::getMore([
+        $where = parent::getMore([
             ['uid',''],
             ['data',''],
             ['order_id',''],
@@ -109,7 +109,7 @@ class UserSpread extends AuthController
 
     public function get_stair_list()
     {
-        $where = UtilService::getMore([
+        $where = parent::getMore([
             ['uid',$this->request->param('uid',0)],
             ['data',''],
             ['nickname',''],
@@ -122,7 +122,7 @@ class UserSpread extends AuthController
 
     public function get_stair_badge()
     {
-        $where = UtilService::getMore([
+        $where = parent::getMore([
             ['uid',''],
             ['data',''],
             ['nickname',''],
@@ -160,7 +160,7 @@ class UserSpread extends AuthController
      * */
     public function delete_promoter()
     {
-        list($uids)=UtilService::postMore([
+        list($uids)=parent::postMore([
             ['uids',[]]
         ],$this->request,true);
         if(!count($uids)) return JsonService::fail('请选择需要解除推广权限的用户！');

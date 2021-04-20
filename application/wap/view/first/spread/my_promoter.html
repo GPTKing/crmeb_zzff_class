@@ -24,7 +24,6 @@
         left: 50%;
         width: 4rem;
         height: 4rem;
-        background: url("{__WAP_PATH}zsff/images/nothing.png") center/contain no-repeat;
         -webkit-transform: translateX(-50%);
         transform: translateX(-50%);
     }
@@ -37,11 +36,11 @@
 <div class="my-promoter" id="app" ref="spreadlist">
     <nav class="acea-row row-between-wrapper">
         <div class="item">
-            <div>推广人(人)</div>
+            <div>推广人数</div>
             <div class="num">{$data.one_spread_count}</div>
         </div>
         <div class="item">
-            <div>总售出订单(个)</div>
+            <div>总售出订单</div>
             <div class="num">{$data.order_count}</div>
         </div>
     </nav>
@@ -56,22 +55,21 @@
         <div class="nav acea-row row-middle">
             <div class="item item1">昵称</div>
             <div class="item item2">手机号</div>
-            <div class="item item3" @click="order(1)" v-if="!action">售出专题
+            <div class="item item3" @click="order(1)" v-if="!action">推广专题
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-qiehuan-copy" v-if=" where.special_order=='desc' "></use>
                     <use xlink:href="#icon-qiehuan-copy1" v-else-if="where.special_order=='asc'"></use>
                 </svg>
             </div>
-            <div class="item item4" @click="order(2)" v-if="!action">售出金额
+            <div class="item item4" @click="order(2)" v-if="!action">推广金额
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-qiehuan-copy" v-if=" where.now_money_order=='desc' "></use>
                     <use xlink:href="#icon-qiehuan-copy1" v-else-if="where.now_money_order=='asc'"></use>
                 </svg>
-                <!--icon-qiehuan-->
             </div>
             <div class="item item3" v-if="action">操作</div>
         </div>
-        <div v-if="is_promoter == 1 && is_senior==0" style="padding-top: 2.5rem;text-align: center;">
+        <div v-if="isPromoter == 0" style="padding-top: 2.5rem;text-align: center;">
             <p>抱歉，您当前无权邀请下属推广人哦~</p>
             <p>如有疑问，请联系客服</p>
         </div>
@@ -80,28 +78,31 @@
                 <div class="item item1 line1" v-text="item.nickname"></div>
                 <div class="item item2" v-text="item.phone"></div>
                 <div class="item item3" v-text="item.sellout_count" v-if="!action"></div>
-                <div class="item item4" v-text="item.sellout_money" v-if="!action"></div>
-                <div class="item item3" v-if="action" @click="removeSpread(index,item.uid)" style="color:#509efb;">移除推广人
+                <div class="item item4"  v-if="!action">¥{{item.sellout_money}}</div>
+                <div class="item item3" v-if="action" @click="removeSpread(index,item.uid)" style="color:#509efb;text-align: center;">移除
                 </div>
             </div>
             <div v-show="loading" class="loading">
                 <span class="fa fa-spinner"></span>
             </div>
             <div v-if="loadend && where.page > 2" class="loaded">已全部加载</div>
-            <div v-if="!spreadList.length && !loading" class="nothing"></div>
+            <div v-if="!spreadList.length && !loading" class="nothing">
+                <img class="nothing"  src="/wap/first/zsff/images/no_data_available.png">
+            </div>
         </div>
     </div>
     <div style="height:1.2rem;"></div>
-    <div class="footer acea-row row-center" v-if="is_promoter != 1 || is_senior">
+    <div class="footer acea-row row-center" v-if="isPromoter == 1">
         <a class="increase increase1" v-text="spreadTitle" @click="spreadAct"></a>
-        <a class="increase" href="{:Url('poster_spread')}" ref="storeMenu">新增推广人</a>
+        <a class="increase" href="{:Url('poster_spread')}" ref="storeMenu">推广学员</a>
     </div>
+    <quick-menu></quick-menu>
 </div>
 {/block}
 {block name="foot"}
 <script>
-    var is_promoter={$userInfo.is_promoter ? : 0},is_senior = {$userInfo.is_senior};
-    require(['vue','helper','store'],function(Vue,$h,app) {
+    var is_promoter={$userInfo.is_promoter ? : 0},isPromoter={$isPromoter};
+    require(['vue','helper','store','{__WAP_PATH}zsff/js/quick.js'],function(Vue,$h,app) {
         new Vue({
             el: '#app',
             data: {
@@ -113,9 +114,9 @@
                     limit:10,
                     search:'',
                 },
-                is_senior:is_senior,
                 is_promoter:is_promoter,
-                spreadTitle:'推广人管理',
+                isPromoter:isPromoter,
+                spreadTitle:'学员管理',
                 action:false,
                 loading:false,
                 loadend:false,
@@ -150,7 +151,7 @@
                 },
                 spreadAct:function(){
                     this.action = !this.action;
-                    this.spreadTitle = this.action ? '取消推广人管理': '推广人管理';
+                    this.spreadTitle = this.action ? '取消学员管理': '学员管理';
                 },
                 order:function(action){
                     var spreadList=[];
@@ -221,30 +222,20 @@
                           that.where.page=res.data.data.page;
                           that.$set(that,'spreadList',spreadList);
                           that.$nextTick(function () {
-                              that.bScrollInit();
+                              that.EventUtil();
                           })
                       },function (res) {
                           that.loading=false;
                           that.loadTitle='上拉加载更多';
                       });
                 },
-                //滑动底部加载
-                bScrollInit:function(){
-                    var that = this;
-                    this.$refs.spreadlist.style.height = (
-                        document.documentElement.clientHeight-
-                        this.$refs.storeMenu.offsetHeight
-                    )+'px';
-                    this.$refs.spreadlist.style.overflowY = 'scroll';
-                    $(this.$refs.spreadlist).on('scroll',function(){
-                        var scrollTop = $(this).scrollTop();
-                        var scrollHeight = $(that.$refs.list).height();
-                        var windowHeight = $(this).height();
-                        if ((scrollTop + windowHeight) >= scrollHeight) {
-                            that.loading == false && that.getSpreadList();
-                        }
+                EventUtil: function () {
+                    this.$nextTick(function () {
+                        $h.EventUtil.listenTouchDirection(document, function () {
+                            this.loading == false && this.getSpreadList();
+                        }.bind(this), false);
                     })
-                },
+                }
             }
         });
     })

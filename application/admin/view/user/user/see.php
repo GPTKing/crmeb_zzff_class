@@ -96,7 +96,7 @@
                                     <tr>
                                         <th>订单编号</th>
                                         <th>专题名称</th>
-                                        <th>商品数量</th>
+                                        <th>数量</th>
                                         <th>实付金额</th>
                                         <th>操作</th>
                                     </tr>
@@ -121,9 +121,10 @@
                                     <thead>
                                         <tr>
                                             <th>订单编号</th>
-                                            <th>课程数量</th>
-                                            <th>课程总价</th>
+                                            <th>数量</th>
+                                            <th>订单总价</th>
                                             <th>实付金额</th>
+                                            <th>支付方式</th>
                                             <th>交易完成时间</th>
                                         </tr>
                                     </thead>
@@ -140,6 +141,9 @@
                                             <td>{{item.total_num}}</td>
                                             <td>{{item.total_price}}</td>
                                             <td>{{item.pay_price}}</td>
+                                            <td v-if="item.pay_type=='weixin'">微信</td>
+                                            <td v-else-if="item.pay_type=='zhifubao'">支付宝</td>
+                                            <td v-else>余额</td>
                                             <td>{{item.paid==1 ? item.pay_time : '未支付'}}</td>
                                         </tr>
                                         <tr v-show="orderList.length<=0" style="text-align: center">
@@ -154,7 +158,7 @@
                                     <thead>
                                     <tr>
                                         <th>动作</th>
-                                        <th>获得积分</th>
+                                        <th>获得{$gold_name}</th>
                                         <th>签到时间</th>
                                         <th>备注</th>
                                     </tr>
@@ -212,7 +216,7 @@
                                     <tr>
                                         <th>昵称</th>
                                         <th>余额</th>
-                                        <th>积分</th>
+                                        <th>{$gold_name}</th>
                                         <th>加入时间</th>
                                     </tr>
                                     </thead>
@@ -225,7 +229,7 @@
                                             </p>
                                         </td>
                                         <td>{{item.now_money}}</td>
-                                        <td>{{item.integral}}</td>
+                                        <td>{{item.gold_num}}</td>
                                         <td>{{item.add_time}}</td>
                                     </tr>
                                     <tr v-show="balanceChangList.length<=0" style="text-align: center">

@@ -1,5 +1,4 @@
 <?php
-
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
@@ -15,7 +14,6 @@ namespace app\admin\controller\setting;
 use think\Url;
 use service\FormBuilder as Form;
 use think\Request;
-use service\UtilService as Util;
 use service\JsonService as Json;
 use app\admin\controller\AuthController;
 use app\admin\model\system\SystemConfigTab as ConfigTabModel;
@@ -57,7 +55,7 @@ class SystemConfigTab extends AuthController
      */
     public function index()
     {
-        $where = Util::getMore([
+        $where = parent::getMore([
             ['status', ''],
             ['title', ''],
         ], $this->request);
@@ -76,7 +74,7 @@ class SystemConfigTab extends AuthController
             Form::input('title', '分类昵称'),
             Form::input('eng_title', '分类字段'),
             Form::frameInputOne('icon', '图标', Url::build('admin/widget.widgets/icon', array('fodder' => 'icon')))->icon('ionic'),
-            Form::radio('type', '类型', 0)->options([['value' => 0, 'label' => '系统'], ['value' => 1, 'label' => '公众号基础配置'], ['value' => 2, 'label' => '小程序基础配置'], ['value' => 4, 'label' => '支付'],['value' => 5, 'label' => '阿里云'],['value' => 3, 'label' => '其它'],['value' => 7, 'label' => '虚拟币']]),
+            Form::radio('type', '类型', 0)->options([['value' => 0, 'label' => '系统'], ['value' => 1, 'label' => '公众号'],['value' => 2, 'label' => '分销'],['value' => 3, 'label' => '其它'],['value' => 4, 'label' => '支付'],['value' => 5, 'label' => '阿里云'],['value' => 6, 'label' => '虚拟币']]),
             Form::radio('status', '状态', 1)->options([['value' => 1, 'label' => '显示'], ['value' => 2, 'label' => '隐藏']])
         ]);
         $form->setMethod('post')->setTitle('添加分类配置');
@@ -91,7 +89,7 @@ class SystemConfigTab extends AuthController
      */
     public function save(Request $request)
     {
-        $data = Util::postMore([
+        $data = parent::postMore([
             'eng_title',
             'status',
             'title',
@@ -115,7 +113,7 @@ class SystemConfigTab extends AuthController
             Form::input('title', '分类昵称', $menu['title']),
             Form::input('eng_title', '分类字段', $menu['eng_title']),
             Form::frameInputOne('icon', '图标', Url::build('admin/widget.widgets/icon', array('fodder' => 'icon')), $menu['icon'])->icon('ionic'),
-            Form::radio('type', '类型', $menu['type'])->options([['value' => 0, 'label' => '系统'], ['value' => 1, 'label' => '公众号'], ['value' => 2, 'label' => '小程序'], ['value' => 4, 'label' => '支付'] ,['value' => 5, 'label' => '阿里云'],['value' => 3, 'label' => '其它'],['value' => 6, 'label' => '虚拟币']]),
+            Form::radio('type', '类型', $menu['type'])->options([['value' => 0, 'label' => '系统'], ['value' => 1, 'label' => '公众号'],['value' => 2, 'label' => '分销'],['value' => 3, 'label' => '其它'],['value' => 4, 'label' => '支付'] ,['value' => 5, 'label' => '阿里云'],['value' => 6, 'label' => '虚拟币']]),
             Form::radio('status', '状态', $menu['status'])->options([['value' => 1, 'label' => '显示'], ['value' => 2, 'label' => '隐藏']])
         ]);
         $form->setMethod('post')->setTitle('添加分类配置');
@@ -130,7 +128,7 @@ class SystemConfigTab extends AuthController
      */
     public function update(Request $request, $id)
     {
-        $data = Util::postMore(['title', 'status', 'eng_title', 'icon', 'type'], $request);
+        $data = parent::postMore(['title', 'status', 'eng_title', 'icon', 'type'], $request);
         if (!$data['title']) return Json::fail('请输入分类昵称');
         if (!$data['eng_title']) return Json::fail('请输入分类字段');
         if (!ConfigTabModel::get($id)) return Json::fail('编辑的记录不存在!');

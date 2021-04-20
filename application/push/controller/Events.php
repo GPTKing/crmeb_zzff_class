@@ -14,8 +14,9 @@ namespace app\push\controller;
 
 use GatewayWorker\Lib\Gateway;
 use think\Hook;
+use think\Request;
 use Workerman\Lib\Timer;
-
+use app\wap\model\live\LiveUser;
 
 class Events
 {
@@ -81,6 +82,15 @@ class Events
             'type' => 'init',
             'client_id' => $client_id
         )));
+    }
+
+    /**用户进入时连接
+     * @param $client_id
+     * @param $data
+     */
+    public static function onWebSocketConnect($client_id,$data){
+        Gateway::bindUid($client_id, $data['get']['uid']);
+        LiveUser::setLiveUserOnline($data['get']['room'], $data['get']['uid'], 1);
     }
 
     /**

@@ -12,7 +12,9 @@
         <!--搜索条件-->
         <div class="layui-col-md12">
             <div class="layui-card">
-                <div class="layui-card-header">搜索条件</div>
+                <div class="layui-card-header">
+                    <div style="font-weight: bold;">分销列表</div>
+                </div>
                 <div class="layui-card-body">
                     <div class="layui-carousel layadmin-carousel layadmin-shortcut" lay-anim="" lay-indicator="inside" lay-arrow="none" style="background:none">
                         <div class="layui-card-body">
@@ -20,8 +22,8 @@
                                 <div class="layui-col-lg12">
                                     <label class="layui-form-label">时间选择:</label>
                                     <div class="layui-input-block" data-type="data" v-cloak="">
-                                        <button class="layui-btn layui-btn-sm" type="button" v-for="item in dataList" @click="setData(item)" :class="{'layui-btn-primary':where.data!=item.value}">{{item.name}}</button>
-                                        <button class="layui-btn layui-btn-sm" type="button" ref="time" @click="setData({value:'zd',is_zd:true})" :class="{'layui-btn-primary':where.data!='zd'}">自定义</button>
+                                        <button class="layui-btn layui-btn-normal layui-btn-sm" type="button" v-for="item in dataList" @click="setData(item)" :class="{'layui-btn-primary':where.data!=item.value}">{{item.name}}</button>
+                                        <button class="layui-btn layui-btn-normal layui-btn-sm" type="button" ref="time" @click="setData({value:'zd',is_zd:true})" :class="{'layui-btn-primary':where.data!='zd'}">自定义</button>
                                         <button type="button" class="layui-btn layui-btn-sm layui-btn-primary" v-show="showtime==true" ref="date_time">{$year.0} - {$year.1}</button>
                                     </div>
                                 </div>
@@ -33,12 +35,15 @@
                                 </div>
                                 <div class="layui-col-lg12">
                                     <div class="layui-input-block">
-                                        <button @click="search" type="button" class="layui-btn layui-btn-sm layui-btn-normal">
-                                            <i class="layui-icon layui-icon-search"></i>搜索</button>
-                                        <button @click="excel" type="button" class="layui-btn layui-btn-sm layui-btn-normal export" type="button">
-                                            <i class="fa fa-floppy-o" style="margin-right: 3px;"></i>导出</button>
-                                        <button @click="refresh" type="reset" class="layui-btn layui-btn-primary layui-btn-sm">
-                                            <i class="layui-icon layui-icon-refresh" ></i>刷新</button>
+                                        <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" @click="search">
+                                            <i class="layui-icon">&#xe615;</i>搜索
+                                        </button>
+                                        <button class="layui-btn layui-btn-primary layui-btn-sm export" @click="excel">
+                                            <i class="layui-icon">&#xe67d;</i>导出
+                                        </button>
+                                        <button class="layui-btn layui-btn-primary layui-btn-sm export" @click="refresh">
+                                            <i class="layui-icon">&#xe669;</i>刷新
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -69,19 +74,15 @@
     <div class="layui-row layui-col-space15">
         <div class="layui-col-md12">
             <div class="layui-card">
-                <div class="layui-card-header">分销员列表</div>
                 <div class="layui-card-body">
-                    <!--                    <div class="layui-btn-container">-->
-                    <!--                        <div class="layui-btn-group conrelTable">-->
-                    <!--                            <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="refresh"><i class="layui-icon layui-icon-refresh" ></i>刷新</button>-->
-                    <!--                        </div>-->
-                    <!--                    </div>-->
                     <table class="layui-hide" id="userList" lay-filter="userList"></table>
                     <script type="text/html" id="headimgurl">
-                        <img style="cursor: pointer" lay-event='open_image' src="{{d.headimgurl}}" style="max-width:50px">
+                        <img style="cursor: pointer" lay-event='open_image' src="{{d.headimgurl}}" height="50">
                     </script>
                     <script type="text/html" id="act">
-                        <button type="button" class="layui-btn layui-btn-xs" onclick="dropdown(this)">操作 <span class="caret"></span></button>
+                        <button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="dropdown(this)">
+                            <i class="layui-icon">&#xe625;</i>操作
+                        </button>
                         <ul class="layui-nav-child layui-anim layui-anim-upbit">
                             <li>
                                 <a href="javascript:void(0);" class="" onclick="$eb.createModalFrame(this.innerText,'{:Url('stair')}?uid={{d.uid}}',{w:1200,h:800})">
@@ -160,38 +161,20 @@
     layList.tableList('userList',"{:Url('spread_list')}",function () {
         return [
             {type:'checkbox'},
-            {field: 'uid', title: 'UID', sort: true,width:'5%',align: 'center'},
-            {field: 'headimgurl', title: '头像',templet:'#headimgurl',align: 'center',width:'10%'},
-            {field: 'nickname', title: '用户信息',templet:'#userinfo',width:'12%'},
+            {field: 'uid', title: 'UID', align: 'center'},
+            {field: 'headimgurl', title: '头像',templet:'#headimgurl',align: 'center'},
+            {field: 'nickname', title: '用户信息',templet:'#userinfo'},
             {field: 'spread_count', title: '推广用户数量',sort:true,align: 'center'},
-            {field: 'order_count', title: '订单数量',align: 'center',width:'5%'},
             {field: 'order_price', title: '推广订单金额',sort:true,align: 'center'},
+            {field: 'order_count', title: '订单数量',align: 'center'},
             {field: 'brokerage_money', title: '佣金金额',sort:true,align: 'center'},
-            {field: 'extract_count_price', title: '已提现金额',sort:true,align: 'center'},
-            {field: 'extract_count_num', title: '提现次数',align: 'center',width:'5%'},
             {field: 'new_money', title: '未提现金额',sort:true,align: 'center'},
+            {field: 'extract_count_price', title: '已提现金额',sort:true,align: 'center'},
+            {field: 'extract_count_num', title: '提现次数',align: 'center'},
             {field: 'spread_name', title: '上级推广人',sort:true,align: 'center'},
-            {field: 'right', title: '操作',toolbar:'#act',width:'8%',align: 'center'},
+            {field: 'right', title: '操作',toolbar:'#act',align: 'center'},
         ];
     });
-    layList.date({elem:'#start_time',theme:'#393D49',type:'datetime'});
-    layList.date({elem:'#end_time',theme:'#393D49',type:'datetime'});
-    layList.search('search',function(where){
-        if(where.start_time!='' && where.end_time=='') return layList.msg('请选择结束时间')
-        if(where.end_time!='' && where.start_time=='') return layList.msg('请选择开始时间')
-        console.log(where);
-        layList.reload(where,true);
-    });
-    layList.search('export',function(where){
-        where.excel=1;
-        location.href=layList.U({a:'get_spread_list',q:where});
-    })
-    $('.conrelTable').find('button').each(function () {
-        var type=$(this).data('type');
-        $(this).on('click',function () {
-            action[type] && action[type]();
-        })
-    })
     $('.option .layui-box').find('p').each(function () {
         $(this).on('click',function () {
             var type = $(this).data('action'),uid = $('#uid').val();
@@ -289,7 +272,6 @@
                         content: '<img src="'+data.headimgurl+'" style="display: block;width: 100%;" />'
                     });
                 break;
-
         }
     });
     require(['vue'],function(Vue) {
@@ -299,11 +281,11 @@
                 badge: [],
                 dataList: [
                     {name: '全部', value: ''},
-                    {name: '今天', value: 'today'},
                     {name: '昨天', value: 'yesterday'},
-                    {name: '最近7天', value: 'lately7'},
-                    {name: '最近30天', value: 'lately30'},
+                    {name: '今天', value: 'today'},
+                    {name: '本周', value: 'week'},
                     {name: '本月', value: 'month'},
+                    {name: '本季度', value: 'quarter'},
                     {name: '本年', value: 'year'},
                 ],
                 where:{
@@ -336,7 +318,6 @@
                 search:function () {
                     this.where.excel=0;
                     this.getBadge();
-                    console.log(this.where);
                     layList.reload(this.where,true);
                 },
                 excel:function () {
@@ -344,8 +325,7 @@
                     location.href=layList.U({a:'spread_list',q:this.where});
                 },
                 refresh:function () {
-                    layList.reload();
-                    this.getBadge();
+                    window.location.reload();
                 }
             },
             mounted:function () {

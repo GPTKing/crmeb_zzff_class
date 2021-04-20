@@ -7,16 +7,16 @@
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
-//
+// +----------------------------------------------------------------------
 
 namespace app\wap\model\user;
 
-
 use basic\ModelBasic;
-use service\SystemConfigService;
 use service\WechatTemplateService;
 use think\Url;
 use traits\ModelTrait;
+use app\wap\model\routine\RoutineTemplate;
+use service\SystemConfigService;
 
 class UserExtract extends ModelBasic
 {
@@ -95,24 +95,9 @@ class UserExtract extends ModelBasic
             $res1 = self::create($insertData);
             if (!$res1) return self::setErrorInfo('提现失败');
             $res2 = User::edit(['brokerage_price' => $balance], $userInfo['uid'], 'uid');
-            $res3 = UserBill::expend('余额提现', $userInfo['uid'], 'now_money', 'extract', $data['money'], $res1['id'], $balance, $mark);
+            $res3 = UserBill::expend('佣金提现', $userInfo['uid'], 'now_money', 'extract', $data['money'], $res1['id'], $balance, $mark);
             $res = $res2 && $res3;
             if ($res) {
-                try {
-                    WechatTemplateService::sendTemplate(
-                        WechatUser::uidToOpenid($userInfo['uid']),
-                        WechatTemplateService::USER_BALANCE_CHANGE,
-                        [
-                            'first' => '你好,申请佣金提现成功!',
-                            'keyword1' => '余额提现',
-                            'keyword2' => date('Y-m-d'),
-                            'keyword3' => $data['extract_price'],
-                            'remark' => '点击查看我的提现明细'
-                        ],
-                        Url::build('wap/spread/spread_detail', ['type'=>2],true, true)
-                    );
-                } catch (\Throwable $e) {
-                }
                 self::commitTrans();
                 //发送模板消息
                 return true;

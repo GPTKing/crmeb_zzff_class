@@ -1,5 +1,4 @@
 <?php
-
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
@@ -41,7 +40,7 @@ class SystemMenus extends AuthController
     public function index()
     {
         $pid = $this->request->param('pid') ? $this->request->param('pid') : 0;
-        $params = Util::getMore([
+        $params = parent::getMore([
             ['is_show', ''],
 //            ['access',''],
             ['keyword', ''],
@@ -91,7 +90,7 @@ class SystemMenus extends AuthController
      */
     public function save(Request $request)
     {
-        $data = Util::postMore([
+        $data = parent::postMore([
             'menu_name',
             'controller',
             ['module', 'admin'],
@@ -127,7 +126,7 @@ class SystemMenus extends AuthController
                 }
                 return $menus;
             })->filterable(1),
-            Form::select('module', '模块名', $menu['module'])->options([['label' => '总后台', 'value' => 'admin'], ['label' => '总后台1', 'value' => 'admin1']]),
+            Form::select('module', '模块名', $menu['module'])->options([['label' => '总后台', 'value' => 'admin']]),
             Form::input('controller', '控制器名', $menu['controller']),
             Form::input('action', '方法名', $menu['action']),
             Form::input('params', '参数', MenusModel::paramStr($menu['params']))->placeholder('举例:a/123/b/234'),
@@ -149,7 +148,7 @@ class SystemMenus extends AuthController
      */
     public function update(Request $request, $id)
     {
-        $data = Util::postMore([
+        $data = parent::postMore([
             'menu_name',
             'controller',
             ['module', 'admin'],

@@ -16,7 +16,11 @@ use app\admin\model\special\Grade;
 use app\admin\model\special\SpecialSubject;
 use traits\ModelTrait;
 use basic\ModelBasic;
-
+use app\admin\model\ump\EventRegistration;
+use app\admin\model\special\Special;
+use app\admin\model\special\SpecialTask;
+use app\admin\model\store\StoreProduct;
+use app\admin\model\article\Article;
 /**
  * Class SystemAdmin
  * @package app\admin\model\system
@@ -27,6 +31,8 @@ class Recommend extends ModelBasic
 
     protected $insert = ['add_time'];
 
+    const name='';
+
     public static function setAddTimeAttr($value)
     {
         return time();
@@ -34,7 +40,7 @@ class Recommend extends ModelBasic
 
     public static function getTypeseTingAttr($value, $data)
     {
-        $name = '';
+        $name = self::name;
         switch ($data['typesetting']) {
             case 1:
                 $name = '大图';
@@ -59,17 +65,35 @@ class Recommend extends ModelBasic
     {
         $name = '';
         switch ($data['type']) {
-            case 1:
-                $name = '图文';
-                break;
             case 0:
                 $name = '专题';
+                break;
+            case 1:
+                $name = '新闻';
                 break;
             case 2:
                 $name = '直播';
                 break;
             case 3:
                 $name = '自定义';
+                break;
+            case 4:
+                $name = '商品';
+                break;
+            case 5:
+                $name = '直播[内置]';
+                break;
+            case 6:
+                $name = '讲师[内置]';
+                break;
+            case 7:
+                $name = '活动[内置]';
+                break;
+            case 8:
+                $name = '拼团';
+                break;
+            case 10:
+                $name = '素材';
                 break;
         }
         return $name;
@@ -115,8 +139,29 @@ class Recommend extends ModelBasic
         foreach ($data as $item) {
             $item['type_name'] = self::getTypeNameAttr('', $item);
             $item['type_ting'] = self::getTypeseTingAttr('', $item);
-            $item['number'] = RecommendRelation::where(['recommend_id' => $item['id']])->count();
-            $item['grade_title'] = Grade::where(['id' => $item['grade_id']])->value('name');
+            $item['number'] = 0;
+            switch ($item['type']){
+                case 0:
+                case 8:
+                    $item['number'] = RecommendRelation::where(['r.recommend_id' => $item['id']])->alias('r')->join('Special s','s.id=r.link_id')->where(['s.is_del'=>0,'s.is_show'=>1])->count();
+                    break;
+                case 4:
+                  $item['number'] = RecommendRelation::where(['r.recommend_id' => $item['id']])->alias('r')->join('StoreProduct p','p.id=r.link_id')->where(['p.is_del'=>0,'p.is_show'=>1])->count();
+                break;
+                case 1:
+                  $item['number'] = RecommendRelation::where(['recommend_id' => $item['id']])->alias('r')->join('Article a','a.id=r.link_id')->where(['a.hide'=>0,'a.is_show'=>1])->count();
+                break;
+                case 10:
+                  $item['number'] = RecommendRelation::where(['recommend_id' => $item['id']])->alias('r')->join('SpecialTask t','t.id=r.link_id')->where(['t.is_del'=>0,'t.is_show'=>1])->count();
+                break;
+                case 5:
+                  $item['number'] = Special::where(['type' =>4, 'is_show' => 1, 'is_del' => 0])->count();
+                break;
+                case 7:
+                  $item['number'] = 1;
+                break;
+            }
+            $item['grade_title'] =$item['grade_id']>0 ? SpecialSubject::where(['id' => $item['grade_id'],'is_del'=>0])->value('name') : '无';
         }
         $count = self::where('is_fixed', $where['is_fixed'])->count();
         return compact('data', 'count');

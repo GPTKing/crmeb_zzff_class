@@ -9,46 +9,20 @@
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
 
-
 namespace app\wap\controller;
-
 
 use app\wap\model\user\SmsCode;
 use app\admin\model\system\SystemGroup;
 use app\admin\model\system\SystemGroupData;
-use app\wap\model\store\StoreCategory;
-use app\wap\model\store\StoreProduct;
 use app\wap\model\wap\ArticleCategory;
 use service\AliMessageService;
 use service\JsonService;
+use service\sms\storage\Sms;
 use service\SystemConfigService;
 use think\Session;
 
 class PublicApi
 {
-
-    /*
-   * 发送短信验证码
-   * @param string $phone
-   * */
-    public function code($phone = '')
-    {
-        $name = "is_phone_code" . $phone;
-        if ($phone == '') return JsonService::fail('请输入手机号码!');
-        $time = Session::get($name, 'routine');
-        if ($time < time() + 60) Session::delete($name, 'routine');
-        if (Session::has($name, 'routine') && $time < time()) return JsonService::fail('您发送验证码的频率过高,请稍后再试!');
-        $code = AliMessageService::getVerificationCode();
-        SmsCode::set(['tel' => $phone, 'code' => $code, 'last_time' => time() + 300]);
-        Session::set($name, time() + 60, 'routine');
-        $res = AliMessageService::sendmsg($phone, $code);
-        if($res){
-            return JsonService::successful('发送成功',$res);
-        } else {
-            return JsonService::fail('发送失败!');
-        }
-    }
-
     public function get_cid_article($cid = 0, $first = 0, $limit = 8)
     {
         $list = ArticleCategory::cidByArticleList($cid, $first, $limit, 'id,title,image_input,visit,add_time,synopsis,url') ?: [];
@@ -70,32 +44,8 @@ class PublicApi
         return JsonService::successful('ok', $list);
     }
 
-    public function get_category_product_list($limit = 4)
-    {
-        $cateInfo = StoreCategory::where('is_show', 1)->where('pid', 0)->field('id,cate_name,pic')
-            ->order('sort DESC')->select()->toArray();
-        $result = [];
-        $StoreProductModel = new StoreProduct;
-        foreach ($cateInfo as $k => $cate) {
-            $cate['product'] = $StoreProductModel::alias('A')->where('A.is_del', 0)->where('A.is_show', 1)
-                ->where('A.mer_id', 0)->where('B.pid', $cate['id'])
-                ->join('__STORE_CATEGORY__ B', 'B.id = A.cate_id')
-                ->order('A.is_benefit DESC,A.sort DESC,A.add_time DESC')
-                ->limit($limit)->field('A.id,A.image,A.store_name,A.sales,A.price,A.unit_name')->select()->toArray();
-            if (count($cate['product']))
-                $result[] = $cate;
-        }
-        return JsonService::successful($result);
-    }
-
-    public function get_best_product_list($first = 0, $limit = 8)
-    {
-        return JsonService::successful(StoreProduct::getHotProduct('id,image,store_name,cate_id,price,vip_price,unit_name,sort,sales', 6));
-    }
-
     public function wechat_media_id_by_image($mediaIds = '')
     {
-
         if (!$mediaIds) return JsonService::fail('参数错误');
         try {
             $mediaIds = explode(',', $mediaIds);
@@ -125,5 +75,4 @@ class PublicApi
             return JsonService::fail('上传失败', ['msg' => $e->getMessage(), 'line' => $e->getLine(), 'file' => $e->getFile()]);
         }
     }
-
 }

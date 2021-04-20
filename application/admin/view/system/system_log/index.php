@@ -5,9 +5,9 @@
 <script src="{__PLUG_PATH}daterangepicker/daterangepicker.js"></script>
 {/block}
 {block name="content"}
-<div class="row">
-    <div class="col-sm-12">
-        <div class="ibox">
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
             <div class="ibox-content">
                 <div class="row">
                     <div class="m-b m-l">
@@ -24,7 +24,7 @@
                             </div>
                             <div class="input-group">
                                 <input type="text" name="pages" value="{$where.pages}" placeholder="请输入行为" class="input-sm form-control"> <span class="input-group-btn">
-                                    <button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-search" ></i> 搜索</button> </span>
+                                    <button type="submit" class="layui-btn layui-btn-normal layui-btn-sm"><i class="layui-icon">&#xe615;</i> 搜索</button> </span>
                             </div>
                         </form>
                     </div>
@@ -33,7 +33,7 @@
                     <table class="table table-striped  table-bordered">
                         <thead>
                         <tr>
-                            <th class="text-center">编号</th>
+                            <th class="text-center" style="width:60px;">编号</th>
                             <th class="text-center">ID/名称</th>
                             <th class="text-center">行为</th>
                             <th class="text-center">链接</th>

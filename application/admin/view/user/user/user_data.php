@@ -8,8 +8,8 @@
     .data .item .text{color: #1E9FFF;cursor: pointer}
     .data .item-right{float: right;padding-right: 25px}
     .data .item-right button{border-radius: 5px;}
-    .data .form table tr:hover{background-color:#ffffff!important;}
     .data .form table td{border: none;font-size: 14px;}
+    .data .form table tr:hover{background-color:#ffffff!important;}
     .layui-table td, .layui-table th {position: relative;line-height: 10px;padding: 8px 15px;}
 </style>
 {/block}
@@ -26,11 +26,8 @@
                                 <img :src="userinfo.avatar" alt="">
                             </div>
                             <div class="item" v-text="userinfo.nickname"></div>
-                            <div class="item" v-if="userinfo.is_senior">
-                                <span class="layui-badge layui-bg-blue" style="height: 24px;line-height: 24px;font-size: 20px">高级推广人</span>
-                            </div>
-                            <div class="item" v-else-if="userinfo.is_promoter && !userinfo.is_senior">
-                                <span class="layui-badge layui-bg-blue" style="height: 24px;line-height: 24px;font-size: 20px" v-if="userinfo.is_promoter==1">推广人</span>
+                            <div class="item" v-if="userinfo.is_promoter">
+                                <span class="layui-badge layui-bg-blue" style="height: 24px;line-height: 24px;font-size: 20px">推广人</span>
                             </div>
                             <div class="item" v-else>
                                 <span class="layui-badge layui-bg-blue" style="height: 24px;line-height: 24px;font-size: 20px">无</span>
@@ -375,19 +372,6 @@
                         }
                     });
                 },
-                update:function(){
-                    var that=this;
-                    layList.form.render();
-                    this.ContentIndex=layList.layer.open({
-                        type: 1,
-                        skin: 'layui-layer-rim', //加上边框
-                        area: ['420px', '240px'], //宽高
-                        content:$(this.$refs.updateContent),
-                        cancel:function () {
-                            that.$refs.updateContent.style.display='none';
-                        }
-                    });
-                },
                 getUserInfo:function(){
                     var that=this;
                     layList.baseGet(layList.U({a:'get_user_info',q:{uid:uid}}),function (res) {
@@ -474,33 +458,13 @@
                     layList.basePost(layList.U({a:'save_give'}),{uid:uid,special_id:data.special_id},function (res) {
                         layList.msg(res.msg,function () {
                             that.$refs.give.style.display='none';
-                            that.$refs.updateContent.style.display='none';
                             layList.layer.close(that.GiveIndex);
+                            location.reload();
                         })
                     },function (res) {
                         layList.msg(res.msg);
                     });
                 });
-                layList.search('updateContent',function(data){
-                    layList.baseGet(layList.U({a:'update_user_spread',q:{uid:uid,type:data.type}}),function (res) {
-                        layList.msg(res.msg,function () {
-                            switch (data.type){
-                                case '1':case '2':case '3':case '4':
-                                    that.userinfo.is_promoter = data.type;
-                                    break;
-                                case '5':
-                                    that.userinfo.is_senior=1;
-                                    that.userinfo.is_promoter=1;
-                                    break;
-                            }
-                            that.$refs.give.style.display='none';
-                            that.$refs.updateContent.style.display='none';
-                            layList.layer.close(that.ContentIndex);
-                        })
-                    },function (res) {
-                        layList.msg(res.msg);
-                    });
-                })
                 layList.element.on('tab(tab)',function (data) {
                     that.avtive=data.index;
                 })

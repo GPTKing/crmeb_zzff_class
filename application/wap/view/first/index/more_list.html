@@ -47,63 +47,64 @@
         <span v-show="loading==true" class="fa fa-spinner loadingpic" style="font-size: 0.4rem"></span>
         <span v-text="loadTitle">没有更多内容了</span>
     </p>
+    <quick-menu></quick-menu>
 </div>
 {/block}
 {block name='foot'}
 <script>
-    var type={$type},search='{$search}';
-    require(['vue','helper','store'],function(Vue,$h,app) {
+    var type = {$type}, search = '{$search}';
+    require(['vue', 'helper', 'store', '{__WAP_PATH}zsff/js/quick.js'], function (Vue, $h, app) {
         new Vue({
             el: '#app',
             data: {
-                searchList:[],
-                loadTitle:'',
-                loading:false,
-                loadend:false,
-                where:{
-                    type:type,
+                searchList: [],
+                loadTitle: '',
+                loading: false,
+                loadend: false,
+                where: {
+                    type: type,
                     search: search || '',
-                    page:1,
-                    limit:10
+                    page: 1,
+                    limit: 10
                 }
             },
-            methods:{
-                getMoreList:function () {
-                    if(this.loading) return;
-                    if(this.loaded) return;
-                    this.loading=true;
-                    this.loadTitle='';
-                    app.baseGet($h.U({c:'index',a:'get_more_list',q:this.where}),function (res) {
-                        var list=res.data.data.more_list;
-                        var searchList=$h.SplitArray(list,this.searchList);
-                        this.where.page=res.data.data.page;
-                        this.loading=false;
-                        this.loaded=list.length < this.where.limit;
-                        this.loadTitle=this.loaded ? '没有更多内容了': '加载更多';
-                        this.$set(this,'searchList',searchList);
+            methods: {
+                getMoreList: function () {
+                    if (this.loading) return;
+                    if (this.loaded) return;
+                    this.loading = true;
+                    this.loadTitle = '';
+                    app.baseGet($h.U({ c: 'index', a: 'get_more_list', q: this.where }), function (res) {
+                        var list = res.data.data.more_list;
+                        var searchList = $h.SplitArray(list, this.searchList);
+                        this.where.page = res.data.data.page;
+                        this.loading = false;
+                        this.loaded = list.length < this.where.limit;
+                        this.loadTitle = this.loaded ? '没有更多内容了' : '加载更多';
+                        this.$set(this, 'searchList', searchList);
                         this.$nextTick(function () {
                             this.EventUtil();
                         }.bind(this));
-                    }.bind(this),function (res) {
-                        this.loading=false;
-                        this.loadTitle='加载更多';
+                    }.bind(this), function (res) {
+                        this.loading = false;
+                        this.loadTitle = '加载更多';
                     }.bind(this));
                 },
-                EventUtil:function () {
+                EventUtil: function () {
                     this.$nextTick(function () {
-                        $h.EventUtil.listenTouchDirection(document,function (){
+                        $h.EventUtil.listenTouchDirection(document, function () {
                             this.loading == false && this.getMoreList();
-                        }.bind(this),false);
+                        }.bind(this), false);
                     })
                 },
-                getSpecialUrl:function(id){
-                    return $h.U({c:'special',a:'details',q:{id:id}});
+                getSpecialUrl: function (id) {
+                    return $h.U({ c: 'special', a: 'details', q: { id: id } });
                 },
-                getTashUrl:function(id){
-                    return $h.U({c:'special',a:'details',q:{id:id}})+'#tash';
-                },
+                getTashUrl: function (id) {
+                    return $h.U({ c: 'special', a: 'details', q: { id: id } }) + '#tash';
+                }
             },
-            mounted:function () {
+            mounted: function () {
                 this.getMoreList();
             }
         });

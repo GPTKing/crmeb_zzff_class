@@ -7,25 +7,30 @@
                 <div class="layui-card-body">
                     <form class="layui-form" action="">
                         <div class="layui-form-item">
-                            <label class="layui-form-label">列表名称</label>
-                            <div class="layui-input-block">
-                                <input type="hidden" name="is_fixed" value="{if isset($recemmend)}{$recemmend.is_fixed}{else}{$is_fixed}{/if}">
-                                <input type="hidden" name="is_show" value="{if isset($recemmend)}{$recemmend.is_show}{else}1{/if}">
-                                <input type="text" name="title" lay-verify="title" value="{if isset($recemmend)}{$recemmend.title}{/if}" autocomplete="off" placeholder="列表名称" class="layui-input">
-                            </div>
-                        </div>
-                        <div class="layui-form-item">
-                            <label class="layui-form-label">排序</label>
-                            <div class="layui-input-block">
-                                <input type="number" name="sort" lay-verify="sort" value="{if isset($recemmend)}{$recemmend.sort}{/if}" autocomplete="off" placeholder="排序" class="layui-input">
-                            </div>
-                        </div>
-                        <div class="layui-form-item">
                             <div class="layui-inline">
-                                <label class="layui-form-label" style="margin-right: 28px">排版选择</label>
+                                <label class="layui-form-label">名称：</label>
+                                <div class="layui-input-inline">
+                                    <input type="hidden" name="is_fixed" value="{if isset($recemmend)}{$recemmend.is_fixed}{else}{$is_fixed}{/if}">
+                                    <input type="hidden" name="is_show" value="{if isset($recemmend)}{$recemmend.is_show}{else}1{/if}">
+                                    <input type="text" maxlength="10" name="title" lay-verify="title" value="{if isset($recemmend)}{$recemmend.title}{/if}" autocomplete="off" placeholder="最多10个字" class="layui-input">
+                                    <input type="hidden" name="typesetting"  value="{if isset($recemmend)}{$recemmend.typesetting}{/if}">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">排序：</label>
+                                <div class="layui-input-inline">
+                                    <input type="number" name="sort" lay-verify="sort" value="{if isset($recemmend)}{$recemmend.sort}{/if}" autocomplete="off" placeholder="排序" class="layui-input">
+                                </div>
+                            </div>
+                        </div>
+                        {if !isset($recemmend) || $recemmend.typesetting != 5}
+                        <div class="layui-form-item">
+                            <div class="layui-inline" id="typesettings">
+                                <label class="layui-form-label">排版：</label>
                                 <div class="layui-input-inline">
                                     <select name="typesetting" lay-verify="typesetting">
                                         <option value="">请选择排版类型</option>
+                                        <option value="0" {if isset($recemmend) && $recemmend.typesetting==0}selected{/if}>不能排版</option>
                                         <option value="1" {if isset($recemmend) && $recemmend.typesetting==1}selected{/if}>大图</option>
                                         <option value="2" {if isset($recemmend) && $recemmend.typesetting==2}selected{/if}>宫图</option>
                                         <option value="3" {if isset($recemmend) && $recemmend.typesetting==3}selected{/if}>小图</option>
@@ -34,34 +39,39 @@
                                 </div>
                             </div>
                             <div class="layui-inline">
-                                <label class="layui-form-label" style="margin-right: 28px">类型选择</label>
+                                <label class="layui-form-label">类型：</label>
                                 <div class="layui-input-inline">
-                                    <select name="type" lay-verify="type">
+                                    <select name="type" id="groupid" lay-filter="select">
                                         <option value="">请选择类型</option>
                                         <option value="0" {if isset($recemmend) && $recemmend.type==0}selected{/if}>专题</option>
-                                        <!--<option value="1" {if isset($recemmend) && $recemmend.type==1}selected{/if}>资讯</option>-->
-<!--                                        <option value="2" {if isset($recemmend) && $recemmend.type==2}selected{/if}>直播</option>-->
+                                        <option value="1" {if isset($recemmend) && $recemmend.type==1}selected{/if}>新闻</option>
+                                        <option value="4" {if isset($recemmend) && $recemmend.type==4}selected{/if}>商品</option>
+                                        <option value="8" {if isset($recemmend) && $recemmend.type==8}selected{/if}>拼团</option>
+                                        <option value="10" {if isset($recemmend) && $recemmend.type==10}selected{/if}>素材</option>
                                     </select>
                                 </div>
                             </div>
                         </div>
                         <div class="layui-form-item">
-                            <label class="layui-form-label">一级分类</label>
-                            <div class="layui-input-block">
-                                <select name="grade_id" lay-verify="grade_id">
-                                    <option value="0" {if isset($recemmend) && $recemmend.grade_id==0}selected{/if}>全部</option>
-                                    {volist name='grade_list' id='item'}
-                                    <option value="{$item.id}" {if isset($recemmend) && $recemmend.grade_id==$item.id}selected{/if}>{$item.name}</option>
-                                    {/volist}
-                                </select>
+                            <div class="layui-inline" id="category" {if isset($recemmend) && $recemmend.type!=0}style="display: none;"{/if}>
+                                <label class="layui-form-label">一级分类：</label>
+                                <div class="layui-input-inline">
+                                    <select name="grade_id" lay-verify="grade_id">
+                                        <option value="0" {if isset($recemmend) && $recemmend.grade_id==0}selected{/if}>全部</option>
+                                        {volist name='grade_list' id='item'}
+                                        <option value="{$item.id}" {if isset($recemmend) && $recemmend.grade_id==$item.id}selected{/if}>{$item.name}</option>
+                                        {/volist}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">展示数量：</label>
+                                <div class="layui-input-inline">
+                                    <input type="number" name="show_count" lay-verify="show_count" value="{if isset($recemmend)}{$recemmend.show_count}{/if}" autocomplete="off" placeholder="超过最大数量不展示" class="layui-input">
+                                </div>
                             </div>
                         </div>
-                        <div class="layui-form-item submit">
-                            <label class="layui-form-label">列表展示</label>
-                            <div class="layui-input-block">
-                                <input type="number" name="show_count" lay-verify="show_count" value="{if isset($recemmend)}{$recemmend.show_count}{/if}" autocomplete="off" placeholder="列表展示最大个数,超过后不显示" class="layui-input">
-                            </div>
-                        </div>
+                    {/if}
                         <div class="layui-form-item submit">
                             <div class="layui-input-block">
                                 {if isset($recemmend)}
@@ -98,6 +108,26 @@
     file_image.on('click',function () {
         $('input[name="file_image"]').click();
     });
+    layList.form.on('select(select)',function (data) {
+        switch (data.value) {
+            case '0':
+                $('#category').show();
+                break;
+            case '1':
+                $('#category').hide();
+                $('#typesettings').val(1);
+                break;
+            case '4':
+                $('#category').hide();
+                break;
+            case '8':
+                $('#category').hide();
+                break;
+            case '10':
+                $('#category').hide();
+                break;
+        }
+    });
     $('input[name="file_image"]').change(function () {
         if(this.files.length > 1) return layList.msg('您上传的图片不能大与1张');
         var file=this.files[0];
@@ -133,10 +163,13 @@
     layList.search('save',function(data){
         delete data.file_image;
         if(!data.title) return layList.msg('请输入标题');
+        if (data.typesetting !=5) {
         if(!data.type) return layList.msg('请选择类型');
-        // if(!data.grade_id) return layList.msg('请选择年级部');
-        if(!data.show_count) return layList.msg('请填写展示几个内容板块');
+        if(data.show_count<=0) return layList.msg('请填写展示几个内容板块');
         if(!data.typesetting) return layList.msg('请选择排版');
+        if(data.type==1 && data.typesetting!=0) return layList.msg('新闻不能排版，请重新选择排版');
+        if(data.type==10 && data.typesetting!=2) return layList.msg('素材只能选择宫图');
+        }
         layList.basePost(layList.U({a:'save_recemmend',q:{id:id}}),data,function (res) {
             layList.msg(res.msg,function () {
                 parent.layer.close(windowindex);

@@ -15,7 +15,6 @@ use basic\ModelBasic;
 use traits\ModelTrait;
 
 /**
- *
  * Class SystemConfigContent
  * @package app\admin\model\system
  */

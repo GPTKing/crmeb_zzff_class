@@ -44,37 +44,37 @@
     .edui-default .edui-for-image .edui-icon{
         background-position: -380px 0px;
     }
+    [v-cloak]{
+        display: none;
+    }
+    .layui-form-select dl {
+        z-index: 1000;
+    }
 </style>
 <script type="text/javascript" charset="utf-8" src="{__ADMIN_PATH}plug/ueditor/third-party/zeroclipboard/ZeroClipboard.js"></script>
 <script type="text/javascript" charset="utf-8" src="{__ADMIN_PATH}plug/ueditor/ueditor.config.js"></script>
 <script type="text/javascript" charset="utf-8" src="{__ADMIN_PATH}plug/ueditor/ueditor.all.min.js"></script>
-<script type="text/javascript" src="{__ADMIN_PATH}plug/ueditor/lang/zh-cn/zh-cn.js"></script>
-<script type="text/javascript" src="{__ADMIN_PATH}js/aliyun-oss-sdk-4.4.4.min.js"></script>
-<script type="text/javascript" src="{__ADMIN_PATH}js/request.js"></script>
-<script type="text/javascript" src="{__MODULE_PATH}widget/lib/plupload-2.1.2/js/plupload.full.min.js"></script>
-<script type="text/javascript" src="{__MODULE_PATH}widget/OssUpload.js"></script>
 {/block}
 {block name="content"}
 <div class="layui-fluid" style="background: #fff">
-    <div class="layui-row layui-col-space15"  id="app">
+    <div class="layui-row layui-col-space15"  id="app" v-cloak="">
         <form action="" class="layui-form">
             <div class="layui-col-md12">
                 <div class="layui-card" v-cloak="">
                     <div class="layui-card-header">基本信息</div>
                     <div class="layui-card-body" style="padding: 10px 150px;">
-                        <!--<div class="layui-form-item">
-                            <label class="layui-form-label">分类选择</label>
-                            <div class="layui-input-block">
-                                <select name="subject_id" v-model="formData.subject_id" lay-search="" lay-filter="subject_id">
-                                    <option value="0">请选分类</option>
-                                    <option :value="item.id" v-for="item in subject_list">{{item.name}}</option>
-                                </select>
-                            </div>
-                        </div>-->
                         <div class="layui-form-item">
                             <label class="layui-form-label" >素材名称</label>
                             <div class="layui-input-block">
                                 <input type="text" name="title" v-model="formData.title" autocomplete="off" placeholder="请输入素材名称" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item submit">
+                            <label class="layui-form-label">素材分类</label>
+                            <div class="layui-input-block">
+                                <select name="pid" v-model="formData.pid" lay-search="" lay-filter="pid" >
+                                    <option v-for="item in cateList"  :value="item.id" >{{item.html}}{{item.title}}</option>
+                                </select>
                             </div>
                         </div>
                         <div class="layui-form-item m-t-5">
@@ -84,7 +84,10 @@
                             </div>
                         </div>
                         <div class="layui-form-item m-t-5" v-cloak="">
-                            <label class="layui-form-label">素材封面</label>
+                            <label class="layui-form-label">
+                                <div>素材封面</div>
+                                <div>(710*400px)</div>
+                            </label>
                             <div class="layui-input-block">
                                 <div class="upload-image-box" v-if="formData.image" @mouseenter="mask.image = true" @mouseleave="mask.image = false">
                                     <img :src="formData.image" alt="">
@@ -100,13 +103,13 @@
                             <div class="layui-form-item m-t-5">
                                 <label class="layui-form-label">素材简介</label>
                                 <div class="layui-input-block">
-                                    <textarea id="myEditorDetail" style="width:100%;height: 500px">{{formData.detail}}</textarea>
+                                    <textarea id="myEditorDetail" name="image" style="width:100%;height: 500px">{{formData.detail}}</textarea>
                                 </div>
                             </div>
                             <div class="layui-form-item m-t-5">
                                 <label class="layui-form-label">素材内容</label>
                                 <div class="layui-input-block">
-                                    <textarea id="myEditorContent" style="width:100%;height: 500px">{{formData.content}}</textarea>
+                                    <textarea id="myEditorContent" name="images" style="width:100%;height: 500px">{{formData.content}}</textarea>
                                 </div>
                             </div>
                         </div>
@@ -115,7 +118,7 @@
                 <div class="layui-col-md12">
                     <div class="layui-form-item submit" style="margin-bottom: 10px">
                         <div class="layui-input-block">
-                            <button class="layui-btn layui-btn-normal" type="button" @click="save">{$id ? '确认修改':'立即提交'}</button>
+                            <button class="layui-btn layui-btn-normal" style="margin-left: 10%;" type="button" @click="save">{$id ? '确认修改':'立即提交'}</button>
                             <button class="layui-btn layui-btn-primary clone" type="button" @click="clone_form">取消</button>
                         </div>
                     </div>
@@ -127,22 +130,19 @@
 {/block}
 {block name='script'}
 <script>
-    var id={$id},
-        special=<?=isset($special) ? $special : "{}"?>;
-    require(['vue'],function(Vue) {
+    var id={$id},special=<?=isset($special) ? $special : "{}"?>;
+    require(['vue','zh-cn','request','plupload','aliyun-oss','OssUpload'],function(Vue) {
         new Vue({
             el: "#app",
             data: {
-                subject_list:[],
                 formData:{
                     title:special.title || '',
                     image:special.image ?  special.image['pic'] : '',
                     sort:special.sort || 0,
+                    pid:special.pid || 0,
                     content:special.content ? (special.content || '') : '',
                     detail:special.detail ? (special.detail || '') : '',
-
                 },
-
                 mask:{
                     image:false,
                 },
@@ -152,6 +152,7 @@
                     Image:"jpg,gif,png,JPG,GIF,PNG",
                 },
                 uploader:null,
+                cateList:[]
             },
             methods:{
                 //取消
@@ -165,7 +166,7 @@
                     var that = this;
                     if(index != undefined){
                         that.formData[key].splice(index,1);
-                        that.$set( that.formData,key,that.formData[key]);
+                        that.$set(that.formData,key,that.formData[key]);
                     }else{
                         that.$set(that.formData,key,'');
                     }
@@ -201,30 +202,20 @@
                         this.$set(this.formData,key,value);
                     }
                 },
-
                 setContent:function(link){
                     this.ueC.setContent('<div><video style="width: 100%" src="'+link+'" class="video-ue" controls="controls"><source src="'+link+'"></source></video></div><br><span style="color:white">.</span>',true);
                 },
                 //上传图片
                 upload:function(key,count){
-                    ossUpload.createFrame('请选择图片',{fodder:key,max_count:count === undefined ? 0 : count});
+                    ossUpload.createFrame('请选择图片',{fodder:key,max_count:count === undefined ? 0 : count},{w:800,h:550});
                 },
-                get_subject_list:function(){
-                    var that=this;
-                    layList.baseGet(layList.U({a:'get_subject_list'}),function (res) {
-                        that.$set(that,'subject_list',res.data);
-                        that.$nextTick(function () {
-                            layList.form.render('select');
-                        })
-                    });
-                },
-
                 save:function () {
-                    var that=this/*,banner=new Array()*/;
+                    var that=this;
                     that.formData.content = that.ueC.getContent();
                     that.formData.detail = that.ueD.getContent();
                     if(!that.formData.title) return layList.msg('请输入素材标题');
-                    //if(!that.formData.content) return layList.msg('请编辑素材内容再进行保存');
+                    if(!that.formData.image) return layList.msg('请输入素材封面');
+                    if(!that.formData.content) return layList.msg('请编辑素材内容再进行保存');
                     if(!that.formData.detail) return layList.msg('请编辑素材简介再进行保存');
                     layList.loadFFF();
                     layList.basePost(layList.U({a:'save_source',q:{id:id,special_type:'{$special_type}'}}),that.formData,function (res) {
@@ -247,6 +238,16 @@
                         layList.loadClear();
                     });
                 },
+                //获取素材分类
+                get_subject_list: function () {
+                    var that = this;
+                    layList.baseGet(layList.U({c:'special.special_task_category',a: 'get_cate_list'}), function (res) {
+                        that.$set(that, 'cateList', res.data);
+                        that.$nextTick(function () {
+                            layList.form.render('select');
+                        })
+                    });
+                },
                 clone_form:function () {
                     var that = this;
                     if(parseInt(id) == 0){
@@ -258,6 +259,7 @@
             },
             mounted:function () {
                 var that=this;
+                that.get_subject_list();
                 window.changeIMG = that.changeIMG;
                 //实例化form
                 layList.date({
@@ -268,7 +270,9 @@
                         that.formData.live_time = value;
                     }
                 });
-
+                layList.select('pid', function (obj) {
+                    that.formData.pid = obj.value;
+                });
                 //选择图片
                 function changeIMG(index,pic){
                     $(".image_img").css('background-image',"url("+pic+")");
@@ -276,31 +280,43 @@
                     $('#image_input').val(pic);
                 }
                 //选择图片插入到编辑器中
-                window.insertEditor = function(list,e){
-                    that.ueC.execCommand('insertimage', list);
-                    that.ueD.execCommand('insertimage', list);
-                }
-
+                window.insertEditor = function(list,fodder){
+                    that.editorActive.execCommand('insertimage', list);
+                };
                 this.$nextTick(function () {
                     layList.form.render();
                     //实例化编辑器
                     UE.registerUI('imagenone',function(editor,name){
+                        console.log('1111',editor)
                         var $btn = new UE.ui.Button({
                             name : 'image',
                             onclick : function(){
-                                ossUpload.createFrame('选择图片',{fodder:'editor'});
+                                console.log(editor);
+                                that.editorActive = editor;
+                                ossUpload.createFrame('选择图片',{fodder:'editor'},{w:800,h:550});
                             },
                             title: '选择图片'
                         });
-
                         return $btn;
-
                     });
                     that.ueC = UE.getEditor('myEditorContent');
                     that.ueD = UE.getEditor('myEditorDetail');
                 });
-                //获取科目
-                that.get_subject_list();
+                // this.$nextTick(function () {
+                //     layList.form.render();
+                //     //实例化编辑器
+                //     UE.registerUI('imagenone',function(editor,name){
+                //         var $btn = new UE.ui.Button({
+                //             name : 'image',
+                //             onclick : function(){
+                //                 ossUpload.createFrame('选择图片',{fodder:'editor'},{w:800,h:550});
+                //             },
+                //             title: '选择图片'
+                //         });
+                //         return $btn;
+                //     });
+                //     that.ueC = UE.getEditor('myEditorContent');
+                // });
                 //图片上传和视频上传
                 that.$nextTick(function () {
                     that.uploader = ossUpload.upload({
@@ -327,6 +343,5 @@
             }
         })
     })
-
 </script>
 {/block}

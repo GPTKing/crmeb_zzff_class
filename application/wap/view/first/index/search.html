@@ -110,6 +110,19 @@
         color: #666;
         cursor: pointer;
     }
+    .del-search{
+        color: #666;
+        font-size: .24rem;
+    }
+    .nothing {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 4rem;
+        height: 4rem;
+        -webkit-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+    }
 </style>
 {/block}
 {block name="content"}
@@ -124,12 +137,12 @@
         </form>
         <div v-if="history.length" class="section">
             <div class="head">
-                <div class="name">历史记录</div>
+                <div class="name">历史记录</div><span class="del-search" @click="delSearchHistory">清除</span>
                 <div class="iconfont"></div>
             </div>
             <div class="cont">
                 <ul class="list">
-                    <li v-for="(item, index) in history" :key="index" class="item" @click="goSearch(item)">{{ item.search }}</li>
+                    <li v-for="(item, index) in history" :key="index" class="item" @click="goSearch(item.search)">{{ item.search }}</li>
                 </ul>
             </div>
         </div>
@@ -145,7 +158,7 @@
         </div>
     </div>
     <div class="search-page">
-        <div class="searchResult swiper-details" v-if="(searchList.special.length || searchList.tash.length) && search"
+        <div class="searchResult swiper-details" v-if="(searchList.special.length) && search"
             v-cloak="">
             <div class="title acea-row row-middle line1" v-if="searchList.special.length">专题</div>
             <div class="swiper-list2">
@@ -170,47 +183,33 @@
             </div>
             <a class="more acea-row row-middle row-right" v-if="searchList.special.length > limit"
                 :href="getMoreList(0)">查看更多></a>
-            <div class="title acea-row row-middle line1" v-if="searchList.tash.length">任务视频</div>
-            <div class="video-listn">
-                <div class="item acea-row row-between-wrapper" v-for="item in searchList.tash">
-                    <a class="pictrue" :href="getTashUrl(item.special_id)"><img :src="item.image"></a>
-                    <div class="underline">
-                        <a class="text acea-row row-center row-column" :href="getTashUrl(item.special_id)">
-                            <div class="name line1" v-text="item.title"></div>
-                            <div class="num acea-row row-middle"><span
-                                    class="iconfont icon-bofang1"></span>{{item.play_count}}</div>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <a class="more acea-row row-middle row-right" v-if="searchList.tash.length > limit"
-                :href="getMoreList(1)">查看更多></a>
         </div>
         <p class="loading-line" style="background-color: #ffffff" v-cloak=""
-            v-if="searchList.special.length < 1 && searchList.tash.length < 1 && search && is_search">
-            <span>没有搜索到更多内容</span>
+            v-if="searchList.special.length < 1 && search && is_search">
+            <img class="nothing"  src="/wap/first/zsff/images/no_result.png">
         </p>
     </div>
+    <quick-menu></quick-menu>
 </div>
 {/block}
 {block name='foot'}
 <script>
     var phone="{$phone}";
-    require(['vue', 'helper', 'store'], function (Vue, $h, app) {
+    require(['vue', 'helper', 'store', '{__WAP_PATH}zsff/js/quick.js'], function (Vue, $h, app) {
         new Vue({
             el: '#app',
             data: {
                 search: '',
                 hotSearch: [],
                 history: [],
-                searchList: { special: [], tash: [] },
+                searchList: { special: []},
                 loading: false,
                 limit: 2,
                 is_search: false,
             },
             watch: {
                 search: function (n) {
-                    if (n == '') this.$set(this, 'searchList', { special: [], tash: [] });
+                    if (n == '') this.$set(this, 'searchList', { special: [] });
                 }
             },
             methods: {
@@ -233,6 +232,15 @@
                         this.$set(this, 'hotSearch', res.data.data);
                     }.bind(this));
                 },
+                delSearchHistory: function () {
+                    var that=this;
+                    app.baseGet($h.U({ c: 'index', a: 'del_search_history' }), function (res) {
+                        that.get_search_history();
+                        that.$set(that, 'search', '');
+                        that.$set(that, 'searchList', { special: []});
+                        return $h.pushMsgOnce('清除缓存');
+                    }.bind(this));
+                },
                 goSearch: function (name) {
                     if (typeof name == 'string' && name) this.search = name;
                     if (this.search == '') return;
@@ -241,7 +249,10 @@
                     app.baseGet($h.U({ c: 'index', a: 'go_search', q: { search: this.search, limit: this.limit + 1 } }), function (res) {
                         this.loading = false;
                         this.$set(this, 'searchList', res.data.data);
-                        this.is_search = res.data.data.special.length < 1 && res.data.data.tash.length < 1 ? true : false;
+                        this.is_search = res.data.data.special.length < 1 ? true : false;
+                        if(phone){
+                            this.get_search_history();
+                        }
                     }.bind(this), function () {
                         this.loading = false;
                     }.bind(this));

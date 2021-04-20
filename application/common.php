@@ -7,7 +7,8 @@
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
-//
+// +----------------------------------------------------------------------
+
 
 // 应用公共文件
 
@@ -82,7 +83,10 @@ function get_key_attr($value, $returnType = true, $rep = '')
                 'pic' => $value,
             ];
         } else {
-            return '';
+            return [
+                'key' => '',
+                'pic' => '',
+            ];
         }
     }
 }
@@ -155,13 +159,19 @@ function money_rate_num($money, $type) {
     switch ($type) {
         case "gold":
             $goldRate = \service\SystemConfigService::get("gold_rate");
-                //$num = ($money * 10) * (int) $goldRate;
                 $num = $money * (int) $goldRate;
             return $num;
         default:
             return \service\JsonService::fail('汇率类型缺失');
 
     }
+}
+
+function getUrlToDomain($domain) {
+    if($domain=='') $domain=$_SERVER['PHP_SELF'];
+    $arr = parse_url($domain);
+    if (!isset($arr['host'])) $arr['host'] = $arr['path'];
+    return $arr['host'];
 }
 
 if (!function_exists('filter_emoji')) {

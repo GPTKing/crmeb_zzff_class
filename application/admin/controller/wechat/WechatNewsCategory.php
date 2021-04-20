@@ -1,5 +1,4 @@
 <?php
-
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
@@ -15,11 +14,9 @@ namespace app\admin\controller\wechat;
 use app\admin\controller\AuthController;
 use app\admin\model\article\Article;
 use service\FormBuilder as Form;
-use service\UtilService as Util;
 use service\JsonService as Json;
 use app\admin\model\wechat\WechatReply;
 use app\admin\model\wechat\WechatUser;
-use service\UtilService;
 use think\Db;
 use think\Request;
 use think\Url;
@@ -37,7 +34,7 @@ class WechatNewsCategory extends AuthController
 {
     public function select($callback = '_selectNews$eb')
     {
-        $where = Util::getMore([
+        $where = parent::getMore([
             ['cate_name', '']
         ], $this->request);
         $this->assign('where', $where);
@@ -48,7 +45,7 @@ class WechatNewsCategory extends AuthController
 
     public function index()
     {
-        $where = Util::getMore([
+        $where = parent::getMore([
             ['cate_name', '']
         ], $this->request);
         $this->assign('where', $where);
@@ -75,7 +72,7 @@ class WechatNewsCategory extends AuthController
 
     public function save(Request $request)
     {
-        $data = Util::postMore([
+        $data = parent::postMore([
             'cate_name',
             ['new_id', []],
             ['sort', 0],
@@ -117,7 +114,7 @@ class WechatNewsCategory extends AuthController
 
     public function update(Request $request, $id)
     {
-        $data = Util::postMore([
+        $data = parent::postMore([
             'cate_name',
             ['new_id', []],
             ['sort', 0],
@@ -135,10 +132,18 @@ class WechatNewsCategory extends AuthController
 
     public function delete($id)
     {
-        if (!WechatNewsCategoryModel::del($id))
+        $cate=WechatNewsCategoryModel::get($id);
+        if (!$cate){
             return Json::fail(WechatNewsCategoryModel::getErrorInfo('删除失败,请稍候再试!'));
-        else
-            return Json::successful('删除成功!');
+        }else{
+            $res=WechatNewsCategoryModel::del($id);
+            $res1=Article::where('id',$cate['new_id'])->delete();
+            if($res && $res1){
+                return Json::successful('删除成功!');
+            }else{
+                return Json::fail(WechatNewsCategoryModel::getErrorInfo('删除失败,请稍候再试!'));
+            }
+        }
     }
 
 
@@ -185,39 +190,13 @@ class WechatNewsCategory extends AuthController
             if (!count($errorLog)) return Json::successful('全部发送成功');
             else return Json::successful(implode(',', $errorLog) . '，剩余的发送成功');
         } else {//群发消息
-//        if($list){
-//               if($list['new'] && is_array($list['new'])){
-//                   foreach ($list['new'] as $kk=>$vv){
-//                       $wechatNews[$kk]['title'] = $vv['title'];
-//                       $wechatNews[$kk]['thumb_media_id'] = $vv['image_input'];
-//                       $wechatNews[$kk]['author'] = $vv['author'];
-//                       $wechatNews[$kk]['digest'] = $vv['synopsis'];
-//                       $wechatNews[$kk]['show_cover_pic'] = 1;
-//                       $wechatNews[$kk]['content'] = Db::name('articleContent')->where('nid',$vv["id"])->value('content');
-//                       $wechatNews[$kk]['content_source_url'] = $vv['url'];
-//                   }
-//            }
-//        }
-            //6sFx6PzPF2v_Lv4FGOMzz-oQunU2Z3wrOWb-7zS508E
-            //6sFx6PzPF2v_Lv4FGOMzz7SUUuamgWwlqdVfhQ5ALT4
-//        foreach ($wechatNews as $k=>$v){
-//            $material = WechatService::materialService()->uploadImage(UtilService::urlToPath($v['thumb_media_id']));
-//            dump($material);
-//            $wechatNews[$k]['thumb_media_id'] = $material->media_id;
-//        }
-//        $mediaIdNews = WechatService::uploadNews($wechatNews);
-//        $res = WechatService::sendNewsMessage($mediaIdNews->media_id);
-//        if($res->errcode) return Json::fail($res->errmsg);
-//        else return Json::successful('推送成功');
-//        dump($mediaIdNews);
-//        dump($res);
         }
     }
 
     public function send_news($id = '')
     {
         if ($id == '') return $this->failed('参数错误');
-        $where = Util::getMore([
+        $where = parent::getMore([
             ['cate_name', '']
         ], $this->request);
         $this->assign('where', $where);
@@ -234,7 +213,7 @@ class WechatNewsCategory extends AuthController
                 'title' => '',
                 'author' => $this->adminInfo->real_name,
                 'content' => '',
-                'image_input' => '/public/system/module/wechat/news/images/image.png',
+                'image_input' => '/system/module/wechat/news/images/image.png',
                 'synopsis' => '',
             ]
         ]);
@@ -245,7 +224,7 @@ class WechatNewsCategory extends AuthController
 
     public function append_save(Request $request)
     {
-        $data = UtilService::postMore([
+        $data = parent::postMore([
             ['list', []],
             ['id', 0]
         ], $request);
@@ -270,6 +249,7 @@ class WechatNewsCategory extends AuthController
                 $id[] = $idC;
             } else {
                 unset($v['id']);
+                $v['is_show']=1;
                 $res = Article::set($v)->toArray();
                 $id[] = $res['id'];
                 $data['list'][$k]['id'] = $res['id'];

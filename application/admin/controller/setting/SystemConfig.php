@@ -1,5 +1,4 @@
 <?php
-
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
@@ -15,7 +14,6 @@ namespace app\admin\controller\setting;
 use think\Url;
 use service\FormBuilder as Form;
 use think\Request;
-use service\UtilService as Util;
 use service\JsonService as Json;
 use service\UploadService as Upload;
 use app\admin\controller\AuthController;
@@ -33,7 +31,7 @@ class SystemConfig extends AuthController
      * */
     public function index()
     {
-        list($type, $pid, $tab_id, $children_tab_id) = Util::getMore([
+        list($type, $pid, $tab_id, $children_tab_id) = parent::getMore([
             ['type', $this->request->param('type',0)],//配置类型
             ['paid', 0],//父级分类ID
             ['tab_id', $this->request->param('tab_id',0)],//当前分类ID
@@ -158,7 +156,6 @@ class SystemConfig extends AuthController
                             $value = $data['value'];
                         }
                         $formbuider[] = Form::checkbox($data['menu_name'], $data['info'], $value)->options($options)->info($data['desc'])->col(13);
-
                     }
                     break;
                 case 'select'://多选框
@@ -190,7 +187,7 @@ class SystemConfig extends AuthController
      * */
     public function create(Request $request)
     {
-        $data = Util::getMore(['type'], $request);//接收参数
+        $data = parent::getMore(['type'], $request);//接收参数
         $tab_id = $request->param('tab_id', 1);
         $formbuider = array();
         switch ($data['type']) {
@@ -220,7 +217,7 @@ class SystemConfig extends AuthController
      * */
     public function save(Request $request)
     {
-        $data = Util::postMore([
+        $data = parent::postMore([
             'menu_name',
             'type',
             'config_tab_id',
@@ -266,7 +263,7 @@ class SystemConfig extends AuthController
      */
     public function update_config(Request $request, $id)
     {
-        $data = Util::postMore(['status', 'info', 'desc', 'sort', 'config_tab_id', 'required', 'parameter', 'value', 'upload_type'], $request);
+        $data = parent::postMore(['status', 'info', 'desc', 'sort', 'config_tab_id', 'required', 'parameter', 'value', 'upload_type'], $request);
         if (!ConfigModel::get($id)) return Json::fail('编辑的记录不存在!');
         $data['value'] = rtrim($data['value'], '"');
         $data['value'] = ltrim($data['value'], '"');
@@ -359,26 +356,39 @@ class SystemConfig extends AuthController
                         return Json::fail('域名有误！应如：http://crmeb.net');
                     }
                 }
-                if($k=='extract_min_money'|| $k=='store_brokerage_ratio'|| $k=='store_brokerage_two'|| $k=='barrage_show_time'|| $k=='store_stock'){
-                    if(bcsub($v,0,0)<=0){
+                if($k=='gold_rate' || $k=='single_gold_coin'|| $k=='extract_min_money'|| $k=='store_brokerage_ratio'|| $k=='store_brokerage_two'|| $k=='store_stock'){
+                     if(bcsub($v,0,0)<=0){
                         switch ($k){
+                            case 'gold_rate':
+                                return Json::fail('人民币与金币换算率不能小于等于0');
+                            break;
+                            case 'single_gold_coin':
+                                return Json::fail('单次签到虚拟币数不能小于等于0');
+                            break;
                             case 'extract_min_money':
                                 return Json::fail('提现最低金额不能小于等于0');
-                                break;
+                            break;
                             case 'store_brokerage_ratio':
-                                return Json::fail('一级推广人返佣比例不能小于等于0');
-                                break;
+                                return Json::fail('课程一级推广人返佣比例不能小于等于0');
+                            break;
                             case 'store_brokerage_two':
-                                return Json::fail('二级推广人返佣比例不能小于等于0');
-                                break;
-                            case 'barrage_show_time':
-                                return Json::fail('专题弹幕停留时间不能小于等于0');
-                                break;
+                                return Json::fail('课程二级推广人返佣比例不能小于等于0');
+                            break;
                             case 'store_stock':
                                 return Json::fail('警戒库存不能小于等于0');
-                                break;
+                            break;
                         }
-                    }
+                     }
+                     if(bcsub($v,100,0)>0){
+                         switch ($k){
+                             case 'store_brokerage_ratio':
+                                 return Json::fail('课程一级推广人返佣比例不能大于100');
+                                 break;
+                             case 'store_brokerage_two':
+                                 return Json::fail('课程二级推广人返佣比例不能大于100');
+                                 break;
+                         }
+                     }
                 }
                 ConfigModel::edit(['value' => json_encode($v)], $k, 'menu_name');
             }
@@ -459,7 +469,7 @@ class SystemConfig extends AuthController
     public function file_upload()
     {
         $res = Upload::file('file', 'config/file');
-        if (!$res->status) return \FormBuilder\Json::uploadFail($res->error);
-        return \FormBuilder\Json::uploadSucc($res->filePath);
+        if(!$res->status) return Json::fail($res->error);
+        return Json::successful('上传成功!',['filePath'=>$res->filePath]);
     }
 }

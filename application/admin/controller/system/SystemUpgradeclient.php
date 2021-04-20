@@ -1,5 +1,4 @@
 <?php
-
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
@@ -26,6 +25,5 @@ use app\admin\model\system\SystemConfig;
  */
 class SystemUpgradeclient extends AuthController
 {
-
 
 }

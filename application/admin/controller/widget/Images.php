@@ -1,5 +1,4 @@
 <?php
-
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
@@ -18,7 +17,6 @@ use app\admin\model\system\SystemAttachmentCategory as Category;
 use app\admin\controller\AuthController;
 use service\SystemConfigService;
 use service\JsonService as Json;
-use service\UtilService as Util;
 use service\FormBuilder as Form;
 use think\Url;
 
@@ -66,7 +64,7 @@ class Images extends AuthController
      */
     public function get_image_list()
     {
-        $where = Util::getMore([
+        $where = parent::getMore([
             ['page', 1],
             ['limit', 18],
             ['pid', 0]
@@ -137,7 +135,6 @@ class Images extends AuthController
      */
     public function moveimg($imgaes)
     {
-
         $formbuider = [];
         $formbuider[] = Form::hidden('imgaes', $imgaes);
         $formbuider[] = Form::select('pid', '选择分类')->setOptions(function () {
@@ -158,7 +155,7 @@ class Images extends AuthController
      */
     public function moveImgCecate()
     {
-        $data = Util::postMore([
+        $data = parent::postMore([
             'pid',
             'imgaes'
         ]);
@@ -246,7 +243,7 @@ SCRIPT;
      */
     public function updateCate($id)
     {
-        $data = Util::postMore([
+        $data = parent::postMore([
             'pid',
             'name'
         ]);
@@ -299,5 +296,4 @@ SCRIPT;
             return Json::fail('删除失败');
         }
     }
-
 }

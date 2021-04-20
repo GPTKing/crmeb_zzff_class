@@ -4,65 +4,63 @@
     <div class="layui-row layui-col-space15" id="app">
         <div class="layui-col-md12">
             <div class="layui-card">
-                <div class="layui-card-header">搜索条件</div>
-                <div class="layui-card-body">
-                    <form class="layui-form layui-form-pane" action="">
-                        <div class="layui-form-item">
-                            <div class="layui-inline">
-                                <label class="layui-form-label">是否展示</label>
-                                <div class="layui-input-block">
-                                    <select name="status">
-                                        <option value="">全部</option>
-                                        <option value="1">显示</option>
-                                        <option value="0">不显示</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="layui-inline">
-                                <div class="layui-input-inline">
-                                    <button class="layui-btn layui-btn-sm layui-btn-normal" lay-submit="search"
-                                            lay-filter="search">
-                                        <i class="layui-icon layui-icon-search"></i>搜索
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
+                <div class="layui-card-header">
+                    <div style="font-weight: bold;">首页活动</div>
                 </div>
-            </div>
-        </div>
-        <!--产品列表-->
-        <div class="layui-col-md12">
-            <div class="layui-card">
-                <div class="layui-card-header">分类列表</div>
                 <div class="layui-card-body">
-                    <div class="alert alert-info" role="alert">
-                        注:分类名称和排序可进行快速编辑;
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
-                                    aria-hidden="true">&times;</span></button>
+                    <div class="layui-row layui-col-space15">
+                        <div class="layui-col-md12">
+                            <form class="layui-form layui-form-pane" action="">
+                                <div class="layui-form-item">
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label">是否展示</label>
+                                        <div class="layui-input-inline">
+                                            <select name="status">
+                                                <option value="">全部</option>
+                                                <option value="1">显示</option>
+                                                <option value="0">不显示</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="layui-inline">
+                                        <div class="layui-input-inline">
+                                            <button class="layui-btn layui-btn-sm layui-btn-normal" lay-submit="search"
+                                                    lay-filter="search">
+                                                <i class="layui-icon">&#xe615;</i>搜索
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="layui-col-md12">
+                            <div class="layui-btn-container">
+                                <form class="layui-form" lay-filter="formswitch" action="">
+                                    <div class="layui-form-item">
+                                        <div class="layui-inline">
+                                            <label class="layui-form-label" style="font-size: 14px;width: 170px;">在前台首页显示状态：</label>
+                                            <div class="layui-input-inline">
+                                                <input type='checkbox' name='state' class="test" lay-skin='switch'  lay-filter='is_show_or_hide' lay-text='显示|隐藏'>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <table class="layui-hide" id="List" lay-filter="List"></table>
+                            <script type="text/html" id="pic">
+                                <img style="cursor: pointer;" height="50" lay-event='open_image' src="{{d.pic}}">
+                            </script>
+                            <script type="text/html" id="status">
+                                <input type='checkbox' name='id' lay-skin='switch' value="{{d.id}}" lay-filter='status'
+                                       lay-text='显示|隐藏' {{ d.status== 1 ? 'checked' : '' }}>
+                            </script>
+                            <script type="text/html" id="act">
+                                <button class="layui-btn layui-btn-normal layui-btn-xs" onclick="$eb.createModalFrame('编辑','{:Url('create_v1')}?id={{d.id}}',{w:800})">
+                                    <i class="layui-icon">&#xe642;</i>编辑
+                                </button>
+                            </script>
+                        </div>
                     </div>
-                    <div class="layui-btn-container">
-                        <button type="button" class="layui-btn layui-btn-sm"
-                                onclick="$eb.createModalFrame(this.innerText,'{:Url('create_v1')}',{w:800})">添加配置
-                        </button>
-                    </div>
-                    <table class="layui-hide" id="List" lay-filter="List"></table>
-                    <script type="text/html" id="pic">
-                        <img style="cursor: pointer" lay-event='open_image' src="{{d.pic}}">
-                    </script>
-                    <script type="text/html" id="status">
-                        <input type='checkbox' name='id' lay-skin='switch' value="{{d.id}}" lay-filter='status'
-                               lay-text='显示|隐藏' {{ d.status== 1 ? 'checked' : '' }}>
-                    </script>
-                    <script type="text/html" id="act">
-                        <button class="layui-btn layui-btn-xs"
-                                onclick="$eb.createModalFrame('编辑','{:Url('create_v1')}?id={{d.id}}',{w:800})">
-                            <i class="fa fa-paste"></i> 编辑
-                        </button>
-                        <button class="layui-btn layui-btn-xs" lay-event='delstor'>
-                            <i class="fa fa-warning"></i> 删除
-                        </button>
-                    </script>
                 </div>
             </div>
         </div>
@@ -72,18 +70,23 @@
 {/block}
 {block name="script"}
 <script>
+    var is_show_or_hide={$is_show_or_hide};
     //实例化form
     layList.form.render();
+    layList.form.val('formswitch',{
+        state: is_show_or_hide == 1 ? true : false
+    })
+    console.log($('.test').val())
     //加载列表
     layList.tableList('List', "{:Url('get_group_data_list',['gid'=>$gid])}", function () {
         return [
-            {field: 'id', title: '编号', sort: true, event: 'id', width: '5%'},
+            {field: 'id', title: '编号', width: 60,align: 'center'},
             {field: 'title', title: '标题', edit: 'title'},
             {field: 'info', title: '简介', edit: 'info'},
-            {field: 'pic', title: '图标', templet: '#pic'},
-            {field: 'sort', title: '排序', sort: true, event: 'sort', edit: 'sort'},
-            {field: 'status', title: '是否显示', templet: '#status'},
-            {field: 'right', title: '操作', align: 'center', toolbar: '#act', width: '10%'},
+            {field: 'pic', title: '图标', templet: '#pic',align:'center'},
+            {field: 'sort', title: '排序', sort: true, event: 'sort', edit: 'sort',align:'center'},
+            {field: 'status', title: '状态', templet: '#status',align:'center'},
+            {field: 'right', title: '操作', align: 'center', toolbar: '#act'},
         ];
     });
     //自定义方法
@@ -96,11 +99,19 @@
                 layList.msg(res.msg);
             });
         },
-    }
-
+    };
     //查询
     layList.search('search', function (where) {
         layList.reload(where, true);
+    });
+    layList.form.on('switch(is_show_or_hide)',function (data) {
+        layList.baseGet(layList.Url({
+            a: 'is_show_or_hide',
+            q: {value: data.elem.checked==true ? 1 : 2}
+        }), function (res) {
+            console.log(res);
+            layList.msg(res.msg);
+        });
     });
 
     layList.switch('status', function (odj, value) {
@@ -138,7 +149,7 @@
                     }).catch(function (err) {
                         $eb.$swal('error', err);
                     });
-                })
+                });
                 break;
             case 'open_image':
                 $eb.openImage(data.pic);

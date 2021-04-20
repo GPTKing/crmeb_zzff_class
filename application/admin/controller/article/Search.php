@@ -1,5 +1,4 @@
 <?php
-
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
@@ -13,7 +12,6 @@
 namespace app\admin\controller\article;
 
 use app\admin\controller\AuthController;
-use service\UtilService as Util;
 use service\JsonService as Json;
 use service\UploadService as Upload;
 use think\Request;

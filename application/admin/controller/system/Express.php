@@ -1,5 +1,4 @@
 <?php
-
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
@@ -13,7 +12,6 @@
 namespace app\admin\controller\system;
 
 use service\FormBuilder as Form;
-use service\UtilService as Util;
 use service\JsonService as Json;
 use think\Request;
 use think\Url;
@@ -36,7 +34,7 @@ class Express extends AuthController
      */
     public function index()
     {
-        $params = Util::getMore([
+        $params = parent::getMore([
             ['keyword', '']
         ], $this->request);
         $this->assign(ExpressModel::systemPage($params));
@@ -71,7 +69,7 @@ class Express extends AuthController
      */
     public function save(Request $request)
     {
-        $data = Util::postMore([
+        $data = parent::postMore([
             'name',
             'code',
             ['sort', 0],
@@ -111,7 +109,7 @@ class Express extends AuthController
      */
     public function update(Request $request, $id)
     {
-        $data = Util::postMore([
+        $data = parent::postMore([
             'name',
             'code',
             ['sort', 0],

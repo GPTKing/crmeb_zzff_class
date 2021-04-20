@@ -1,10 +1,7 @@
 {extend name="public/container"}
-{block name='head_top'}
-
-{/block}
 {block name='title'}佣金明细{/block}
 {block name="content"}
-<div class="commission-details">
+<div class="commission-details" id="app">
     <header class="acea-row row-center-wrapper row-column">
         <div>累计佣金 (元）</div>
         <div class="money">{$data.sum_spread}</div>
@@ -28,8 +25,13 @@
             </a>
         </div>
     </div>
+    <quick-menu></quick-menu>
 </div>
-{/block}
-{block name="foot"}
-
+<script>
+    require(['vue','{__WAP_PATH}zsff/js/quick.js'], function (Vue) {
+        new Vue({
+            el: '#app',
+        });
+    });
+</script>
 {/block}

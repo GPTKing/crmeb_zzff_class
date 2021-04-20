@@ -1,5 +1,4 @@
 <?php
-
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
@@ -14,6 +13,7 @@ namespace app\admin\controller;
 
 
 use app\admin\model\system\SystemAdmin;
+use app\admin\model\system\SystemConfig;
 use basic\SystemBasic;
 use service\CacheService;
 use service\UtilService;
@@ -31,6 +31,7 @@ class Login extends SystemBasic
 {
     public function index()
     {
+        $this->assign('login_logo',SystemConfig::getValue('login_logo'));
         return $this->fetch();
     }
 
@@ -39,25 +40,26 @@ class Login extends SystemBasic
      */
     public function verify(Request $request)
     {
-        if (!$request->isPost()) return $this->failed('请登陆!');
+        if (!$request->isPost()) return ['code'=>4];
         list($account, $pwd, $verify) = UtilService::postMore([
             'account', 'pwd', 'verify'
         ], $request, true);
         //检验验证码
-        if (!captcha_check($verify)) return $this->failed('验证码错误，请重新输入');
+        if (!captcha_check($verify)) return ['code'=>2];
         $error = Session::get('login_error') ?: ['num' => 0, 'time' => time()];
-        if ($error['num'] >= 5 && $error['time'] < strtotime('+ 5 minutes'))
-            return $this->failed('错误次数过多,请稍候再试!');
+        if ($error['num'] >= 5 && $error['time'] < strtotime('+ 5 minutes')){
+            return ['code'=>3];
+        }
         //检验帐号密码
         $res = SystemAdmin::login($account, $pwd);
         if ($res) {
             Session::set('login_error', null);
-            return $this->redirect(Url::build('Index/index'));
+            return ['code'=>1];
         } else {
             $error['num'] += 1;
             $error['time'] = time();
             Session::set('login_error', $error);
-            return $this->failed(SystemAdmin::getErrorInfo('用户名错误，请重新输入'));
+            return ['code'=>0];
         }
     }
 

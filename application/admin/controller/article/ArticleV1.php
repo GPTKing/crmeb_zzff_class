@@ -14,7 +14,6 @@ namespace app\admin\controller\article;
 use app\admin\controller\AuthController;
 use app\admin\model\article\ArticleCategory as ArticleCategoryModel;
 use app\admin\model\article\ArticleContent;
-use service\UtilService as Util;
 use service\JsonService as Json;
 use service\UploadService as Upload;
 use think\Request;
@@ -43,7 +42,7 @@ class ArticleV1 extends AuthController
 
     public function article_list()
     {
-        $where = Util::getMore([
+        $where = parent::getMore([
             ['limit', 20],
             ['page', 1],
             ['cid', $this->request->param('cid')],
@@ -106,7 +105,7 @@ class ArticleV1 extends AuthController
 
     public function save_article($id = 0)
     {
-        $data = Util::postMore([
+        $data = parent::postMore([
             ['title', ''],
             ['synopsis', ''],
             ['sort', 0],
@@ -117,7 +116,6 @@ class ArticleV1 extends AuthController
         ]);
         if (!$data['title']) return Json::fail('请输入图文标题');
         if (!$data['synopsis']) return Json::fail('请输入图文简介');
-        if (count($data['label']) < 1) return Json::fail('请输入标签');
         if (!$data['content']) return Json::fail('请输入图文内容');
         $data['label'] = json_encode($data['label']);
         $content = htmlspecialchars($data['content']);
@@ -172,7 +170,7 @@ class ArticleV1 extends AuthController
         }
     }
 
-    /*
+    /**
     * 添加推荐
     * */
     public function recommend($article_id = 0)
@@ -183,7 +181,7 @@ class ArticleV1 extends AuthController
         $form = Form::create(Url::build('save_recommend', ['article_id' => $article_id]), [
             Form::select('recommend_id', '推荐')->setOptions(function () {
                 $list = Recommend::where(['is_show' => 1, 'type' => 1])->field('title,id')->order('sort desc,add_time desc')->select();
-                $menus = [['value' => 0, 'label' => '顶级菜单']];
+                $menus = [];
                 foreach ($list as $menu) {
                     $menus[] = ['value' => $menu['id'], 'label' => $menu['title']];
                 }
@@ -202,7 +200,7 @@ class ArticleV1 extends AuthController
     public function save_recommend($article_id = 0)
     {
         if (!$article_id) $this->failed('缺少参数');
-        $data = Util::postMore([
+        $data = parent::postMore([
             ['recommend_id', 0],
             ['sort', 0],
         ]);
@@ -215,5 +213,21 @@ class ArticleV1 extends AuthController
             return Json::successful('推荐成功');
         else
             return Json::fail('推荐失败');
+    }
+    /**取消推荐
+     * @param int $id
+     */
+    public function cancel_recommendation($id=0,$article_id=0)
+    {
+        if (!$id || !$article_id) $this->failed('缺少参数');
+        if (RecommendRelation::be(['id' => $id, 'link_id' => $article_id])){
+            $res=RecommendRelation::where(['id'=>$id,'link_id'=>$article_id])->delete();
+            if ($res)
+                return Json::successful('取消推荐成功');
+            else
+                return Json::fail('取消推荐失败');
+        }else{
+            return Json::fail('推荐不存在');
+        }
     }
 }

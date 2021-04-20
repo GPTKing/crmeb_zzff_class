@@ -1,5 +1,4 @@
 <?php
-
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
@@ -16,7 +15,6 @@ use app\admin\controller\AuthController;
 use app\admin\model\special\SpecialCourse;
 use app\admin\model\special\SpecialTask;
 use service\JsonService;
-use service\UtilService;
 use think\Url;
 
 /**
@@ -44,7 +42,7 @@ class Task extends AuthController
      * */
     public function task_list()
     {
-        $where = UtilService::getMore([
+        $where = parent::getMore([
             ['page', 1],
             ['is_show', ''],
             ['limit', 20],
@@ -83,13 +81,13 @@ class Task extends AuthController
      * */
     public function save_task($id = 0)
     {
-        $data = UtilService::postMore([
+        $data = parent::postMore([
             ['title', ''],
             ['image', ''],
             ['link', ''],
             ['play_count', 0],
             ['special_id', 0],
-            ['sor', 0],
+            ['sort', 0],
             ['is_pay', 0],
             ['is_show', 1],
         ]);

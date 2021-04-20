@@ -10,8 +10,15 @@
                 </div>
                 <div class="panel-body">
                     <div class="row show-grid">
+                        {if condition="$orderInfo['type'] eq 2"}
+                        <div class="col-xs-12" >用户昵称: {$userInfo.nickname}</div>
+                        <div class="col-xs-12">收货人: {$orderInfo.real_name}</div>
+                        <div class="col-xs-12">联系电话: {$orderInfo.user_phone}</div>
+                        <div class="col-xs-12">收货地址: {$orderInfo.user_address}</div>
+                        {else /}
                         <div class="col-xs-6" >用户昵称: {$userInfo.nickname}</div>
                         <div class="col-xs-6">联系电话: {$userInfo.phone}</div>
+                        {/if}
                     </div>
                 </div>
             </div>
@@ -30,12 +37,14 @@
                             {elseif condition="$orderInfo['paid'] eq 1 && $orderInfo['status'] eq 0 && $orderInfo['refund_status'] eq 0"/}
                             已支付
                             {elseif condition="$orderInfo['paid'] eq 1 && $orderInfo['refund_status'] eq 1"/}
-                            申请退款<b style="color:#f124c7">{$orderInfo.refund_reason_wap}</b>
+                            申请退款
                             {elseif condition="$orderInfo['paid'] eq 1 && $orderInfo['refund_status'] eq 2"/}
                             已退款
                             {/if}
                         </div>
-                        <div class="col-xs-6">课程总价: ￥{$orderInfo.total_price}</div>
+                        <div class="col-xs-6">商品总数: {$orderInfo.total_num}</div>
+                        <div class="col-xs-6">订单总价: ￥{$orderInfo.total_price}</div>
+                        <div class="col-xs-6">支付邮费: ￥{$orderInfo.total_postage}</div>
                         <div class="col-xs-6">实际支付: ￥{$orderInfo.pay_price}</div>
                         {if condition="$orderInfo['refund_price'] GT 0"}
                         <div class="col-xs-6" style="color: #f1a417">退款金额: ￥{$orderInfo.refund_price}</div>
@@ -63,13 +72,27 @@
                         {notempty name="orderInfo.pay_time"}
                         <div class="col-xs-6">支付时间: {$orderInfo.pay_time|date="Y/m/d H:i",###}</div>
                         {/notempty}
-                        <div class="col-xs-6" style="color: #ff0005">用户备注: {$orderInfo.mark?:'无'}</div>
                         <div class="col-xs-6" style="color: #733b5c">备注: {$orderInfo.remark?:'无'}</div>
                         <div class="col-xs-6" style="color: #733AF9">推广人: {if $spread}{$spread}{else}无{/if}</div>
                     </div>
                 </div>
             </div>
         </div>
+        {if condition="$orderInfo['delivery_type'] eq 'express'"}
+        <div class="col-sm-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    物流信息
+                </div>
+                <div class="panel-body">
+                    <div class="row show-grid">
+                        <div class="col-xs-6" >快递公司: {$orderInfo.delivery_name}</div>
+                        <div class="col-xs-6">快递单号: {$orderInfo.delivery_id} </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {/if}
         <div class="col-sm-12">
             <div class="panel panel-default">
                 <div class="panel-heading">

@@ -21,10 +21,11 @@ use service\JsonService;
 use service\SystemConfigService;
 use service\UtilService;
 use think\Cache;
+use think\cache\driver\Redis;
 use think\Cookie;
 use think\Session;
 use think\Url;
-use app\wap\model\user\MemberShip;
+use service\GroupDataService;
 
 class AuthController extends WapBasic
 {
@@ -41,27 +42,39 @@ class AuthController extends WapBasic
 
     protected $phone;
 
+    protected $force_binding;
+
     protected $isWechat = false;
+
+    protected $redisModel;
+
+    protected $subjectUrl='';
 
     protected function _initialize()
     {
         parent::_initialize();
+        $this->redisModel = new Redis();
         $this->isWechat = UtilService::isWechatBrowser();
         $spread_uid = $this->request->get('spread_uid', 0);
         $NoWechantVisitWhite = $this->NoWechantVisitWhite();
-        $codeUrl = '';
         $subscribe = false;
+        $site_url = SystemConfigService::get('site_url');
+        $this->subjectUrl=getUrlToDomain($site_url);
         try {
             $uid = User::getActiveUid();
             if (!empty($uid)) {
                 $this->userInfo = User::getUserInfo($uid);
-                MemberShip::memberExpiration($uid);
                 if($spread_uid) $spreadUserInfo = User::getUserInfo($spread_uid);
                 $this->uid = $this->userInfo['uid'];
                 $this->phone = User::getLogPhone($uid);
                 //绑定临时推广人
                 if ($spread_uid && $spreadUserInfo && $this->uid != $spread_uid && $spreadUserInfo['spread_uid']!=$this->uid && $this->userInfo['spread_uid'] != $spread_uid  && !$this->userInfo['spread_uid']) {
-                    User::edit(['spread_uid' => $spread_uid], $this->uid, 'uid');
+                    $storeBrokerageStatu = SystemConfigService::get('store_brokerage_statu') ?: 1;//获取后台分销类型
+                    if ($storeBrokerageStatu == 1) {
+                        if($spreadUserInfo['is_promoter']) User::edit(['spread_uid' => $spread_uid], $this->uid, 'uid');
+                    }else{
+                        User::edit(['spread_uid' => $spread_uid], $this->uid, 'uid');
+                    }
                 }
                 if (!isset($this->userInfo['uid'])) $this->userInfo['uid'] = 0;
                 if (!isset($this->userInfo['is_promoter'])) $this->userInfo['is_promoter'] = 0;
@@ -102,18 +115,23 @@ class AuthController extends WapBasic
             Cache::set('__SYSTEM__', $overallShareWechat, 800);
         }
 
-        if (!$codeUrl) $codeUrl = SystemConfigService::get('wechat_qrcode');
-        $balance_switch=SystemConfigService::get('balance_switch');
+        $codeUrl = SystemConfigService::get('wechat_qrcode');
+        $balance_switch=SystemConfigService::get('balance_switch');//余额开关
+        $alipay_switch=SystemConfigService::get('alipay_switch');//支付宝开关
+        $this->force_binding=SystemConfigService::get('force_binding');//微信端是否强制绑定手机号
         $this->assign([
             'code_url' => $codeUrl,
             'is_yue' => $balance_switch,
+            'is_alipay' => $alipay_switch,
             'subscribe' => $subscribe,
             'subscribeQrcode' => SystemConfigService::get('wechat_qrcode'),
             'userInfo' => $this->userInfo,
+            'now_money' => $this->userInfo['now_money'] ? $this->userInfo['now_money'] : 0,
             'phone' => $this->phone,
             'isWechat' => $this->isWechat,
             'overallShareWechat' => json_encode($overallShareWechat),
-            'Auth_site_name' => SystemConfigService::get('site_name')
+            'Auth_site_name' => SystemConfigService::get('site_name'),
+            'menus'=>GroupDataService::getData('bottom_navigation')
         ]);
     }
 

@@ -12,10 +12,10 @@
 namespace app\wap\controller;
 
 
+use app\wap\model\user\SignPoster;
 use app\wap\model\user\SmsCode;
-use app\wap\model\special\Grade;
+use app\wap\model\special\SpecialSubject;
 use app\wap\model\store\StoreOrder;
-use app\wap\model\store\StorePink;
 use app\wap\model\user\User;
 use app\wap\model\user\UserBill;
 use app\wap\model\user\UserExtract;
@@ -36,22 +36,20 @@ class Spread extends AuthController
 {
     public function spread()
     {
-        $data['number'] = UserBill::whereTime('add_time', 'today')->where('uid', $this->uid)->where('category', 'now_money')
+        $data['income'] = UserBill::whereTime('add_time', 'today')->where('uid', $this->uid)->where('category', 'now_money')
             ->where('type', 'in', ['rake_back', 'rake_back_one', 'brokerage','rake_back_two'])->sum('number');
-        $orderIds = StoreOrder::whereTime('add_time', 'today')->where('refund_status', 0)->where('link_pay_uid', 'in', $this->uid)->where('paid', 1)->field('order_id,pink_id')->select();
-        $orderids1 = StoreOrder::whereTime('add_time', 'today')->where('refund_status', 0)->where('spread_uid', 'in', $this->uid)->where('paid', 1)->field('order_id,pink_id')->select();
+        $return = UserBill::whereTime('add_time', 'today')->where('uid', $this->uid)->where('category', 'now_money')
+            ->where('type', 'in', ['brokerage_return'])->sum('number');
+        $data['income'] =bcsub($data['income'],$return,2);
+        $orderIds = StoreOrder::whereTime('add_time', 'today')->where('refund_status', 0)->where('link_pay_uid', 'in', $this->uid)->where('pay_price','>', 0)->where('paid', 1)->field('order_id,pink_id')->select();
+        $orderids1 = StoreOrder::whereTime('add_time', 'today')->where('refund_status', 0)->where('spread_uid', 'in', $this->uid)->where('pay_price','>', 0)->where('paid', 1)->field('order_id,pink_id')->select();
         $orderids = array_merge(count($orderIds) ? $orderIds->toArray() : [], count($orderids1) ? $orderids1->toArray() : []);
         $order_count = 0;
         foreach ($orderids as $item) {
-            if ($item['pink_id']) {
-                $res = StorePink::where(['id' => $item['pink_id'], 'is_refund' => 0, 'status' => 3, 'order_id' => $item['order_id']])->count();
-                if ($res) $order_count++;
-            } else {
-                $order_count++;
-            }
+            $order_count++;
         }
         $data['order_count'] = $order_count;
-        $data['spread_count'] = User::whereTime('spread_time', 'today')->where('is_promoter', 1)->where('spread_uid', $this->uid)->count();
+        $data['spread_count'] = User::whereTime('spread_time', 'today')->where('spread_uid', $this->uid)->count();
         $this->assign('data', $data);
         return $this->fetch();
     }
@@ -104,26 +102,25 @@ class Spread extends AuthController
     }
 
 
-    /*
+    /**
      * 专题推广
      *
      * */
     public function special()
     {
-
         return $this->fetch();
     }
 
-    /*
+    /**
      * 获取年级列表
      *
      * */
     public function get_grade_list()
     {
-        return JsonService::successful(Grade::getPickerData());
+        return JsonService::successful(SpecialSubject::wapSpecialCategoryAll(1));
     }
 
-    /*
+    /**
      * 获取每个年级下的专题并分页
      * */
     public function getSpecialSpread()
@@ -136,18 +133,18 @@ class Spread extends AuthController
         return JsonService::successful(Special::getSpecialSpread($where, $this->uid));
     }
 
-    /*
+    /**
      * 专题推广二维码
      * */
     public function poster_special($special_id = 0)
     {
-        if (!$special_id) $this->failed('缺少专题id无法查看海报');
+        if (!$special_id) $this->failed('缺少专题id无法查看海报', Url::build('spread/special'));
         $special = Special::getSpecialInfo($special_id);
-        if ($special === false) $this->failed(Special::getErrorInfo());
-        if (!$special['poster_image']) $this->failed('您查看的海报不存在');
+        if ($special === false) $this->failed(Special::getErrorInfo(), Url::build('spread/special'));
+        if (!$special['poster_image']) $this->failed('您查看的海报不存在', Url::build('spread/special'));
         $url = SystemConfigService::get('site_url') . Url::build('special/details') . '?id=' . $special['id'] . '&link_pay_uid=' . $this->uid . '&link_pay=1&spread_uid=' . $this->uid . '#link_pay';
         try {
-            $filename = CanvasService::foundCode($special['id'], $url, $special['poster_image']);
+            $filename = CanvasService::foundCode1($special, $url, $special['poster_image']);
         } catch (\Exception $e) {
             return $this->failed($e->getMessage());
         }
@@ -161,7 +158,7 @@ class Spread extends AuthController
         return $this->fetch();
     }
 
-    /*
+    /**
      * 我的推广人
      *
      * */
@@ -174,6 +171,16 @@ class Spread extends AuthController
         } else {
             $data['order_count'] = 0;
         }
+        $isPromoter=0;
+        $storeBrokerageStatu = SystemConfigService::get('store_brokerage_statu') ?: 1;
+        if($storeBrokerageStatu==1){
+            if($this->userInfo['is_promoter']){
+                $isPromoter=1;
+            }
+        }else{
+            $isPromoter=1;
+        }
+        $this->assign('isPromoter', $isPromoter);
         $this->assign('data', $data);
         return $this->fetch();
     }
@@ -191,14 +198,14 @@ class Spread extends AuthController
             $uids1 = User::where('spread_uid', 'in', $uids)->group('uid')->column('uid');
             $data['spread_one'] = UserBill::where(['a.uid' => $this->uid, 'a.type' => 'brokerage', 'a.category' => 'now_money'])->alias('a')
                 ->join('store_order o', 'o.id = a.link_id')
-                ->whereIn('o.uid', $uids)
+                ->whereIn('o.uid', $uids)->where('o.refund_status', 'eq', 0)
                 ->where('a.link_id', 'neq', 0)->sum('a.number');
-            if ($uids1) {
-                $data['spread_two'] = UserBill::where(['a.uid' => $this->uid, 'a.type' => 'brokerage', 'a.category' => 'now_money'])->alias('a')
-                    ->join('store_order o', 'o.id = a.link_id')
-                    ->whereIn('o.uid', $uids1)
-                    ->where('a.link_id', 'neq', 0)->sum('a.number');
-            }
+        if ($uids1) {
+            $data['spread_two'] = UserBill::where(['a.uid' => $this->uid, 'a.type' => 'brokerage', 'a.category' => 'now_money'])->alias('a')
+                ->join('store_order o', 'o.id = a.link_id')
+                ->whereIn('o.uid', $uids1)->where('o.refund_status', 'eq', 0)
+                ->where('a.link_id', 'neq', 0)->sum('a.number');
+         }
         }
         $data['sum_spread'] = bcadd($data['spread_one'], $data['spread_two'], 2);
         $this->assign('data', $data);
@@ -227,17 +234,22 @@ class Spread extends AuthController
         return JsonService::successful(UserBill::getSpreadList($where, $this->uid));
     }
 
-    /*
+    /**
      * 推广海报
      *
      * */
     public function poster_spread()
     {
         $spread_poster_url = SystemConfigService::get('spread_poster_url');
-        if (!$spread_poster_url) return $this->failed('海报不存在');
+        if (!$spread_poster_url) return $this->failed('海报不存在', Url::build('spread/special'));
         $url = SystemConfigService::get('site_url') . Url::build('Spread/become_promoter', ['s_spread_uid' => $this->uid]);
         try {
-            $filename = CanvasService::foundCode($this->uid, $url, $spread_poster_url,'user_');
+            $sign_info = SignPoster::todaySignInfo();
+            $spread['id'] = $this->uid;
+            $spread['title'] = $sign_info['sign_talk'];
+            $uids = User::where('spread_uid', $this->uid)->group('uid')->column('uid');
+            $spread['fake_sales'] = count($uids);
+            $filename = CanvasService::foundCode1($spread, $url, $spread_poster_url,'user_');
         } catch (\Exception $e) {
             return $this->failed($e->getMessage());
         }
@@ -251,7 +263,7 @@ class Spread extends AuthController
         return $this->fetch();
     }
 
-    /*
+    /**
      * 绑定推广人
      * @param int $pread_uid
      * @return json
@@ -265,12 +277,12 @@ class Spread extends AuthController
         ], $this->request, true);
         if (!$phone || !$code) return $this->failed('请输入登录账号');
         if (!$code) return $this->failed('请输入验证码');
+        $code=md5('is_phone_code'.$code);
         if (!SmsCode::CheckCode($phone, $code)) return JsonService::fail('验证码验证失败');
         SmsCode::setCodeInvalid($phone, $code);
         if ($this->userInfo['spread_uid'] == $s_spread_uid && $this->userInfo['is_promoter']) return JsonService::fail('您已绑定此推广人,请勿重复绑定');
         if ($this->userInfo['spread_uid'] && $this->userInfo['is_promoter']) return JsonService::fail('您已有推广人,无法绑定!');
         if ($this->userInfo['is_promoter']) return JsonService::fail('您已经成为推广人,无法绑定!');
-        if ($this->userInfo['is_promoter'] && $this->userInfo['is_senior']) return JsonService::fail('您已成为高级推广人,无法绑定');
         $data = ['phone' => $phone];
         $data = User::manageSpread($s_spread_uid, $data, true);
         if ($data === false) return JsonService::fail(User::getErrorInfo());
@@ -280,7 +292,7 @@ class Spread extends AuthController
             return JsonService::fail('很抱歉加入失败!');
     }
 
-    /*
+    /**
      * 新增推广人注册
      *
      * */
@@ -289,10 +301,11 @@ class Spread extends AuthController
         if (!$s_spread_uid) $this->failed('缺少推广人uid');
         $this->assign('spread_uid', $s_spread_uid);
         $this->assign('promoter_content', SystemConfigService::get('promoter_content'));
+        $this->assign('home_logo', SystemConfigService::get('home_logo'));
         return $this->fetch();
     }
 
-    /*
+    /**
      * 推广人列表获取
      *
      * */
@@ -308,7 +321,7 @@ class Spread extends AuthController
         return JsonService::successful(User::GetSpreadList($where, $this->uid));
     }
 
-    /*
+    /**
      * 移除当前用下的推广人
      * @param int $uid 需要移除的用户id
      * */

@@ -29,7 +29,7 @@ class Service extends AuthController
     public function service_ing(Request $request){
         $params = Request::instance()->param();
         $to_uid = $params['to_uid'];
-        $merchant = array("id"=>0,"mer_name"=>"");
+        $merchant =array("id"=>0,"mer_name"=>"");
         if(!isset($to_uid) || empty($to_uid))$this->failed('未获取到接收用户信息！');
         if($this->userInfo['uid'] == $to_uid)$this->failed('您不能进行自言自语！');
 

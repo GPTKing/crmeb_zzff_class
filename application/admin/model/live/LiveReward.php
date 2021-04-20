@@ -1,5 +1,4 @@
 <?php
-
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
@@ -15,18 +14,16 @@ namespace app\admin\model\live;
 /**
  * 直播间礼物
  */
-
-use app\admin\model\system\SystemGroupData;
 use basic\ModelBasic;
 use service\SystemConfigService;
 use traits\ModelTrait;
 use app\wap\model\user\User;
+use app\admin\model\live\LiveGift;
 
 class LiveReward extends ModelBasic
 {
 
     use ModelTrait;
-
 
     public static function getLiveRewardList($where)
     {
@@ -34,7 +31,7 @@ class LiveReward extends ModelBasic
                   ->page((int)$where['page'],(int)$where['limit'])->select();
         $data = count($data) ? $data->toArray() : [];
         foreach ($data as &$item) {
-            $live_gift = SystemGroupData::getDateValue($item['gift_id']);
+            $live_gift = LiveGift::liveGiftOne($item['gift_id']);
             $item['gift_name'] = $live_gift ? $live_gift['live_gift_name'] : "";
             $item['gift_image'] = $live_gift ? $live_gift['live_gift_show_img'] : "";
         }
@@ -57,6 +54,9 @@ class LiveReward extends ModelBasic
         }
         if (isset($where['live_id']) && $where['live_id']) {
             $model->where($alert.'live_id',$where['live_id']);
+        }
+        if (isset($where['gift_id']) && $where['gift_id']) {
+            $model->where($alert.'gift_id',$where['gift_id']);
         }
         if (isset($where['user_info']) && $where['user_info']) {
             $userinfo = User::whereLike('nickname' ,"%".$where['user_info']."%")->whereOr('phone',$where['user_info'])->field('uid')->find();

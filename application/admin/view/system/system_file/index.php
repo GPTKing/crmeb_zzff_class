@@ -1,8 +1,8 @@
 {extend name="public/container"}
 {block name="content"}
-<div class="row">
-    <div class="col-sm-12">
-        <div class="ibox">
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
             <div class="ibox-content">
                 <div class="table-responsive">
                     <table class="table table-striped  table-bordered">

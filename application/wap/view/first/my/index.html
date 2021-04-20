@@ -3,7 +3,16 @@
 {block name='head_top'}
 <style>
     body {
-        background-color: #f5f5f5;
+        background: linear-gradient(180deg, #FFFFFF 0%, #F5F5F5 100%);
+        background-attachment: fixed;
+    }
+
+    .support {
+        display: block;
+        width: 2.19rem;
+        margin: .28rem auto 1.38rem;
+        pointer-events: none;
+        -webkit-touch-callout: none;
     }
 
     .mask h4 {
@@ -27,12 +36,6 @@
         margin: 0 auto;
     }
 
-    .support {
-        display: block;
-        width: 2.19rem;
-        margin: .28rem auto 1.38rem;
-    }
-
     .mask .button {
         display: inherit;
         text-align: center;
@@ -45,145 +48,57 @@
         border-radius: 0.5rem;
         margin: 1rem auto;
     }
-
-    .userNew .vip-wrap {
-        width: 6.9rem;
-        height: 1.06rem;
-        padding: .24rem .28rem 0 .32rem;
-        border-bottom-right-radius: .16rem;
-        border-bottom-left-radius: .16rem;
-        margin: -.24rem auto 0;
-        font-weight: 500;
-        font-size: .28rem;
-        background-color: #fcedd3;
-        color: #966c23;
-    }
-
-    .userNew .vip-wrap svg {
-        font-size: .37rem;
-    }
-
-    .userNew .vip-wrap .name {
-        flex: 1;
-        margin-right: .25rem;
-        margin-left: .25rem;
-    }
-
-    .userNew .vip-wrap .btn {
-        width: 1.6rem;
-        height: .5rem;
-        border-radius: .5rem;
-        font-weight: 500;
-        font-size: .24rem;
-        line-height: .5rem;
-        text-align: center;
-        background-image: linear-gradient(to right, #f6ddbe, #f1be74);
-        color: #63440e;
-    }
-
-    .vip-state {
-        display: inline-block;
-        padding-right: .12rem;
-        padding-left: .12rem;
-        border-radius: .21rem;
-        font-weight: 400;
-        font-size: .2rem;
-        line-height: .36rem;
-        background-color: #fff8ed;
-        color: #966c23;
-    }
-
-    .vip-state svg {
-        vertical-align: middle;
-        font-size: .23rem;
+    .user-section {
+        border-bottom: .2rem solid #F9F9F9;
     }
 </style>
 {/block}
 {block name="content"}
-<div class="userNew" id="app" v-cloak>
-    <div class="header acea-row row-between-wrapper" @click="goUrl('{:Url('user_info')}')">
-        <div class="picTxt acea-row row-middle">
-            <div class="pictrue">
-                {if $userInfo['uid']}
-                <img src="{$userInfo.avatar}">
-                {else}
-                <img src="/wap/first/zsff/images/avatar_default.png">
-                {/if}
-            </div>
-            <div>
-                {if $userInfo['uid']}
-                <div class="name line1">{$userInfo.nickname}</div>
-                {else}
-                <div class="name line1">请登陆</div>
-                {/if}
-
-            </div>
-        </div>
-        <div class="iconfont icon-icon-yxj-arrow-right"></div>
-    </div>
-    <div class="nav acea-row row-middle">
-        <div class="item" @click="goUrl('{:Url('special/grade_list')}')">
-            <div class="pictrue"><img src="/wap/first/zsff/images/u_n01.png"></div>
-            <div class="name">我的课程</div>
-            <div class="info">管理您的课程订单</div>
-        </div>
-        <div class="item" @click="goUrl('{:Url('special/record')}')">
-            <div class="pictrue"><img src="/wap/first/zsff/images/u_n02.png"></div>
-            <div class="name">学习记录</div>
-            <div class="info">共有{$recordNumber}条记录</div>
-        </div>
-        <div class="item" @click="goUrl('{:Url('special/grade_list',['type'=>1])}')">
-            <div class="pictrue"><img src="/wap/first/zsff/images/u_n03.png"></div>
-            <div class="name">我的收藏</div>
-            <div class="info">已收藏{$collectionNumber}个</div>
-        </div>
-    </div>
-
-    <div class="list">
-        <div class="item acea-row row-between-wrapper" @click="goUrl('{:Url('spread/spread')}')">
-            <div class="picTxt acea-row row-middle">
-                <div class="pictrue"><img src="/wap/first/zsff/images/u02.png"></div>
-                <div class="name">推广中心</div>
-            </div>
-            <div class="iconfont icon-icon-yxj-arrow-right"></div>
-        </div>
-        <div class="item acea-row row-between-wrapper" @click="goUrl('{:Url('my_gift')}')">
-            <div class="picTxt acea-row row-middle">
-                <div class="pictrue"><img src="/wap/first/zsff/images/u01.png"></div>
-                <div class="name">我的赠送</div>
-            </div>
-            <div class="iconfont icon-icon-yxj-arrow-right"></div>
-        </div>
-        <div class="item acea-row row-between-wrapper" v-show="isyue"  @click="goUrl('{:Url('bill_detail')}')">
-            <div class="picTxt acea-row row-middle">
-                <div class="pictrue"><img src="/wap/first/zsff/images/yue.png"></div>
-                <div class="name">我的余额</div>
-            </div>
-            <div class="iconfont icon-icon-yxj-arrow-right"></div>
-        </div>
-        <div class="item acea-row row-between-wrapper" @click="location.href='{:Url('about_us')}'">
-            <div class="picTxt acea-row row-middle">
-                <div class="pictrue"><img src="/wap/first/zsff/images/u03.png"></div>
-                <div class="name">关于我们</div>
-            </div>
-            <div class="iconfont icon-icon-yxj-arrow-right"></div>
-        </div>
-        <div class="item acea-row row-between-wrapper" @click="goUrl('{:Url('service/service_list')}')">
-            <div class="picTxt acea-row row-middle">
-                <div class="pictrue"><img src="/wap/first/zsff/images/u04.png"></div>
-                <div class="name">咨询客服</div>
-            </div>
-            <div class="iconfont icon-icon-yxj-arrow-right"></div>
-        </div>
-        {if $phone && !$isWechat}
-        <div class="item acea-row row-between-wrapper" @click="logout">
-            <div class="picTxt acea-row row-middle">
-                <div class="pictrue"><img src="/wap/first/zsff/images/logout.png"></div>
-                <div class="name">退出</div>
-            </div>
-            <div class="iconfont icon-icon-yxj-arrow-right"></div>
-        </div>
+<div v-cloak id="app" class="user-page">
+    <div class="user-section" @click="goUrl('{:Url('user_info')}', 1)">
+        {if $userInfo['uid']}
+        <img class="img" src="{$userInfo.avatar}">
+        {else}
+        <img class="img" src="/wap/first/zsff/images/avatar_default.jpg">
         {/if}
+        <div class="text-wrap">
+            {if $userInfo['uid']}
+            <div class="name">{$userInfo.nickname}</div>
+            {else}
+            <div class="name">请登录</div>
+            {/if}
+        </div>
+        <div class="iconfont iconxiangyou"></div>
+    </div>
+    <div class="tool-section">
+        <div class="title">我的工具</div>
+        <div class="list">
+            <div class="item" @click="goUrl('{:Url('special/grade_list')}',1)">
+                <img class="img" src="/wap/first/zsff/images/wdkc.png">
+                <div class="text">我的课程</div>
+            </div>
+            <div class="item" @click="goUrl('{:Url('special/record')}',1)">
+                <img class="img" src="/wap/first/zsff/images/xxjl.png">
+                <div class="text">学习记录</div>
+            </div>
+            <div class="item" @click="goUrl('{:Url('special/grade_list',['type'=>1])}',1)">
+                <img class="img" src="/wap/first/zsff/images/wdsc.png">
+                <div class="text">我的收藏</div>
+            </div>
+        </div>
+    </div>
+    <div class="serve-section">
+        <div class="title">我的服务</div>
+        <div class="list">
+            <div v-for="item in menuList" class="item" @click="goUrl(item,2)">
+                <img class="img" :src="item.icon">
+                <div class="text">{{ item.title }}</div>
+            </div>
+            <div class="item" v-show="phone && !isWechat" @click="logout">
+                <img class="img" src="/wap/first/zsff/images/logout.png">
+                <div class="text">退出</div>
+            </div>
+        </div>
     </div>
     <enter :appear="appear" @change="changeVal" :url="url" :site_name="site_name"></enter>
     <div class="mask" @touchmove.prevent style="z-index: 100;" v-show="isfollow">
@@ -197,8 +112,8 @@
     {include file="public/store_menu"}
 </div>
 <script>
-    var site_name = '{$Auth_site_name}',isyue={$is_yue ? 'true' : 'false'};
-    require(['vue', 'helper', 'store', '{__WAP_PATH}zsff/js/enter.js'], function (Vue, $h, app) {
+    var site_name = '{$Auth_site_name}',isyue={$is_yue ? 'true' : 'false'},phone='{$phone}',isWechat='{$isWechat}';
+    require(['vue', 'helper', 'store', 'layer', '{__WAP_PATH}zsff/js/enter.js'], function (Vue, $h, app, layer) {
         new Vue({
             el: '#app',
             data: {
@@ -208,10 +123,27 @@
                 url: $h.U({ c: 'login', a: 'phone_check' }),
                 site_name: site_name,
                 isyue: isyue,
+                phone: phone,
+                isWechat: isWechat,
+                menuList: []
             },
-            mounted: function () {
+            created: function () {
+                this.getMenu();
             },
             methods: {
+                getMenu: function () {
+                    var that = this;
+                    $h.loadFFF();
+                    app.baseGet($h.U({
+                        c: 'my',
+                        a: 'getPersonalCenterMenu'
+                    }), function(res) {
+                        $h.loadClear();
+                        that.menuList = res.data.data;
+                    }, function(err) {
+                        $h.loadClear();
+                    });
+                },
                 skip: function () {
                     this.isfollow = false;
                     this.appear = true;
@@ -242,10 +174,25 @@
                         window.location.reload();
                     }
                 },
-                goUrl: function (url) {
+                goUrl: function (item,type) {
                     var that = this;
                     app.baseGet($h.U({ c: 'index', a: 'login_user' }), function (res) {
-                        window.location.href = url;
+                        if(type==1){
+                            window.location.href =item;
+                        }else{
+                            window.location.href = item.link;
+                        }
+                    }, function () {
+                        that.appear = false;
+                    });
+                },
+                memberUrl:function(){
+                    var that = this;
+                    app.baseGet($h.U({ c: 'index', a: 'login_user' }), function (res) {
+                        window.location.href = $h.U({
+                            c: 'special',
+                            a: 'member_recharge'
+                        });
                     }, function () {
                         that.appear = false;
                     });
@@ -265,9 +212,15 @@
                 },
                 logout: function () {
                     var that = this;
-                    app.baseGet($h.U({ c: 'my', a: 'logout' }), function (res) {
-                        $h.pushMsgOnce(res.data.msg, function () {
-                            location.reload();
+                    layer.confirm('确认退出登录？', {
+                        title: false,
+                        closeBtn: 0,
+                        btn: ['确定', '取消']
+                    }, function () {
+                        app.baseGet($h.U({ c: 'my', a: 'logout' }), function (res) {
+                            $h.pushMsgOnce(res.data.msg, function () {
+                                location.reload();
+                            });
                         });
                     });
                 }

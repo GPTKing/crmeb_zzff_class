@@ -1,35 +1,38 @@
 {extend name="public/container"}
-{block name='head_top'}
-
+{block name='title'}
+{if $type==0}
+一级推广佣金记录
+{elseif $type==1}
+二级推广佣金记录
+{else}
+佣金提现记录
+{/if}
 {/block}
-{block name='title'}{if $type==0}一级推广佣金记录{elseif $type==1}二级推广佣金记录{else}佣金提现记录{/if}{/block}
 {block name="content"}
 <div class="promotion-details withdrawals-record" id="app" ref="app">
     <div class="data acea-row row-middle" id="dateShowBtn">
         <input type="text" readonly="readonly" onfocus='this.blur();' id="dateSelectorTwo" :value=value>
-        <span class="iconfont icon-xiala"></span>
+        <span class="iconfont iconxiangxia"></span>
     </div>
-
     <ul class="list" v-cloak="" ref="list">
         <li class="item acea-row row-column row-center" v-for="item in spreadList">
             <div class="acea-row row-between-wrapper">
-                <div class="title line1" v-text="item.title" v-if="type==0 || type==1"></div>
-                <div class="title line1" v-text="item.mark" v-else></div>
+                <div class="title line1" v-text="item.mark"></div>
                 <div class="name line1" v-text="item.nickname"></div>
             </div>
             <div class="time acea-row row-between-wrapper">
                 <div v-text="item.add_time"></div>
                 <div class="money" v-if="item.pm==1">+{{item.number}}</div>
-                <div class="money" style="color: #ea2f2f;" v-else>-{{item.number}}</div>
+                <div class="money" style="color: #ea2f2f;" v-else-if="item.pm==0">-{{item.number}}</div>
+                <div v-else>{{item.number}}</div>
             </div>
         </li>
     </ul>
-
     <p class="loading-line" style="background-color: #ffffff" v-cloak="">
         <span v-show="loading==true" class="fa fa-spinner loadingpic" style="font-size: 0.4rem"></span>
-        <!-- <span v-text="loadTitle">加载更多</span> -->
+         <span v-text="loadTitle">加载更多</span>
     </p>
-
+    <quick-menu></quick-menu>
 </div>
 <script src="{__WAP_PATH}zsff/js/iScroll.js"></script>
 <script src="{__WAP_PATH}zsff/js/Mdate.js"></script>
@@ -37,7 +40,7 @@
 {block name="foot"}
 <script>
     var type={$type};
-    require(['vue','helper','store'],function(Vue,$h,app) {
+    require(['vue','helper','store','{__WAP_PATH}zsff/js/quick.js'],function(Vue,$h,app) {
         new Vue({
             el: '#app',
             data: {

@@ -7,7 +7,8 @@
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
-//
+// +----------------------------------------------------------------------
+
 
 // 应用公共文件
 if (!function_exists('unThumb')) {
@@ -15,13 +16,6 @@ if (!function_exists('unThumb')) {
     {
         return str_replace('/s_', '/', $src);
     }
-}
-/**
- *判断拼团是否结束*/
-function isPinkStatus($pink)
-{
-    if (!$pink) return false;
-    return \app\wap\model\store\StorePink::isSetPinkOver($pink);
 }
 
 /**

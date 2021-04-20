@@ -7,7 +7,8 @@
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
-//
+// +----------------------------------------------------------------------
+
 
 namespace app\wap\model\user;
 
@@ -38,7 +39,6 @@ class UserNotice extends ModelBasic
         $data["lastpage"] = ceil($count/$limit) <= ($page+1) ? 1 : 0;
 
         $where['uid'] = array("like","%,$uid,%");
-//        $where['uid'] = array(array("like","%,$uid,%"),array("eq",""), 'or');
         $where['is_send'] = 1;
         $list = self::where($where)->field('id,user,title,content,add_time')->order("add_time desc")->limit($page*$limit,$limit)->select()->toArray();
         foreach ($list as $key => $value) {

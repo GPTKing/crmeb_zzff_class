@@ -7,15 +7,15 @@
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
-//
+// +----------------------------------------------------------------------
+
 
 namespace app\wap\model\user;
 
-
 use service\SystemConfigService;
 use basic\ModelBasic;
-use service\WechatService;
 use traits\ModelTrait;
+
 class UserSign extends ModelBasic
 {
     use ModelTrait;

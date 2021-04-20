@@ -7,9 +7,11 @@
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
-//
+// +----------------------------------------------------------------------
+
 
 // 应用公共文件
+
 /**
  * 获取用户名称
  * @param $uid
@@ -19,6 +21,22 @@ function getUserNickname($uid){
     return \app\admin\model\user\User::where('uid',$uid)->value('nickname');
 }
 
+/**删除缓存hash数据
+ * @param $name
+ * @param $key
+ * @return bool
+ */
+function del_redis_hash($name, $key)
+{
+    if (!$name || !$key) return false;
+    $redisModel = new \think\cache\driver\Redis();
+    $site_url = \service\SystemConfigService::get('site_url');
+    $subjectUrl=GetUrlToDomain($site_url);
+    $name=$subjectUrl.$subjectUrl;
+    $exists_recommend_redis = $redisModel->HEXISTS($name,$key);
+    if ($exists_recommend_redis)  $redisModel->hdel($name,$key);
+    return true;
+}
 /**
  * 获取产品名称
  * @param $id
@@ -28,14 +46,6 @@ function getProductName($id){
     return \app\admin\model\store\StoreProduct::where('id',$id)->value('store_name');
 }
 
-/**
- * 获取拼团名称
- * @param $id
- * @return mixed
- */
-function getCombinationTitle($id){
-    return \app\admin\model\store\StoreCombination::where('id',$id)->value('title');
-}
 
 /**
  * 获取订单编号
@@ -159,3 +169,28 @@ function get_server_ip(){
     return $server_ip;
 }
 
+/**
+ * 获取CRMEB系统版本号
+ * @param string $default
+ * @return string
+ */
+function get_crmeb_version($default = 'v1.0.0')
+{
+    try {
+        $version = parse_ini_file(app()->getRootPath() . '.version');
+        return $version['version'] ?? $default;
+    } catch (\Throwable $e) {
+        return $default;
+    }
+}
+if (!function_exists('check_phone')) {
+    /**
+     * 手机号验证
+     * @param $phone
+     * @return false|int
+     */
+    function check_phone($phone)
+    {
+        return preg_match( "/^1[3456789]\d{9}$/", $phone);
+    }
+}

@@ -8,7 +8,7 @@
                 <div class="layui-card-body">
                     素材名称：
                     <div class="layui-inline">
-                        <input class="layui-input" name="title" id="demoReload" autocomplete="off">
+                        <input class="layui-input" name="title" id="demoReload" placeholder="请输入素材名称">
                     </div>
                     <button class="layui-btn" data-type="reload">搜索</button>
                 </div>
@@ -20,7 +20,7 @@
                 <div class="layui-card-header">{$special_title}素材列表</div>
                 <div class="layui-card-body">
                     <div class="layui-btn-container">
-                        <button class="layui-btn layui-btn-normal layui-btn-sm" onclick="window.location.reload()"><i class="layui-icon layui-icon-refresh"></i>  刷新</button>
+                        <button class="layui-btn layui-btn-normal layui-btn-sm" onclick="window.location.reload()"><i class="layui-icon layui-icon-refresh"></i> 刷新</button>
                     </div>
                     <table class="layui-hide" id="List" lay-filter="List"></table>
                     <script type="text/html" id="image">
@@ -41,7 +41,6 @@
 <script>
     var special_id = <?=isset($special_id) ? $special_id : ""?>;
     var table_date=new Array();//用于保存当前页数据
-
     var ids=new Array();    //用于保存选中的数据
     //实例化form
     layList.form.render();
@@ -156,5 +155,23 @@
         }
         this.length-=1;
     };
+    //自定义方法
+    var action= {
+        //打开新添加页面
+        open_add: function (url,title) {
+            layer.open({
+                type: 2 //Page层类型
+                ,area: ['100%', '100%']
+                ,title: title
+                ,shade: 0.6 //遮罩透明度
+                ,maxmin: true //允许全屏最小化
+                ,anim: 1 //0-6的动画形式，-1不开启
+                ,content: url
+                ,end:function() {
+                    location.reload();
+                }
+            });
+        }
+    }
 </script>
 {/block}

@@ -35,86 +35,75 @@
     .layui-form-item .label-box p{
         line-height: inherit;
     }
-    .layui-form-mid{
-        margin-left: 18px;
-    }
-    .m-t-5{
-        margin-top:5px;
+    .cate{
+        margin-top:10px;
     }
     .edui-default .edui-for-image .edui-icon{
         background-position: -380px 0px;
     }
 </style>
-<script type="text/javascript" charset="utf-8" src="{__ADMIN_PATH}plug/ueditor/third-party/zeroclipboard/Zeroclipboard.js"></script>
+<script type="text/javascript" charset="utf-8" src="{__ADMIN_PATH}plug/ueditor/third-party/zeroclipboard/ZeroClipboard.js"></script>
 <script type="text/javascript" charset="utf-8" src="{__ADMIN_PATH}plug/ueditor/ueditor.config.js"></script>
 <script type="text/javascript" charset="utf-8" src="{__ADMIN_PATH}plug/ueditor/ueditor.all.min.js"></script>
-<script type="text/javascript" src="{__ADMIN_PATH}plug/ueditor/lang/zh-cn/zh-cn.js"></script>
-<script type="text/javascript" src="{__ADMIN_PATH}js/aliyun-oss-sdk-4.4.4.min.js"></script>
-<script type="text/javascript" src="{__ADMIN_PATH}js/request.js"></script>
-<script type="text/javascript" src="{__MODULE_PATH}widget/lib/plupload-2.1.2/js/plupload.full.min.js"></script>
-<script type="text/javascript" src="{__MODULE_PATH}widget/OssUpload.js"></script>
 {/block}
 {block name="content"}
 <div class="layui-fluid" style="background: #fff">
-    <div class="layui-tab layui-tab-brief" lay-filter="tab">
-        <ul class="layui-tab-title">
-            <li lay-id="list" {eq name='type' value='1'}class="layui-this" {/eq} >
-            <a href="{eq name='type' value='1'}javascript:;{else}{:Url('index',['type'=>1])}{/eq}">新闻列表</a>
-            </li>
-            <li lay-id="list" {eq name='type' value='2'}class="layui-this" {/eq}>
-            <a href="{eq name='type' value='2'}javascript:;{else}{:Url('add_special',['type'=>2])}{/eq}">新闻添加</a>
-            </li>
-        </ul>
-    </div>
-    <div class="layui-row layui-col-space15"  id="app">
+    <div class="layui-row layui-col-space15"  id="app" v-cloak>
         <form action="" class="layui-form">
             <div class="layui-col-md12">
-                <div class="layui-card" v-cloak="">
-                    <div class="layui-card-body" style="padding: 10px 150px;">
+                <div class="layui-card">
+                    <div class="layui-card-body">
                         <div class="layui-form-item">
-                            <label class="layui-form-label">新闻名称</label>
+                            <label class="layui-form-label">新闻标题：</label>
                             <div class="layui-input-block">
                                 <input type="text" name="title" v-model="formData.title" autocomplete="off" placeholder="请输入新闻名称" class="layui-input">
                             </div>
                         </div>
                         <div class="layui-form-item">
-                            <label class="layui-form-label">新闻简介</label>
+                            <label class="layui-form-label">新闻简介：</label>
                             <div class="layui-input-block">
                                 <textarea placeholder="请输入新闻简介" v-model="formData.synopsis" class="layui-textarea"></textarea>
                             </div>
                         </div>
-                       <div class="layui-form-item">
-                            <label class="layui-form-label">文章分类</label>
+                       <div class="layui-form-item cate">
+                            <label class="layui-form-label">文章分类：</label>
                             <div class="layui-input-block">
-                               <select class="chosen-select" v-model="formData.cid"  style="width:100%;" lay-filter="getSelect">
+                               <select class="chosen-select" v-model="formData.cid" style="width:100%;" lay-filter="getSelect">
                                    <option value="0" >选择分类</option>
                                     <option v-for="(item,idx) in all"  :value="idx" :key="idx">{{item}}</option>
                                 </select>
                             </div>
                         </div>
-                        <div class="layui-form-item m-t-5">
-                            <label class="layui-form-label">新闻排序</label>
+                        <div class="layui-form-item cate">
+                            <!-- <div class="layui-inline"> -->
+                            <label class="layui-form-label">新闻标签</label>
+                            <div class="layui-input-inline" style="width: 300px;">
+                                <input type="text" v-model="label" name="price_min" placeholder="最多4个字" autocomplete="off" maxlength="4" class="layui-input">
+                                <!-- <p class="special-label" @click="addLabrl"><i class="fa fa-plus" aria-hidden="true"></i></p> -->
+                            </div>
+                            <div class="layui-input-inline" style="width: auto;">
+                                <button type="button" class="layui-btn layui-btn-normal" @click="addLabrl" >
+                                    <i class="layui-icon">&#xe654;</i>
+                                </button>
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">输入标签名称后点击”+“号按钮添加；最多写入4个字；点击标签即可删除</div>
+                        </div>
+                        <div v-if="formData.label.length" class="layui-form-item">
+                                <div class="layui-input-block">
+                                    <button v-for="(item,index) in formData.label" :key="index" type="button" class="layui-btn layui-btn-normal layui-btn-sm" @click="delLabel(index)">{{item}}</button>
+                                </div>
+                            </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">新闻排序：</label>
                             <div class="layui-input-block">
                                 <input type="number" style="width: 20%" name="sort" v-model="formData.sort" autocomplete="off" class="layui-input">
                             </div>
                         </div>
-                        <div class="layui-form-item m-t-5" v-cloak="">
-                            <div class="layui-inline">
-                                <label class="layui-form-label" style="margin-right: 28px">新闻标签</label>
-                                <div class="layui-input-inline" style="width: 300px;">
-                                    <input type="text" v-model="label" name="price_min" placeholder="最多4个字" autocomplete="off" class="layui-input" style="float: left;width: 200px">
-                                    <p class="special-label" @click="addLabrl"><i class="fa fa-plus" aria-hidden="true"></i></p>
-                                </div>
-                            </div>
-                            <div class="layui-input-block">
-                                <div class="label-box" v-for="(item,index) in formData.label" @click="delLabel(index)">
-                                    <p>{{item}}</p>
-                                </div>
-                            </div>
-                            <div class="layui-form-mid layui-word-aux">输入标签名称点击添加+号进行添加;最多写入4个字;点击标签可删除</div>
-                        </div>
-                        <div class="layui-form-item m-t-5" v-cloak="">
-                            <label class="layui-form-label">新闻封面</label>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">
+                                <div>新闻封面：</div>
+                                <div>(500*334px)</div>
+                            </label>
                             <div class="layui-input-block">
                                 <div class="upload-image-box" v-if="formData.image_input" @mouseenter="enter()" @mouseleave="leave()">
                                     <img :src="formData.image_input" alt="">
@@ -128,8 +117,8 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="layui-form-item m-t-5">
-                            <label class="layui-form-label">插入视频</label>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">插入视频：</label>
                             <div class="layui-input-block">
                                 <input type="text" name="title" v-model="link" style="width:50%;display:inline-block;margin-right: 10px;" autocomplete="off" placeholder="请输入视频链接" class="layui-input">
                                 <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" @click="uploadVideo()">确认添加</button>
@@ -143,8 +132,8 @@
                             </div>
                             <div class="layui-form-mid layui-word-aux">输入链接将视为添加视频直接添加,请确保视频链接的正确性</div>
                         </div>
-                        <div class="layui-form-item m-t-5">
-                            <label class="layui-form-label">新闻内容</label>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">新闻内容：</label>
                             <div class="layui-input-block">
                                 <textarea id="myEditor" style="width:100%;height: 500px">{{formData.content}}</textarea>
                             </div>
@@ -168,8 +157,7 @@
     var id={$id};
     var article=<?=isset($article) ? $article : "{}"?>;
     var all={$all};
-
-    require(['vue'],function(Vue) {
+    require(['vue','zh-cn','request','aliyun-oss','plupload','OssUpload'],function(Vue) {
         new Vue({
             el: "#app",
             data: {
@@ -205,17 +193,14 @@
                         'your browser does not support the video tag\n' +
                         '</video></div><br>',true);
                 },
-                getSelect:function(e){
-                    console.log(e);
-                },
                 save:function(){
                     var that=this;
                     that.formData.content = that.ue.getContent();
                     if(!that.formData.title) return layList.msg('请输入新闻标题!');
-                   if(!that.formData.cid) return layList.msg('请选择分类!');
+                    if(that.formData.cid<=0) return layList.msg('请选择分类!');
                     if(!that.formData.synopsis) return layList.msg('请输入新闻简介!');
-                    if(that.formData.label.length < 1) return layList.msg('请输入标签!');
                     if(!that.formData.image_input) return layList.msg('请上传新闻封面图');
+                    if (!that.formData.label.length) return layList.msg('请输入标签');
                     layList.loadFFF();
                     layList.basePost(layList.U({a:'save_article',q:{id:id}}),that.formData,function (res) {
                         layList.loadClear();
@@ -225,10 +210,12 @@
                             }, function () {
                                 window.location.reload();
                             }, function () {
+                                parent.layer.closeAll();
                                 window.location.href = layList.U({a: 'index', p: {type: 1}});
                             });
                         }else{
                             layList.msg('修改成功',function () {
+                                parent.layer.closeAll();
                                 window.location.href = layList.U({a: 'index', p: {type: 1}});
                             })
                         }
@@ -238,10 +225,12 @@
                     });
                 },
                 clone_form:function(){
-                    if(parseInt(id)==0){
+                    if (parseInt(id) == 0) {
+                        var that = this;
                         if(that.formData.image_input) return layList.msg('请先删除上传的图片在尝试取消');
+                        parent.layer.closeAll();
                     }
-                    window.location.href=layList.U({a:'index',p:{type:1}});
+                    parent.layer.closeAll();
                 },
                 //取消
                 cancelUpload:function(){
@@ -317,7 +306,6 @@
             },
             mounted:function () {
                 var that = this;
-
                 this.$nextTick(function () {
                     layList.form.render();
                     layList.form.on('select(getSelect)',function (data) {
@@ -335,7 +323,6 @@
                         return $btn;
                     });
                     this.ue = UE.getEditor('myEditor');
-
                     that.uploader = ossUpload.upload({
                         id:'ossupload',
                         FilesAddedSuccess:function(){
@@ -360,10 +347,8 @@
                 window.changeIMG = that.changeIMG;
                 //选择图片插入到编辑器中
                 window.insertEditor = function(list){
-                    console.log(list);
                     that.ue.execCommand('insertimage', list);
                 }
-
             },
             updated:function(){
                 layList.form.render();

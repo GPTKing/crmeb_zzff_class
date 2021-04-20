@@ -33,12 +33,16 @@ class UserBill extends ModelBasic
         return time();
     }
 
-    
+
     public static function income($title,$uid,$category,$type,$number,$link_id = 0,$balance = 0,$mark = '',$status = 1){
         $pm = 1;
         return self::set(compact('title','uid','link_id','category','type','number','balance','mark','status','pm'));
     }
-
+    public static function expend($title, $uid, $category, $type, $number, $link_id = 0, $balance = 0, $mark = '', $status = 1)
+    {
+        $pm = 0;
+        return self::set(compact('title', 'uid', 'link_id', 'category', 'type', 'number', 'balance', 'mark', 'status', 'pm'));
+    }
     /*
      *  获取佣金记录
      * */
@@ -84,7 +88,19 @@ class UserBill extends ModelBasic
         }
         return $list;
     }
-    /*
+
+    /**获取用户佣金金额
+     * @param int $uid
+     */
+    public static function getCommissionAmount($uid=0){
+        $brokerage=self::where('uid','in',$uid)->where('category','now_money')
+            ->where('type','brokerage')->where('pm',1)->where('status',1)->sum('number');
+        $brokerage_return=self::where('uid','in',$uid)->where('category','now_money')
+            ->where('type','brokerage_return')->where('pm',0)->where('status',1)->sum('number');
+        $commission=bcsub($brokerage,$brokerage_return,2);
+        return $commission;
+    }
+    /**
      * 获取柱状图和饼状图数据
      *
      * */
@@ -199,7 +215,7 @@ class UserBill extends ModelBasic
     }
     //获取佣金提现列表
     public static function getExtrctOneList($where,$uid){
-        $list=self::setOneWhere($where,$uid)
+        $list=self::setOneWhere($where,$uid)->order('add_time desc')
             ->field(['number','link_id','mark','FROM_UNIXTIME(add_time,"%Y-%m-%d %H:%i:%s") as _add_time','status'])
             ->select();
         count($list) && $list=$list->toArray();
@@ -241,7 +257,7 @@ class UserBill extends ModelBasic
     public static function getOneBalanceChangList($where){
          $list=self::setWhereList(
             $where,
-            ['system_add','pay_product','extract','pay_product_refund','system_sub'],
+            ['system_add', 'pay_product', 'extract','extract_fail','pay_goods','pay_sign_up', 'pay_product_refund', 'system_sub'],
             ['FROM_UNIXTIME(add_time,"%Y-%m-%d") as add_time','title','type','mark','number','balance','pm','status'],
             'now_money'
         );
@@ -255,6 +271,15 @@ class UserBill extends ModelBasic
                     break;
                 case 'extract':
                     $item['_type']='提现';
+                    break;
+                case 'extract_fail':
+                    $item['_type']='提现失败';
+                    break;
+                case 'pay_goods':
+                    $item['_type']='购买商品';
+                    break;
+                case 'pay_sign_up':
+                    $item['_type']='活动报名';
                     break;
                 case 'pay_product_refund':
                     $item['_type']='退款';

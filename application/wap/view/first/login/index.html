@@ -85,7 +85,7 @@
                     if(!$reg.isPhone(that.phone)) return $h.pushMsgOnce('请输入正确的手机号码');
                     that.active = true;
                     var n = 60;
-                    app.baseGet($h.U({c:'public_api',a:'code',q:{phone:that.phone}}),function (res){
+                    app.baseGet($h.U({c:'auth_api',a:'code',q:{phone:that.phone}}),function (res){
                         var data=res.data.data;
                         if(data.Message=='OK' || data.Code=='OK'){
                             var run =setInterval(function(){

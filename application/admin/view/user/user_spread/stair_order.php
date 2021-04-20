@@ -106,18 +106,9 @@
         return [
             {field: 'order_id', title: '订单ID',templet:'#order_id'},
             {field: 'user_info', title: '用户信息' ,templet:'#user_info'},
-            // {field: 'spread_info', title: '上级信息' },
-            // {field: 'order_info', title: '订单详情' },
             {field: 'time', title: '时间',templet:'#time'},
             {field: 'number_price', title: '返佣金额'},
         ];
-    });
-    layList.date({elem:'#start_time',theme:'#393D49',type:'datetime'});
-    layList.date({elem:'#end_time',theme:'#393D49',type:'datetime'});
-    layList.search('search',function(where){
-        if(where.start_time!='' && where.end_time=='') return layList.msg('请选择结束时间');
-        if(where.end_time!='' && where.start_time=='') return layList.msg('请选择开始时间');
-        layList.reload(where,true);
     });
     $('.conrelTable').find('button').each(function () {
         var type=$(this).data('type');
@@ -139,11 +130,11 @@
                 badge: [],
                 dataList: [
                     {name: '全部', value: ''},
-                    {name: '今天', value: 'today'},
                     {name: '昨天', value: 'yesterday'},
-                    {name: '最近7天', value: 'lately7'},
-                    {name: '最近30天', value: 'lately30'},
+                    {name: '今天', value: 'today'},
+                    {name: '本周', value: 'week'},
                     {name: '本月', value: 'month'},
+                    {name: '本季度', value: 'quarter'},
                     {name: '本年', value: 'year'},
                 ],
                 spread_type:[

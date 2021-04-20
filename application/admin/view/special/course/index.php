@@ -82,11 +82,11 @@
     //加载列表
     layList.tableList('List',"{:Url('course_list')}?special_id={$special_id}",function (){
         return [
-            {field: 'id', title: '编号', sort: true,event:'id',width:'7%',align: 'center'},
+            {field: 'id', title: '编号', width:60,align: 'center'},
             {field: 'special_name', title: '专题名称',width:'20%'},
             {field: 'course_name', title: '课程名称',edit:'course_name',width:'36%'},
             {field: 'sort', title: '排序',sort: true,event:'sort',edit:'sort',width:'7%'},
-            {field: 'is_show', title: '是否显示',templet:'#is_show',width:'10%'},
+            {field: 'is_show', title: '状态',templet:'#is_show',width:'10%'},
             {field: 'number', title: '任务数量',width:'7%'},
             {field: 'right', title: '操作',align:'center',toolbar:'#act',width:'13%'},
         ];
@@ -140,7 +140,6 @@
                     $eb.axios.get(url).then(function(res){
                         if(res.status == 200 && res.data.code == 200) {
                             $eb.$swal('success',res.data.msg);
-                            obj.del();
                             location.reload();
                         }else
                             return Promise.reject(res.data.msg || '删除失败')

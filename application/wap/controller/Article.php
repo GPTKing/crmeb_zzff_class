@@ -18,21 +18,39 @@ use basic\WapBasic;
 use service\JsonService;
 use service\UtilService;
 use think\Db;
+use think\Url;
+use service\GroupDataService;
 
 /**
  * 文章分类控制器
  * Class Article
  * @package app\wap\controller
  */
-class Article extends WapBasic
+class Article extends AuthController
 {
 
+    /**
+     * 白名单
+     */
+    public static function WhiteList()
+    {
+        return [
+            'get_unifiend_list',
+            'news_bulletin',
+            'index',
+            'unified_list',
+            'news_list',
+            'articleDetails',
+            'details',
+            'news_detail',
+        ];
+    }
     public function index($cid = '')
     {
         $title = '新闻列表';
         if ($cid) {
             $cateInfo = ArticleCategory::where('status', 1)->where('is_del', 0)->where('id', $cid)->find()->toArray();
-            if (!$cateInfo) return $this->failed('文章分类不存在!');
+            if (!$cateInfo) return $this->failed('文章分类不存在!', Url::build('article/unified_list'));
             $title = $cateInfo['title'];
         }
         $this->assign(compact('title', 'cid'));
@@ -57,42 +75,51 @@ class Article extends WapBasic
         ]);
         return JsonService::successful(ArticleModel::getUnifiendList($where));
     }
-    public function video_school()
+
+    /**
+     * 首页新闻简报
+     */
+    public function news_bulletin()
     {
-        return $this->fetch();
+        $news_bulletin=GroupDataService::getData('news_bulletin');
+        return JsonService::successful($news_bulletin);
     }
 
-    public function guide()
+    public function details($id = 0)
     {
-        return $this->fetch();
+        $this->assign('id',$id);
+        return $this->fetch('news_detail');
     }
 
-    public function visit($id = '')
-    {
-        $content = ArticleModel::where(['id' => $id, 'hide' => 0,'is_show'=>1])->find();
-        if (!$content) return $this->failed('此文章已经不存在!');
-        $content["content"] = Db::name('articleContent')->where('nid', $content["id"])->value('content');
-        //增加浏览次数
-        $content["visit"] = $content["visit"] + 1;
-        ArticleModel::where('id', $id)->update(["visit" => $content["visit"]]);
-        $this->assign(compact('content'));
-        return $this->fetch();
-    }
-
-    public function details($id = '')
+    /**
+     * 新闻详情
+     */
+    public function articleDetails($id=0)
     {
         $article = ArticleModel::where(['id'=>$id,'is_show'=>1])->find();
-        if (!$article) $this->failed('您查看的文章不存在');
-        $article["content"] = Db::name('articleContent')->where('nid', $article["id"])->value('content');
+        if (!$article) $this->failed('您查看的文章不存在', Url::build('article/unified_list'));
+        $content = Db::name('articleContent')->where('nid', $article["id"])->value('content');
+        $article["content"] =htmlspecialchars_decode($content);
         //增加浏览次数
         $article["visit"] = $article["visit"] + 1;
+        $article["add_time"] =date('Y-m-d',$article["add_time"]);
         ArticleModel::where('id', $id)->update(["visit" => $article["visit"]]);
-        $this->assign([
-            'title' => $article->title,
-            'image' => $article->image_input,
-            'synopsis' => $article->synopsis,
-            'content' => htmlspecialchars_decode($article->content)
-        ]);
+        return JsonService::successful($article);
+    }
+    /**
+     * 新闻
+     */
+    public function news_list()
+    {
+        return $this->fetch();
+    }
+
+    /**
+     * 资讯详情
+     */
+    public function news_detail($id = 0)
+    {
+        $this->assign('id',$id);
         return $this->fetch();
     }
 }

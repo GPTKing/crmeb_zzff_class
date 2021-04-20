@@ -1,125 +1,114 @@
 {extend name="public/container"}
 {block name="head_top"}
-<link rel="stylesheet" type="text/css" href="{__WAP_PATH}zsff/css/video-js.min.css" />
-<script src="{__WAP_PATH}zsff/js/video.min.js"></script>
-<script src="{__WAP_PATH}zsff/js/video.zh.js"></script>
 <script src="{__WAP_PATH}zsff/js/md5.js"></script>
+<link rel="stylesheet" href="//g.alicdn.com/de/prismplayer/2.9.3/skins/default/aliplayer-min.css">
+<script src="//g.alicdn.com/de/prismplayer/2.9.3/aliplayer-min.js"></script>
+<script type="text/javascript" src="//g.alicdn.com/de/prismplayer/2.9.3/hls/aliplayer-hls-min.js"></script>
+<script src="//g.alicdn.com/de/prismplayer/2.9.3/hls/aliplayer-vod-min.js"></script>
+<!--<script src="//g.alicdn.com/de/prismplayer/2.8.8/hls/aliplayer-vod-anti-min.js"></script>页面防调试js-->
 <style>
-    .ml15{margin-left: 0.15rem;}
-    .videoBox{padding: 0.25rem 0;box-sizing: border-box;border-bottom: 1px solid #f5f5f5;}
-    .app{background-color:#f5f5f5;}
-    .video_tit{width: 100%;height: 1.6rem;background: #fff;padding: 0.3rem 0.2rem;}
-    .video_tit_top{font-weight:400;font-size:.36rem;line-height:.5rem;}
-    .video_tit_down{margin-top:.09rem;font-weight:400;font-size:.24rem;color:#999;}
-    .video_tab{margin-top:.14rem;background-color:#fff;}
-    .video_tab .item{position:relative;-webkit-box-flex:1;-webkit-flex:1;flex:1;height:.96rem;font-weight:400;font-size:.3rem;line-height:.96rem;text-align:center;color:#333;}
-    .video_tab .item.on{font-weight:500;font-size:.32rem;color:#2c8eff;}
-    .video_tab .item.on::after{content:" ";position:absolute;bottom:0;left:50%;width:.6rem;height:.04rem;border-radius:.02rem;background-color:#2c8eff;-webkit-transform:translateX(-50%);transform:translateX(-50%);}
-    .video_list_img{width: 2.18rem;height: 1.3rem;border-radius: 0.1rem;}
-    .video_list_img img{width: 100%;height: 100%;}
-    .video_list_on{width: 0.3rem;height: 0.23rem;border-radius: 5px;overflow: hidden;}
-    .video_list_box{margin-left: 0.26rem;width: 62%;}
-    .video_list_tit{height: 0.9rem;}
-    .video_list_on img{width: 100%;height: 100%;}
-    .video_list_sp{color: #999999;font-size: 0.26rem;}
-    .video_list_btn{width: auto;height: auto;border: 1px solid #509efb;color: #509efb;font-size: 0.22rem;padding: 0.05rem 0.1rem;box-sizing: border-box;border-radius: 3px;}
-    video{width: 100%}
-    #content img{width: 100%}
-    .catalogue li{position:relative;display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;height:1.02rem;padding-right:.3rem;padding-left:.3rem;}
-    .catalogue li::before{content:" ";position:absolute;top:0;right:.3rem;left:1.1rem;height:1px;border-top:1px solid #f5f5f5;color:#f5f5f5;-webkit-transform-origin:center top;transform-origin:center top;-webkit-transform:scaleY(.5);transform:scaleY(.5);}
-    .catalogue li:first-child::before{display:none;}
-    .catalogue li.gray{color:#999;}
-    .catalogue .label{padding-right:.08rem;padding-left:.08rem;border:1px solid #666;border-radius:.03rem;font-weight:400;font-size:.22rem;line-height:.32rem;color:#333;}
-    .catalogue img.label{padding:0;width:.6rem;border:none;border-radius:0;}
-    .catalogue .title{-webkit-flex:1;flex:1;min-width:0;margin-right:.2rem;margin-left:.2rem;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-weight:400;font-size:.28rem;}
-    .catalogue .free{padding-right:.21rem;padding-left:.21rem;border-radius:.19rem;background-color:rgba(254,183,32,.1);font-weight:400;font-size:.22rem;line-height:.38rem;color:#feb720;}
-    .catalogue .iconsuozi{font-size:.3rem;color:#ccc;}
-    .audio-player{padding-top:.25rem;padding-bottom:.49rem;background-color:#fff;}
-    .audio-player .progress{display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;margin-right:.3rem;margin-left:.3rem;}
-    .audio-player .progress .time{width:.75rem;font-weight:400;font-size:.28rem;line-height:.4rem;color:#2c8eff;}
-    .audio-player .progress .bar{-webkit-flex:1;flex:1;border-radius:.02rem;background-color:rgba(44,142,255,.3);margin-right:.18rem;margin-left:.18rem;}
-    .audio-player .progress .bar .range{position:relative;height:.04rem;border-radius:.02rem;background-color:rgba(44,142,255,.8);-webkit-transition:.2s linear;transition:.2s linear;}
-    .audio-player .progress .bar .range .dot{position:absolute;top:50%;left:100%;width:.16rem;height:.16rem;border-radius:50%;background-color:#2c8eff;-webkit-transform:translate(-50%,-50%);transform:translate(-50%,-50%);}
-    .audio-player .control{display:-webkit-flex;display:flex;-webkit-justify-content:center;justify-content:center;-webkit-align-items:center;align-items:center;margin-top:.34rem;}
-    .audio-player .control .knowledge{font-size:.36rem;color:#46505b;}
-    .audio-player .control button:nth-child(2){margin-right:.88rem;margin-left:.88rem;}
-    .audio-player .control .icon{font-size:1.1rem;}
-    .catalogue{background-color:#fff;}
+    body {
+        background-color: #f5f5f5;
+    }
+    .iconfont{
+        width: .86rem;
+        font-size: .3rem;
+        text-align: center;
+        color: #ccc;
+    }
 </style>
 {/block}
 {block name="content"}
-<div v-cloak id="app" class="app">
-    <video v-if="specialInfo.type === 3 && taskInfo.link" id="video-player" class="video-js vjs-big-play-centered" controls
-        :poster="taskInfo.image" preload="auto" :width="windowWidth" webkit-playsinline playsinline>
-        <source :src="taskInfo.link" type="video/mp4">
-    </video>
-    <div class="banner slider-banner"  v-if="specialInfo.type == 1 || specialInfo.type == 2 || !taskInfo.link">
-        <ul class="swiper-wrapper">
-            <li class="swiper-slide">
-                <img :src="audioPlayer.bannerImg || taskInfo.image"/>
-            </li>
-        </ul>
-        <div class="swiper-pagination"></div>
-    </div>
-    <div class="video_tit">
-        <div class="video_tit_top">{{taskInfo.title}}</div>
-        <div class="video_tit_down">已播放{{taskInfo.play_count}}次</div>
-    </div>
-    <!-- 音频播放器 -->
-    <div v-if="specialInfo.type === 2" class="audio-player">
-        <div class="progress">
-            <div class="time">{{audioPlayer.currentTime}}</div>
-            <div ref="bar" class="bar" @click="tapAudio">
-                <div class="range" :style="{width:audioPlayer.range + '%'}" @touchmove.self="moveAudio" @touchend="endAudio">
-                    <div class="dot"></div>
+<div v-cloak id="app">
+    <div class="task-info">
+        <div v-if="taskInfo.type !== 1" id="player" :style="{ height: playerHeight + 'px' }" class="prism-player" :hidden="taskInfo.type === 2"></div>
+        <div v-if="taskInfo.type !== 3" :style="{ height: playerHeight + 'px' }" class="banner">
+            <img :src="taskInfo.image">
+        </div>
+        <div class="intro">
+            <div>{{ taskInfo.title }}</div>
+            <div>已播放{{ taskInfo.play_count }}次</div>
+        </div>
+        <div v-if="taskInfo.type === 2" class="audio-custom">
+            <div class="progress">
+                <div class="time">{{ audioPlayer.currentTime | format }}</div>
+                <div ref="bar" class="bar" @click="audioSeek">
+                    <div :style="{ width: audioPlayer.range + '%' }" class="range" @touchmove.self="audioSeeking" @touchend="audioSeekEnd">
+                        <div class="dot"></div>
+                    </div>
                 </div>
+                <div class="time">{{ audioPlayer.duration | format }}</div>
             </div>
-            <div class="time">{{audioPlayer.duration}}</div>
+            <div class="control">
+                <button class="iconfont iconleft" type="button" @click="audioPrev"></button>
+                <button type="button" @click="audioPlay">
+                    <svg class="icon" aria-hidden="true">
+                        <use :xlink:href="audioPlayer.paused ? '#iconbofang1' : '#iconzanting'"></use>
+                    </svg>
+                </button>
+                <button class="iconfont iconright" type="button" @click="audioNext"></button>
+            </div>
+            <audio ref="audio" :src="audioPlayer.src" @durationchange="onAudioDurationChange($event)" @timeupdate="onAudioTimeUpdate" @ended="onAudioEnded">您的浏览器不支持 H5 audio</audio>
         </div>
-        <div class="control">
-            <button class="knowledge iconleft" type="button" @click="onAudioPrev"></button>
-            <button type="button" @click="onAudioPlayPause">
-                <svg class="icon" aria-hidden="true">
-                    <use :xlink:href="'#' + (audioPlayer.paused ? 'iconbofang1' : 'iconzanting')"></use>
-                </svg>
-            </button>
-            <button class="knowledge iconright" type="button" @click="onAudioNext"></button>
+        <div class="video_tab acea-row row-around">
+            <div :class="{ on: type === 0 }" class="item" @click="type = 0">详情</div>
+            <div :class="{ on: type === 1 }" class="item" @click="type = 1">目录</div>
         </div>
-        <audio ref="audio" :src="audioPlayer.src" @durationchange="onAudioDurationChange($event)" @timeupdate="onAudioTimeUpdate" @ended="onAudioEnded">您的浏览器不支持 H5 audio</audio>
+        <div v-show="type === 0" class="content" v-html="taskInfo.content"></div>
+        <div v-show="type === 1" class="video_list">
+            <ul class="catalogue">
+                <li v-for="(item, index) in taskList" :key="item.id" :class="{ gray: item.taskTrue }"
+                    @click="play(item)">
+                    <div class="image">
+                        <img v-if="item.type === 1" class="img" src="{__WAP_PATH}zsff/images/media1.png">
+                        <img v-else-if="item.type === 2" class="img" src="{__WAP_PATH}zsff/images/media2.png">
+                        <img v-else-if="item.type === 3 || item.type === 4" class="img"
+                            src="{__WAP_PATH}zsff/images/media3.png">
+                    </div>
+                    <div class="title">{{index < 9 ? '0' + (index + 1) : index + 1}} | {{item.title}}</div>
+                    <template v-if="item.is_free">
+                        <div v-if="item.pay_status" class="iconfont iconsuozi"></div>
+                        <div v-else class="iconfont iconziyuan2"></div>
+                    </template>
+                    <div v-else class="free">免费</div>
+                </li>
+            </ul>
+            <p class="loading-line" style="background-color: #fff">
+                <span v-show="loading == true" class="fa fa-spinner loadingpic" style="font-size: 0.4rem"></span>
+                <span  v-text="loadTitle">{{loadTitle}}</span>
+            </p>
+        </div>
     </div>
-    <div class="video_tab acea-row row-around">
-        <div class="item" :class="{ on: type === 0 }" @click="type = 0">详情</div>
-        <div class="item" :class="{ on: type === 1 }" @click="type = 1">目录</div>
-    </div>
-    <div v-if="type === 0" v-html="taskInfo.content" id="content" style="padding:.3rem;background-color:#fff;"></div>
-    <div v-if="type === 1" class="video_list">
-        <ul class="catalogue">
-            <li v-for="(item, index) in taskList" :key="item.id" :class="{ gray: item.taskTrue }" @click="play(item)">
-                <img v-if="item.type === 3" class="label" src="{__WAP_PATH}zsff/images/media1.png">
-                <img v-else-if="item.type === 1" class="label" src="{__WAP_PATH}zsff/images/media2.png">
-                <img v-else-if="item.type === 2" class="label" src="{__WAP_PATH}zsff/images/media3.png">
-                <div v-else-if="item.type === 4" class="label">直播</div>
-                <div v-else-if="item.type === 5" class="label">付费专栏</div>
-                <div v-else-if="item.type === 6" class="label">其他</div>
-                <div class="title">{{index < 9 ? '0' + (index + 1) : index + 1}} | {{item.title}}</div>
-                <div v-if="item.pay_status" class="knowledge iconsuozi"></div>
-                <div v-else class="free">免费</div>
-            </li>
-        </ul>
-        <p class="loading-line" style="background-color: #fff">
-            <span v-show="loading == true" class="fa fa-spinner loadingpic" style="font-size: 0.4rem"></span>
-            <span v-show="taskList.length > 10" v-text="loadTitle">加载更多</span>
-        </p>
-    </div>
+    <quick-menu></quick-menu>
 </div>
 {/block}
 {block name='foot'}
 <script>
-    var taskInfo = {$taskInfo}, specialId = {$specialId},isPay = {$isPay ? 'true': 'false'},specialInfo = {$specialInfo},isMember = {$is_member};
+    var taskInfo = {$taskInfo},
+        specialId = {$specialId},
+        specialInfo = {$specialInfo},
+        isPay = {$isPay? 'true': 'false'},
+        isMember = {$is_member},uid={$userInfo['uid'] ? $userInfo['uid']:0};
 
-    require(['vue', 'helper', 'store'], function (Vue, $h, app) {
-        new Vue({
+    require(['vue', 'helper', 'store', '{__WAP_PATH}zsff/js/quick.js'], function (Vue, $h, api) {
+        var app = new Vue({
             el: '#app',
+            filters: {
+                format: function (time) {
+                    if (!time) {
+                        return '00:00';
+                    }
+                    var minutes = Math.floor(time / 60),
+                        seconds = Math.floor(time % 60);
+                    if (minutes < 10) {
+                        minutes = '0' + minutes;
+                    }
+                    if (seconds < 10) {
+                        seconds = '0' + seconds;
+                    }
+                    return minutes + ':' + seconds;
+                }
+            },
             data: {
                 taskInfo: taskInfo,
                 specialInfo: specialInfo,
@@ -141,131 +130,134 @@
                 audioPlayer: {
                     src: taskInfo.link,
                     currentIndex: 0,
-                    currentTime: '00:00',
-                    duration: '00:00',
+                    currentTime: 0,
+                    duration: 0,
                     range: 0,
                     paused: true
                 },
                 currentMedia: null,
-                windowWidth: window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
-                timer: null
+                screenWidth: window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
+                timer: null,
+                player: null
+            },
+            computed: {
+                playerHeight: function () {
+                    return this.screenWidth * 9 / 16;
+                }
             },
             watch: {
                 'audioPlayer.src': function () {
                     this.bannerImg = this.taskList[this.audioPlayer.currentIndex].image;
                 },
-                'audioPlayer.paused': function (value) {
-                    value ? this.audio.pause() : this.audio.play();
-                },
                 currentMedia: function () {
                     clearTimeout(this.timer);
-                    this.initTimer();
                 }
             },
             created: function () {
-                console.log(window);
                 document.title = this.taskInfo.title;
                 this.getCourseList();
             },
             mounted: function () {
+                var that=this;
                 this.$nextTick(function () {
                     this.timer = setTimeout(() => {
                         this.setMemory(30);
                         clearTimeout(this.timer);
                     }, 30000);
-                    switch (this.specialInfo.type) {
-                        case 2:
-                            this.audio = this.$refs.audio;
-                            this.audioBar = this.$refs.bar;
-                            break;
-                        case 3:
-                            this.videoPlayer = videojs('video-player', {
-                                aspectRatio: '16:9',
-                                crossorigin: 'anonymous',
-                                playsinline: 'playsinline'
-                            });
-                            break;
+                    if (this.taskInfo.type === 1) {
+                        return;
+                    }
+                    if (this.taskInfo.link && !this.taskInfo.videoId) {
+                        this.audio = this.$refs.audio;
+                        this.createPlayer();
+                    } else if(this.taskInfo.videoId && !this.taskInfo.link){
+                        this.callPlayAuth();
                     }
                 });
-
-                // var width = $('#content').width();
-                // if (this.specialInfo.type == 4) {
-                //     var myPlayer = videojs('play');
-                //     $('.video-ue').each(function (index) {
-                //         var id = "video-ue-" + index, videoUrl = $(this).attr('src');
-                //         $(this).attr('id', id);
-                //         $(this).children('video').attr('src', videoUrl);
-                //         $(this).append("<source src='" + videoUrl + "' type='video/mp4' />")
-                //         $(this).addClass("video-js");
-                //         videojs(id, {}, function () {
-                //             this.width(width);
-                //             this.src(videoUrl);
-                //         });
-                //     })
-                // }
+                mapleWx($jssdk(), function () {
+                    this.onMenuShareAll({
+                        title: that.taskInfo.title,
+                        desc: that.taskInfo.title,
+                        imgUrl: that.taskInfo.image,
+                        link: location.href.indexOf('?') == -1 ? location.href + '?spread_uid=' + uid : location.href + '&spread_uid=' + uid,
+                    });
+                });
+            },
+            destroyed: function () {
+                this.player.dispose();
             },
             methods: {
+                // 音频时长
+                onAudioDurationChange: function (event) {
+                    var duration = event.target.duration;
+                    this.audioPlayer.duration = duration;
+                },
+                // 音频播放进度
+                onAudioTimeUpdate: function (event) {
+                    var target = event.target,
+                        currentTime = target.currentTime;
+                    this.audioPlayer.currentTime = currentTime;
+                    this.audioPlayer.range = Math.floor(currentTime / target.duration * 100);
+                },
                 // 拖动音频进度条
-                moveAudio: function (event) {
+                audioSeeking: function (event) {
                     var range = (event.targetTouches[0].pageX - event.target.offsetLeft) / this.audioBar.offsetWidth * 100;
                     this.audioPlayer.paused = true;
                     if (range > 100) {
                         range = 100;
                     }
                     this.audioPlayer.range = range;
+                    if(this.taskInfo.videoId) {
+                        this.player.pause();
+                    }else{
+                        this.audioPlayer.paused ? this.audio.pause() : this.audio.play();
+                    }
                 },
-                // 拖到音频进度条结束
-                endAudio: function (event) {
-                    console.log(event);
-                    this.audio.currentTime = this.audio.duration * this.audioPlayer.range / 100;
+                // 拖动音频进度条结束
+                audioSeekEnd: function () {
                     this.audioPlayer.paused = false;
+                    if(this.taskInfo.videoId) {
+                        var time = this.player.getDuration() * this.audioPlayer.range / 100;
+                        this.player.seek(time);
+                        this.player.play();
+                    }else{
+                        this.audio.currentTime = this.audio.duration * this.audioPlayer.range / 100;
+                        this.audioPlayer.paused ? this.audio.pause() : this.audio.play();
+                    }
                 },
                 // 点击音频进度条
-                tapAudio: function (event) {
-                    var range = event.offsetX / this.audioBar.offsetWidth,
-                        currentTime = this.audio.duration * range;
-                    this.audioPlayer.range = range * 100;
-                    this.audio.currentTime = currentTime;
+                audioSeek: function (event) {
                     this.audioPlayer.paused = false;
-                },
-                // 音频时长
-                onAudioDurationChange: function (event) {
-                    var duration = event.target.duration,
-                        minutes = Math.floor(duration / 60),
-                        seconds = Math.floor(duration % 60);
-                    if (minutes < 10) {
-                        minutes = '0' + minutes;
+                    if(this.taskInfo.videoId){
+                        var range = event.offsetX / this.audioBar.offsetWidth,
+                            currentTime = this.player.getDuration() * range;
+                        this.audioPlayer.range = range * 100;
+                        this.player.seek(currentTime);
+                        this.player.play();
+                    }else{
+                        var range = event.offsetX / this.audioBar.offsetWidth,
+                            currentTime = this.audio.duration * range;
+                        this.audioPlayer.range = range * 100;
+                        this.audio.currentTime = currentTime;
+                        this.audioPlayer.paused ? this.audio.pause() : this.audio.play();
                     }
-                    if (seconds < 10) {
-                        seconds = '0' + seconds;
-                    }
-                    this.audioPlayer.duration = minutes + ':' + seconds;
                 },
                 // 音频播放/暂停
-                onAudioPlayPause: function () {
+                audioPlay: function () {
                     this.audioPlayer.paused = !this.audioPlayer.paused;
-                },
-                // 音频播放进度
-                onAudioTimeUpdate: function (event) {
-                    var target = event.target,
-                        currentTime = target.currentTime,
-                        minutes = Math.floor(currentTime / 60),
-                        seconds = Math.floor(currentTime % 60);
-                    if (minutes < 10) {
-                        minutes = '0' + minutes;
+                    if(this.taskInfo.videoId){
+                        this.audioPlayer.paused ? this.player.pause() : this.player.play();
+                    }else{
+                        this.audioPlayer.paused ? this.audio.pause() : this.audio.play();
                     }
-                    if (seconds < 10) {
-                        seconds = '0' + seconds;
-                    }
-                    this.audioPlayer.currentTime = minutes + ':' + seconds;
-                    this.audioPlayer.range = Math.floor(currentTime / target.duration * 100);
                 },
                 // 音频播放结束
                 onAudioEnded: function () {
                     this.audioPlayer.paused = true;
+                    this.audioPlayer.paused ? this.audio.pause() : this.audio.play();
                 },
                 // 音频上一首
-                onAudioPrev: function () {
+                audioPrev: function () {
                     var that=this;
                     var taskListLength = that.taskList.length,
                         currentIndex = that.audioPlayer.currentIndex,
@@ -287,7 +279,7 @@
                     that.play(currentTask);
                 },
                 // 音频下一首
-                onAudioNext: function () {
+                audioNext: function () {
                     var that=this;
                     var taskListLength = that.taskList.length,
                         currentIndex = that.audioPlayer.currentIndex,
@@ -310,7 +302,7 @@
                 // 播放记忆
                 setMemory: function (time) {
                     var id = this.currentMedia ? this.currentMedia.id : this.taskInfo.id;
-                    app.baseGet($h.U({ c: 'special', a: 'viewing', q: { special_id: this.where.special_id, task_id: id, time: time } }));
+                    api.baseGet($h.U({ c: 'special', a: 'viewing', q: { special_id: this.where.special_id, task_id: id, time: time } }));
                 },
                 play: function (item) {
                     if (this.specialInfo.pay_type == 1 && item.pay_status == 1 && this.is_pay == false) return $h.pushMsgOnce('请先购买~');
@@ -322,16 +314,20 @@
                     }
                     var that = this;
                     that.currentMedia = item;
-                    app.baseGet($h.U({c: 'special', a: 'get_task_link', q: {task_id: item.id, special_id: item.special_id}}), function (res) {
+                    api.baseGet($h.U({ c: 'special', a: 'get_task_link', q: { task_id: item.id, special_id: item.special_id } }), function (res) {
                         if (item.type == 4) {
-                            window.location.href = $h.U({c: 'live', a: 'index', q: {stream_name: item.stream_name}});
+                            window.location.href = $h.U({ c: 'live', a: 'index', q: { stream_name: item.stream_name } });
                         } else {
-                            app.baseGet($h.U({c: 'special', a: 'play_num', q: {task_id: item.id, special_id: item.special_id}}));
-                            location.href = $h.U({
-                                c: 'special',
-                                a: 'task_info',
-                                q: {id: item.id, specialId: specialId, content:2}
-                            });
+                            api.baseGet($h.U({ c: 'special', a: 'play_num', q: { task_id: item.id, special_id: item.special_id } }));
+                            if(res.data.code==200){
+                                if (item.type==1) {
+                                    window.location.href = $h.U({ c: "special", a: "task_text_info", q: { id: item.id, specialId: item.special_id } });
+                                } else {
+                                    window.location.href = $h.U({ c: "special", a: "task_info", q: { id: item.id, specialId: item.special_id } });
+                                }
+                            }else {
+                                return $h.showMsg('更新数据有误！');
+                            }
                         }
                     }, function (err) {
                         return $h.pushMsgOnce(err);
@@ -350,25 +346,149 @@
                     if (this.loaded) return;
                     this.loadTitle = '';
                     this.loading = true;
-                    app.baseGet($h.U({c: 'special', a: 'get_course_list', q: this.where}), function (res) {
+                    api.baseGet($h.U({ c: 'special', a: 'get_course_list', q: this.where }), function (res) {
                         var data = res.data.data;
                         var list = data.list || [];
-                        var taskList = $h.SplitArray(list, that.taskList);
-                        that.where.page = data.page;
-                        that.loaded = list.length < that.where.limit;
-                        that.loadTitle = that.loaded ? '我也是有底线的' : '上拉加载更多';
-                        that.loading = false;
-                        that.$set(that, 'taskList', taskList);
-                        that.$nextTick(function () {
-                            that.bScrollInit();
+                        this.taskList = this.taskList.concat(list);
+                        this.where.page = data.page;
+                        this.loaded = list.length < this.where.limit;
+                        this.loadTitle = this.loaded ? '我也是有底线的' : '上拉加载更多';
+                        this.loading = false;
+                        this.$nextTick(function () {
+                            this.bScrollInit();
                         });
-                    }, function (res) {
+
+                    }.bind(this), function (res) {
                         that.loading = false;
                         that.loadTitle = '加载更多';
                     });
+                },
+                // 创建播放器
+                createPlayer: function () {
+                    var that=this;
+                    if (that.taskInfo.type === 2) {
+                        that.audio = that.$refs.audio;
+                        that.audioBar = that.$refs.bar;
+                    } else {
+                        that.player = new Aliplayer({
+                            id: 'player',
+                            source: that.taskInfo.link,
+                            cover: that.taskInfo.image,
+                            autoplay: false,
+                            skinLayout: [
+                                { name: "bigPlayButton", align: "cc" },
+                                {
+                                    name: "H5Loading", align: "cc"
+                                },
+                                { name: "errorDisplay", align: "tlabs", x: 0, y: 0 },
+                                { name: "infoDisplay" },
+                                { name: "tooltip", align: "blabs", x: 0, y: 56 },
+                                { name: "thumbnail" },
+                                {
+                                    name: "controlBar", align: "blabs", x: 0, y: 0,
+                                    children: [
+                                        { name: "progress", align: "blabs", x: 0, y: 44 },
+                                        { name: "playButton", align: "tl", x: 15, y: 12 },
+                                        { name: "timeDisplay", align: "tl", x: 10, y: 7 },
+                                        { name: "fullScreenButton", align: "tr", x: 10, y: 12 },
+                                        { name: "subtitle", align: "tr", x: 15, y: 12 },
+                                        { name: "setting", align: "tr", x: 15, y: 12 },
+                                        { name: "volume", align: "tr", x: 5, y: 10 }
+                                    ]
+                                }
+                            ]
+                        });
+                    }
+                },
+                // 获取播放凭证
+                callPlayAuth: function () {
+                    $h.loadFFF();
+                    api.baseGet($h.U({
+                        c: 'special',
+                        a: 'get_video_playback_credentials',
+                        p: {
+                            type: 2,
+                            videoId: this.taskInfo.videoId
+                        }
+                    }), function (res) {
+                        this.getPlayAuth(res.data.msg);
+                    }.bind(this), function (err) {
+                        $h.loadClear();
+                        console.error(err);
+                    });
+                },
+                getPlayAuth: function (url) {
+                    var xhr = new XMLHttpRequest();
+                    var that=this;
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState == 4 && xhr.status == 200) {
+                            $h.loadClear();
+                            var data = JSON.parse(xhr.responseText);
+                            if (that.taskInfo.type === 2) {
+                                that.audioBar = that.$refs.bar;
+                                that.player = new Aliplayer({
+                                    id: 'player',
+                                    vid: data.VideoMeta.VideoId,
+                                    playauth: data.PlayAuth,
+                                    format: 'mp3',
+                                    mediaType: 'audio',
+                                    encryptType: 1,
+                                    autoplay: false
+                                });
+                                that.player.on('ready', function () {
+                                    that.audioPlayer.duration = data.VideoMeta.Duration;
+                                }.bind(this));
+                                that.player.on('ended', function () {
+                                    that.audioPlayer.paused = true;
+                                }.bind(this));
+                                that.player.on('timeupdate', function () {
+                                    that.audioPlayer.currentTime = that.player.getCurrentTime();
+                                    that.audioPlayer.range = Math.floor(that.player.getCurrentTime() / that.player.getDuration() * 100);
+                                }.bind(this));
+                                that.player.on('error', function (event) {
+                                    console.error(event);
+                                }.bind(this));
+                            } else {
+                                that.player = new Aliplayer({
+                                    id: 'player',
+                                    vid: data.VideoMeta.VideoId,
+                                    playauth: data.PlayAuth,
+                                    cover: that.taskInfo.image,
+                                    encryptType: 1,
+                                    autoplay: false,
+                                    skinLayout: [
+                                        { name: "bigPlayButton", align: "cc" },
+                                        {
+                                            name: "H5Loading", align: "cc"
+                                        },
+                                        { name: "errorDisplay", align: "tlabs", x: 0, y: 0 },
+                                        { name: "infoDisplay" },
+                                        { name: "tooltip", align: "blabs", x: 0, y: 56 },
+                                        { name: "thumbnail" },
+                                        {
+                                            name: "controlBar", align: "blabs", x: 0, y: 0,
+                                            children: [
+                                                { name: "progress", align: "blabs", x: 0, y: 44 },
+                                                { name: "playButton", align: "tl", x: 15, y: 12 },
+                                                { name: "timeDisplay", align: "tl", x: 10, y: 7 },
+                                                { name: "fullScreenButton", align: "tr", x: 10, y: 12 },
+                                                { name: "subtitle", align: "tr", x: 15, y: 12 },
+                                                { name: "setting", align: "tr", x: 15, y: 12 },
+                                                { name: "volume", align: "tr", x: 5, y: 10 }
+                                            ]
+                                        }
+                                    ]
+                                });
+                            }
+                        } else {
+                            $h.loadClear();
+                        }
+                    }.bind(this);
+                    xhr.open('GET', url);
+                    xhr.send();
                 }
             }
-        })
-    })
+        });
+    });
 </script>
 {/block}

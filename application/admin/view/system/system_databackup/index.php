@@ -1,48 +1,40 @@
 {extend name="public/container"}
 {block name="content"}
-<div class="row">
-    <div class="col-sm-12">
-        <div class="ibox float-e-margins">
-            <div class="ibox-title">
-                <h5>数据库备份记录</h5>
+<div class="layui-fluid">
+<div class="layui-row layui-col-space15">
+    <div class="layui-col-md12">
+        <div class="layui-card">
+            <div class="layui-card-header">
+                <div style="font-weight: bold;">数据库维护</div>
             </div>
-            <div class="ibox-content" style="display: block;">
-                <div class="table-responsive">
-                    <table class="layui-hide" id="fileList" lay-filter="fileList"></table>
-                    <script type="text/html" id="fileListtool">
-                        <button type="button" class="layui-btn layui-btn-xs" lay-event="import"><i class="layui-icon layui-icon-edit"></i>倒入</button>
-                        <button type="button" class="layui-btn layui-btn-xs" lay-event="delFile"><i class="layui-icon layui-icon-edit"></i>删除</button>
-                        <button type="button" class="layui-btn layui-btn-xs" lay-event="downloadFile"><i class="layui-icon layui-icon-edit"></i>下载</button>
-
-                    </script>
+            <div class="layui-card-body">
+                <div class="layui-row layui-col-space15">
+                    <div class="layui-col-md12">
+                        <table class="layui-hide" id="fileList" lay-filter="fileList"></table>
+                        <script type="text/html" id="fileListtool">
+                            <button type="button" class="layui-btn layui-btn-normal layui-btn-xs" lay-event="import"><i class="layui-icon layui-icon-edit"></i>倒入</button>
+                            <button type="button" class="layui-btn layui-btn-normal layui-btn-xs" lay-event="delFile"><i class="layui-icon layui-icon-edit"></i>删除</button>
+                            <button type="button" class="layui-btn layui-btn-normal layui-btn-xs" lay-event="downloadFile"><i class="layui-icon layui-icon-edit"></i>下载</button>
+                        </script>
+                    </div>
+                    <div class="layui-col-md12">
+                        <script type="text/html" id="toolbarDemo">
+                            <div class="layui-btn-container">
+                                <button class="layui-btn layui-btn-normal layui-btn-sm" lay-event="backup">备份</button>
+                                <button class="layui-btn layui-btn-normal layui-btn-sm" lay-event="optimize">优化表</button>
+                                <button class="layui-btn layui-btn-normal layui-btn-sm" lay-event="repair">修复表</button>
+                            </div>
+                        </script>
+                        <table class="layui-hide" id="tableListID" lay-filter="tableListID"></table>
+                        <script type="text/html" id="barDemo">
+                            <button type="button" class="layui-btn layui-btn-normal layui-btn-xs" lay-event="see"><i class="layui-icon">&#xe60a;</i>详情</button>
+                        </script>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<div class="row">
-    <div class="col-sm-12">
-        <div class="ibox">
-            <div class="ibox-title">
-                <h5>数据库表列表</h5>
-            </div>
-            <div class="ibox-content">
-                <div class="table-responsive">
-                    <script type="text/html" id="toolbarDemo">
-                        <div class="layui-btn-container">
-                            <button class="layui-btn layui-btn-sm" lay-event="backup">备份</button>
-                            <button class="layui-btn layui-btn-sm" lay-event="optimize">优化表</button>
-                            <button class="layui-btn layui-btn-sm" lay-event="repair">修复表</button>
-                        </div>
-                    </script>
-                    <table class="layui-hide" id="tableListID" lay-filter="tableListID"></table>
-                    <script type="text/html" id="barDemo">
-                        <button type="button" class="layui-btn layui-btn-xs" lay-event="see"><i class="layui-icon layui-icon-edit"></i>详情</button>
-                    </script>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 <script src="{__ADMIN_PATH}js/layuiList.js"></script>
 <script>
@@ -89,7 +81,7 @@
                 {field: 'size', title: '大小'},
                 {field: 'compress', title: 'compress'},
                 {field: 'backtime', title: '时间'},
-                {fixed: 'right', title: '操作', width: '20%', align: 'center', toolbar: '#fileListtool'}
+                {title: '操作', align: 'center', toolbar: '#fileListtool'}
             ]]
             ,page: false
         });
@@ -134,7 +126,7 @@
                 {field: 'data_length', title: '大小', sort: true,totalRow: true},
                 {field: 'update_time', title: '更新时间', sort: true},
                 {field: 'rows', title: '行数'},
-                {fixed: 'right', title: '操作', width: '10%', align: 'center', toolbar: '#barDemo'}
+                {title: '操作', align: 'center', toolbar: '#barDemo'}
             ]]
             ,page: false
         });

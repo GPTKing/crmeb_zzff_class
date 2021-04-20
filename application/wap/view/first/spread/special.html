@@ -25,9 +25,8 @@
         position: absolute;
         top: 30%;
         left: 50%;
-        width: 4rem;
-        height: 4rem;
-        background: url("{__WAP_PATH}zsff/images/nothing.png") center/contain no-repeat;
+        width: 4.14rem;
+        height: 3.36rem;
         -webkit-transform: translate(-50%, -50%);
         transform: translate(-50%, -50%);
     }
@@ -40,22 +39,14 @@
             <div class="wrapper" id="wrapper">
                 <div class="scroller">
                     <ul>
-                        <li v-for="item in gradeList" :data-id="item.value">
-                            <a href="javascript:void(0)" v-text="item.text"></a>
+                        <li v-for="item in gradeList" :data-id="item.id">
+                            <a href="javascript:void(0)" v-text="item.name"></a>
                         </li>
                     </ul>
                 </div>
             </div>
         </div>
     </div>
-
-    <!--<nav class="acea-row row-middle" ref="storeMenu">-->
-    <!--<div class="item" :class="where.grade_id==nav.value ?'ont':''" v-for="nav in gradeList" @click=" where.grade_id = nav.value ">-->
-    <!--{{nav.text}}-->
-    <!--<div class="on" v-show="where.grade_id==nav.value"></div>-->
-    <!--</div>-->
-    <!--</nav>-->
-
     <div class="swiper-details" v-for="item in specialList" ref="list" v-if="item.list.length">
         <div class="title line1 acea-row row-middle" v-text="item.name"></div>
         <div class="video-listn">
@@ -76,16 +67,19 @@
         <span class="fa fa-spinner"></span>
     </div>
     <div v-if="loadend && where.page > 2" class="loaded">已全部加载</div>
-    <div v-if="!specialList.length && !loading" class="nothing"></div>
+    <div v-if="!specialList.length && !loading">
+        <img class="nothing"  src="/wap/first/zsff/images/no_data_available.png">
+    </div>
+    <quick-menu></quick-menu>
 </div>
 {/block}
 {block name="foot"}
 <script>
-    require(['vue', 'helper', 'store'], function (Vue, $h, app) {
+    require(['vue', 'helper', 'store', '{__WAP_PATH}zsff/js/quick.js'], function (Vue, $h, app) {
         new Vue({
             el: '#app',
             data: {
-                gradeList: [{ text: '全部', value: 0 }],
+                gradeList: [{ name: '全部', id: 0 }],
                 where: {
                     grade_id: 0,
                     page: 1,

@@ -1,5 +1,4 @@
 <?php
-
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
@@ -9,7 +8,6 @@
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
-
 
 namespace app\admin\model\special;
 
@@ -32,12 +30,12 @@ class RecommendBanner extends ModelBasic
 
     public static function getRecemmodBannerList($where)
     {
-        $data = self::valiWhere()->where('recommend_id', $where['id'])->page((int)$where['page'], (int)$where['limit'])->select();
+        $data = self::valiWhere()->order('sort DESC,id DESC')->where('recommend_id', $where['id'])->page((int)$where['page'], (int)$where['limit'])->select();
         $data = count($data) ? $data->toArray() : [];
         foreach ($data as &$item) {
             $item['add_time'] = date('Y-m-d H:i:s', $item['add_time']);
         }
-        $count = self::valiWhere()->where('recommend_id', $where['id'])->count();
+        $count = self::valiWhere()->order('sort DESC,id DESC')->where('recommend_id', $where['id'])->count();
         return compact('data', 'count');
     }
 }

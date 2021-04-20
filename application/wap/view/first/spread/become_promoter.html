@@ -1,12 +1,15 @@
 {extend name="public/container"}
 {block name='head_top'}
 <style>
-    body{background-color:#f2f2f2;}
+    body{background-color:#fff;}
 </style>
 {/block}
-{block name='title'}成为推广人{/block}
+{block name='title'}开启学习旅程{/block}
 {block name="content"}
 <div class="become-promoter" id="app">
+    <div style="text-align: center">
+        <img :src="logo" height="120">
+    </div>
     <div class="phone">
         <ul class="list">
             <li class="item"><input type="text" placeholder="输入手机号" v-model="phone"></li>
@@ -15,18 +18,15 @@
                 <button class="code acea-row row-center-wrapper" :disabled="active" :class="active == true?'on':''" @click="code" v-text="timetext">获取验证码</button>
             </li>
         </ul>
-        <div class="bnt acea-row row-center-wrapper" @click="save_promoter">加入推广人</div>
+        <div class="bnt acea-row row-center-wrapper" @click="save_promoter">加入学习</div>
     </div>
-    <div class="rule">
-        <div class="title">推广细则</div>
-        {$promoter_content}
-    </div>
+    <quick-menu></quick-menu>
 </div>
 {/block}
 {block name="foot"}
 <script>
-    var spread_uid={$spread_uid};
-    require(['vue','helper','store','reg-verify'],function(Vue,$h,app,$reg) {
+    var spread_uid={$spread_uid},logo='{$home_logo}';
+    require(['vue','helper','store','reg-verify','{__WAP_PATH}zsff/js/quick.js'],function(Vue,$h,app,$reg) {
         new Vue({
             el: '#app',
             data: {
@@ -34,6 +34,7 @@
                 timetext:'获取验证码',
                 phone:'',
                 code_num:'',
+                logo: logo
             },
             methods:{
                 save_promoter:function(){
@@ -61,7 +62,7 @@
                     if(!$reg.isPhone(that.phone)) return $h.pushMsgOnce('请输入正确的手机号码');
                     that.active = true;
                     var n = 60;
-                    app.baseGet($h.U({c:'public_api',a:'code',q:{phone:that.phone}}),function (res){
+                    app.baseGet($h.U({c:'auth_api',a:'code',q:{phone:that.phone}}),function (res){
                         var data=res.data.data;
                         if(data.Message=='OK' || data.Code=='OK'){
                             var run =setInterval(function(){

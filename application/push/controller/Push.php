@@ -12,6 +12,7 @@
 namespace app\push\controller;
 
 use app\admin\model\system\SystemGroupData;
+use app\wap\model\live\LiveGift;
 use app\wap\model\live\LiveReward;
 use app\wap\model\live\LiveStudio;
 use app\wap\model\live\LiveUser;
@@ -104,20 +105,12 @@ class Push
      * */
     public function start($typeFnName, $client_id, $message_data)
     {
-
         $this->message_type = $typeFnName;
-
         $this->message_data = $message_data;
-
         $this->client_id = $client_id;
-        $uid=$this->checkValue('uid');
-        if($uid){
-            Gateway::bindUid($client_id, $uid);
-        }
         $this->uid = Gateway::getUidByClientId($client_id);
         //记录用户上线
         if ($this->uid && Gateway::isOnline($client_id) && ($live_id = $this->checkValue('room'))) {
-            LiveUser::setLiveUserOnline($live_id, $this->uid, 1);
             $error['uid'] = $this->uid;
             $error['is_line'] = Gateway::isOnline($client_id);
             $error['live_id'] = $this->checkValue('room');
@@ -127,11 +120,11 @@ class Push
             $error['live_id'] = $this->checkValue('room');
             Log::write(json_encode($error));
         }
-
-        if (method_exists($this, $typeFnName))
-            call_user_func([$this, $typeFnName]);
-        else
+        if (method_exists($this, $typeFnName)){
+             call_user_func([$this, $typeFnName]);
+        }else{
             throw new \Exception('缺少回调方法');
+        }
     }
 
 
@@ -153,7 +146,6 @@ class Push
     protected function handshake()
     {
         $message_data = $this->checkValue(['uid' => 0, 'room' => 0]);
-       // Log::write("心跳用户：".json_encode($message_data));
         if (!$message_data['uid']){
             Gateway::closeClient($this->client_id);
             throw new \Exception("缺少用户uid，无法绑定用户");
@@ -241,13 +233,8 @@ class Push
     protected function recall()
     {
         list($id, $room) = $this->checkValue(['id' => 0, 'room' => ''], true);
-
-        if (!$id)
-            throw new \Exception('缺少撤回消息的id');
-
-        if (!$room)
-            throw new \Exception('缺少房间号');
-
+        if (!$id) throw new \Exception('缺少撤回消息的id');
+        if (!$room) throw new \Exception('缺少房间号');
         if (LiveBarrage::del($id)) {
             Gateway::sendToGroup($room, json_encode([
                 'type' => 'recall',
@@ -274,7 +261,6 @@ class Push
             $user_name = $user_info['nickname'] ? $user_info['nickname'] : ($user_info['account'] ? $user_info['account'] : "新游客");
             $notice_content = $user_name. " 来了";
         }
-
         Gateway::sendToGroup($room, json_encode(['onLine_user_count' => $onLine_user_count + $onLine_num, 'type' => 'room_user_count', 'notice_content' => $notice_content, 'user_type' => $user_type]));
     }
 
@@ -296,8 +282,7 @@ class Push
         if ($uid != $user_info['uid'] || !$user_info) throw new \Exception('非法用户');
         if (!$live_gift_num || !is_numeric($live_gift_num) || $live_gift_num < 0) throw new \Exception('请选择礼物数量');
         //获取礼物配置列表
-        // $live_gift = GroupDataService::getData('live_gift');
-        $live_gift = SystemGroupData::getDateValue($live_gift_id);
+        $live_gift = LiveGift::liveGiftOne($live_gift_id);
         if (!$live_gift) throw new \Exception('礼物不存在');
         //查看直播间是否存在
         $live_studio = LiveStudio::where(['id' => $live_id])->find();
@@ -319,7 +304,7 @@ class Push
                 'recharge_status' => 0,
             ];
             if (Gateway::isUidOnline($uid)) return Gateway::sendToUid($uid, json_encode($new_message));
-        } 
+        }
         try{
             User::beginTrans();
             //插入打赏数据
@@ -353,7 +338,6 @@ class Push
             User::rollbackTrans();
             throw new \Exception($e->getMessage);
         }
-
     }
 
 }

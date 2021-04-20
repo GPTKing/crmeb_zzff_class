@@ -1,5 +1,4 @@
 <?php
-
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
@@ -18,7 +17,6 @@ use app\admin\model\user\User;
 use app\admin\model\wechat\WechatUser as UserModel;
 use app\wap\model\user\UserBill;
 use service\JsonService;
-use service\UtilService as Util;
 use service\WechatService;
 use think\Collection;
 use think\Request;
@@ -30,15 +28,13 @@ use think\Url;
  * @package app\admin\controller\wechat
  */
 class WechatUser extends AuthController
-
 {
-
     /**
      * 显示操作记录
      */
     public function index()
     {
-        $where = Util::getMore([
+        $where = parent::getMore([
             ['nickname', ''],
             ['data', ''],
             ['tagid_list', ''],

@@ -1,15 +1,14 @@
 {extend name="public/container"}
 {block name="content"}
-<div class="row">
-    <div class="col-sm-12">
-        <div class="ibox">
-            <div class="ibox-title">
-                <a type="button" class="btn btn-w-m btn-primary" href="{:Url('index')}">规则首页</a>
-                <button type="button" class="btn btn-w-m btn-primary" onclick="$eb.createModalFrame(this.innerText,'{:Url('create',array('cid'=>0))}')">添加规则</button>
-                <div class="ibox-tools">
-
-                </div>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-header">
+            <div class="layui-btn-group">
+                <a class="layui-btn layui-btn-normal layui-btn-sm" href="{:Url('index')}"><i class="layui-icon">&#xe68e;</i>规则首页</a>
+                <button type="button" class="layui-btn layui-btn-normal layui-btn-sm" onclick="$eb.createModalFrame('添加规则','{:Url('create',array('cid'=>0))}')"><i class="layui-icon">&#xe608;</i>添加规则</button>
             </div>
+        </div>
+        <div class="layui-card-body">
             <div class="ibox-content">
                 <div class="row">
                     <div class="m-b m-l">
@@ -29,7 +28,7 @@
                             **/?>
                         <div class="input-group">
                             <input type="text" name="keyword" value="{$params.keyword}" placeholder="请输入关键词/规则ID/父级ID" class="input-sm form-control"> <span class="input-group-btn">
-                                    <button type="submit" class="btn btn-sm btn-primary"> <i class="fa fa-search" ></i>搜索</button> </span>
+                                    <button type="submit" class="layui-btn layui-btn-normal layui-btn-sm"><i class="layui-icon">&#xe615;</i>搜索</button> </span>
                         </div>
                         </form>
                     </div>
@@ -39,8 +38,7 @@
                     <table class="table table-striped  table-bordered">
                         <thead>
                         <tr>
-
-                            <th class="text-center">编号</th>
+                            <th class="text-center" style="width:60px;">编号</th>
                             <th class="text-center">按钮名</th>
                             <th class="text-center">父级</th>
                             <th class="text-center">模块名</th>
@@ -79,9 +77,9 @@
                                 <i class="fa {eq name='vo.access' value='1'}fa-check text-navy{else/}fa-close text-danger{/eq}"></i>
                             </td>-->
                             <td class="text-center">
-                                <button class="btn btn-info btn-xs" type="button"  onclick="$eb.createModalFrame(this.innerText,'{:Url('create',array('cid'=>$vo['id']))}')"><i class="fa fa-paste"></i> 添加子菜单</button>
-                                <button class="btn btn-info btn-xs" type="button"  onclick="$eb.createModalFrame(this.innerText,'{:Url('edit',array('id'=>$vo['id']))}')"><i class="fa fa-paste"></i> 编辑</button>
-                                <button class="btn btn-warning btn-xs" data-url="{:Url('delete',array('id'=>$vo['id']))}" type="button"><i class="fa fa-warning"></i> 删除
+                                <button class="layui-btn layui-btn-normal layui-btn-xs" type="button"  onclick="$eb.createModalFrame('添加子菜单','{:Url('create',array('cid'=>$vo['id']))}')"><i class="layui-icon">&#xe608;</i>添加子菜单</button>
+                                <button class="layui-btn layui-btn-normal layui-btn-xs" type="button"  onclick="$eb.createModalFrame('编辑','{:Url('edit',array('id'=>$vo['id']))}')"><i class="layui-icon">&#xe642;</i>编辑</button>
+                                <button class="layui-btn layui-btn-danger layui-btn-xs" data-url="{:Url('delete',array('id'=>$vo['id']))}" type="button"><i class="layui-icon">&#xe640;</i>删除
                                 </button>
                             </td>
                         </tr>
@@ -97,7 +95,7 @@
 {/block}
 {block name="script"}
 <script>
-    $('.btn-warning').on('click',function(){
+    $('.layui-btn-danger').on('click',function(){
         var _this = $(this),url =_this.data('url');
         $eb.$swal('delete',function(){
             $eb.axios.get(url).then(function(res){

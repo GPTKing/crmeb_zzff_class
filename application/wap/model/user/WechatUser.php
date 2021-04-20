@@ -7,15 +7,12 @@
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
-//
+// +----------------------------------------------------------------------
+
 
 namespace app\wap\model\user;
 
-use app\wap\model\store\StoreCoupon;
-use app\wap\model\store\StoreCouponUser;
 use basic\ModelBasic;
-use service\SystemConfigService;
-use service\UtilService;
 use service\WechatService;
 use service\CacheService as Cache;
 use think\Session;
@@ -31,7 +28,7 @@ class WechatUser extends ModelBasic
     {
         return time();
     }
-    /*
+    /**
      * 添加一个新用户
      * @param array $wechatInfo
      * @return boolen
@@ -71,7 +68,6 @@ class WechatUser extends ModelBasic
         self::commitTrans();
         return $wechatUser;
     }
-
     /**
      * 更新用户信息
      * @param $openid
@@ -114,7 +110,6 @@ class WechatUser extends ModelBasic
         $openid = Cache::get($cacheName);
         if($openid && !$update) return $openid;
         $openid = self::where('uid',$uid)->value('openid');
-        //if(!$openid) exception('对应的openid不存在!');
         Cache::set($cacheName,$openid,0);
         return $openid;
     }

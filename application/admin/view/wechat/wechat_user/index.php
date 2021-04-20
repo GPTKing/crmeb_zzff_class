@@ -18,13 +18,6 @@
 <div class="row">
     <div class="col-sm-12">
         <div class="ibox">
-            <!--<div class="ibox-title">
-                <button type="button" class="btn btn-w-m btn-primary grant">发放优惠券</button>
-                <button type="button" class="btn btn-w-m btn-primary" onclick="$eb.createModalFrame(this.innerText,'{:Url('store.storeCoupon/grant_subscribe')}',{'w':800})">给关注的用户发放优惠券</button>
-                <button type="button" class="btn btn-w-m btn-primary" onclick="$eb.createModalFrame(this.innerText,'{:Url('store.storeCoupon/grant_all')}',{'w':800})">给所有用户发放优惠券</button>
-                <button type="button" class="btn btn-w-m btn-primary" onclick="$eb.createModalFrame(this.innerText,'{:Url('store.storeCoupon/grant_group')}',{'w':800})">给分组用户发放优惠券</button>
-                <button type="button" class="btn btn-w-m btn-primary" onclick="$eb.createModalFrame(this.innerText,'{:Url('store.storeCoupon/grant_tag')}',{'w':800})">给标签用户发放优惠券</button>
-            </div>-->
             <div class="ibox-content">
                 <div class="row">
                     <div class="m-b m-l">

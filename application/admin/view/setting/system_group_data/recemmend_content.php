@@ -1,15 +1,15 @@
 {extend name="public/container"}
 {block name="content"}
-<div class="layui-fluid">
-    <div class="layui-row layui-col-space15"  id="app">
+<div class="layui-fluid" id="app">
+    <div class="layui-row layui-col-space15" >
         <div class="layui-col-md12">
             <div class="layui-card">
                 <div class="layui-card-header">推荐分组内容管理</div>
                 <div class="layui-card-body">
                     <table class="layui-hide" id="List" lay-filter="List"></table>
                     <script type="text/html" id="act">
-                        <button class="layui-btn layui-btn-xs" lay-event='delete'>
-                            <i class="fa fa-trash"></i> 移除
+                        <button class="layui-btn layui-btn-danger layui-btn-xs" lay-event='delete'>
+                            <i class="layui-icon">&#xe640;</i> 移除
                         </button>
                     </script>
                 </div>
@@ -21,13 +21,15 @@
 {/block}
 {block name="script"}
 <script>
+    //实例化form
+    layList.form.render();
     //加载列表
     layList.tableList('List',"{:Url('recemmend_content',['id'=>$id])}",function (){
         return [
-            {field: 'type_name', title: '类型'},
-            {field: 'title', title: '名称'},
-            {field: 'count', title: '视屏总数'},
-            {field: 'sort', title: '排序',edit:'sort'},
+            {field: 'type_name', title: '类型',align: 'center'},
+            {field: 'title', title: '标题',align: 'center'},
+            {field: 'count', title: '视屏总数',align: 'center'},
+            {field: 'sort', title: '排序',edit:'sort',align: 'center'},
             {field: 'right', title: '操作',align:'center',toolbar:'#act'},
         ];
     });
@@ -47,6 +49,9 @@
         var id=obj.data.id,value=obj.value;
         switch (obj.field) {
             case 'sort':
+                if(value<0) {
+                    return layList.msg('排序不能小于0');
+                }
                 action.set_value('sort',id,value);
                 break;
         }

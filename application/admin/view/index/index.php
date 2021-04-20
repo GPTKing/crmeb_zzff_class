@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="renderer" content="webkit">
     <meta http-equiv="Cache-Control" content="no-siteapp" />
-    <title>CRMEB管理系统</title>
+    <title>CRMEB知识付费管理系统</title>
     <!--[if lt IE 9]>
     <meta http-equiv="refresh" content="0;ie.html" />
     <![endif]-->
@@ -47,8 +47,11 @@
                             </li>
                         </ul>
                     </div>
-                    <div class="logo-element">CB
+                    <div class="logo-element">
                     </div>
+                </li>
+                <li>
+                    <a href="{:Url('Index/index')}"><i class="fa fa-bank"></i> <span class="nav-label">概况总览</span></a>
                 </li>
                 <!--  菜单  -->
                 {volist name="menuList" id="menu"}
@@ -137,8 +140,8 @@
         </div>
         <!--底部版权-->
         <div class="footer"  @touchmove.prevent >
-            <div class="pull-right" style="padding-left: 10px">版本号：v1.20</div>
-            <div class="pull-right">© 2014-2020 <a href="http://www.crmeb.com/" target="_blank">CRMEB</a>
+            <div class="pull-right" style="padding-left: 10px"></div>
+            <div class="pull-right">Copyright © CRMEB 版本号：<a href="http://www.crmeb.com/" target="_blank">CRMEB-ZSFF-OPENv1.4.4</a>
             </div>
         </div>
     </div>
@@ -157,7 +160,7 @@
                         <i class="fa fa-gear"></i> 设置
                     </a>
                 </li>
-                
+
             </ul>
             <div class="tab-content">
                 <div id="tab-1" class="tab-pane active">
@@ -166,21 +169,6 @@
                         <small><i class="fa fa-tim"></i> 您当前有0条未读信息</small>
                     </div>
                     <div>
-                        <!--<div class="sidebar-message">
-                            <a href="#">
-                                <div class="pull-left text-center">
-                                    <img alt="image" class="img-circle message-avatar" src="http://ozwpnu2pa.bkt.clouddn.com/a1.jpg">
-                                    <div class="m-t-xs">
-                                        <i class="fa fa-star text-warning"></i> <i class="fa fa-star text-warning"></i>
-                                    </div>
-                                </div>
-                                <div class="media-body">
-
-                                    据天津日报报道：瑞海公司董事长于学伟，副董事长董社轩等10人在13日上午已被控制。 <br>
-                                    <small class="text-muted">今天 4:21 <a class="J_menuItem admin_close" href="/admin/setting.system_admin/admininfo.html" data-index="0">【查看】</a></small>
-                                </div>
-                            </a>
-                        </div>-->
                     </div>
                 </div>
                 <div id="tab-2" class="tab-pane ">

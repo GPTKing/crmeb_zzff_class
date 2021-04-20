@@ -13,7 +13,6 @@ namespace app\wap\controller;
 
 use app\admin\model\special\RecommendBanner;
 use app\admin\model\wechat\WechatQrcode;
-use app\wap\model\activity\EventRegistration;
 use app\wap\model\live\LiveStudio;
 use app\wap\model\user\SmsCode;
 use app\wap\model\recommend\Recommend;
@@ -23,14 +22,15 @@ use app\wap\model\user\User;
 use app\wap\model\wap\Search;
 use service\GroupDataService;
 use service\JsonService;
-use service\QrcodeService;
 use service\SystemConfigService;
 use service\UploadService as Upload;
 use service\UtilService;
+use think\cache\driver\Redis;
 use think\Config;
-use think\Db;
 use think\Session;
 use think\Cookie;
+use think\Url;
+use think\Db;
 
 
 class Index extends AuthController
@@ -60,7 +60,6 @@ class Index extends AuthController
             'get_search_history',
         ];
     }
-
     /**
      * @return mixed
      */
@@ -70,7 +69,6 @@ class Index extends AuthController
         $this->assign('content', get_config_content('user_agreement'));
         return $this->fetch();
     }
-
     /**
      * 主页
      * @return mixed
@@ -80,15 +78,19 @@ class Index extends AuthController
         $site_name = SystemConfigService::get('site_name');
         $seo_title = SystemConfigService::get('seo_title');
         $site_logo = SystemConfigService::get('home_logo');
-        $this->assign('confing', compact('site_name', 'seo_title', 'site_logo'));
         $live_one_id=Session::get('live_one_id');
+        $is_show_or_hide = SystemConfigService::get('is_show_or_hide');
+        $activity=[];
+        if($is_show_or_hide==1){
+            $activity=GroupDataService::getData('home_activity');
+        }
         $this->assign([
             'banner' => json_encode(GroupDataService::getData('store_home_banner') ?: []),
             'title' => SystemConfigService::get('site_name'),
-            'activity' => json_encode(GroupDataService::getData('home_activity')),
-            'liveList' => json_encode(LiveStudio::getLiveList(10)),
+            'activity' => json_encode($activity),
             'liveOne' => json_encode(LiveStudio::getLiveOne($live_one_id)),
         ]);
+        $this->assign('confing', compact('site_name', 'seo_title', 'site_logo'));
         return $this->fetch();
     }
 
@@ -107,7 +109,6 @@ class Index extends AuthController
     }
 
     /**
-     *
      * @param int $qcode_id
      * @throws \think\exception\DbException
      */
@@ -142,6 +143,7 @@ class Index extends AuthController
             if ($userphone != $phone) return JsonService::fail('当前手机号码尚未绑定此用户');
         }
         if (!$code) return JsonService::fail('请输入验证码');
+        $code=md5('is_phone_code'.$code);
         if (!SmsCode::CheckCode($phone, $code)) return JsonService::fail('验证码验证失败');
         SmsCode::setCodeInvalid($phone, $code);
         if (!$userphone) {
@@ -155,28 +157,35 @@ class Index extends AuthController
                     if ($res === false) return JsonService::fail(User::getErrorInfo());
                 }
             }
-            if (!isset($res)) User::update(['phone' => $phone], ['uid' => $this->uid]);
+            if (!isset($res)) {
+                if(!user::be(['phone' => $phone])){
+                    User::update(['phone' => $phone], ['uid' => $this->uid]);
+                }else{
+                    return JsonService::fail('手机号已被使用');
+                }
+            }
         }
         Cookie::set('__login_phone', 1);
         Session::set('__login_phone_num' . $this->uid, $phone, 'wap');
         return JsonService::successful('登录成功');
     }
 
-    /*
+    /**
      * 获取手机号码登录状态
      * */
     public function user_login()
     {
-        if ($this->phone)
+        if($this->phone || $this->force_binding==2 && $this->isWechat){
             return JsonService::successful('');
-        else
+        }else{
             return JsonService::fail('请先登录,在进行购买!');
+        }
     }
 
     public function login_user()
     {
         if ($this->uid)
-            return JsonService::successful('');
+            return JsonService::successful();
         else
             return JsonService::fail('请登录!');
     }
@@ -196,7 +205,18 @@ class Index extends AuthController
      */
     public function get_content_recommend($page = 1, $limit = 10)
     {
-        return JsonService::successful(Recommend::getContentRecommend((int)$page, (int)$limit, $this->uid));
+        $recommend_list = json_encode(Recommend::getContentRecommend((int)$page, (int)$limit, $this->uid));
+
+        //获取推荐列表
+//        $exists_recommend_reids = $this->redisModel->HEXISTS($this->subjectUrl."wap_index_has","recommend_list");
+//        if (!$exists_recommend_reids) {
+//            $recommend_list = json_encode(Recommend::getContentRecommend((int)$page, (int)$limit, $this->uid));
+//            $this->redisModel->hset($this->subjectUrl."wap_index_has","recommend_list", $recommend_list);
+//            $this->redisModel->expire($this->subjectUrl."wap_index_has",120);
+//        }else{
+//            $recommend_list = $this->redisModel->hget($this->subjectUrl."wap_index_has","recommend_list");
+//        }
+        return JsonService::successful(json_decode($recommend_list,true));
     }
 
     /**
@@ -206,18 +226,47 @@ class Index extends AuthController
     {
         return JsonService::successful(Search::getHostSearch());
     }
+
+    /**
+     * 清除缓存
+     */
+    public function del_search_history()
+    {
+        $uid=$this->userInfo['uid'] ? $this->userInfo['uid'] : 0;
+        if($uid) {
+            $res=Db::name('search_history')->where('uid',$uid)->delete();
+            $res1=$this->redisModel->hdel($this->subjectUrl."wap_index_has","search_history_".$uid);
+            if($res && $res1){
+                return JsonService::successful('清除成功！');
+            }else{
+                return JsonService::fail('清除失败！');
+            }
+        }
+        return JsonService::successful('ok');
+    }
     /**
      * 查找搜索历史内容
      * */
     public function get_search_history($search = '', $limit = 0)
     {
         $uid=$this->userInfo['uid'] ? $this->userInfo['uid'] : 0;
-       if($uid) {
-           $list=Search::userSearchHistory($uid);
-       }else{
-           $list=[];
-       }
-        return JsonService::successful($list);
+        if($uid) {
+           $exists_search_reids = $this->redisModel->HEXISTS($this->subjectUrl."wap_index_has","search_history_".$uid);
+           if (!$exists_search_reids) {
+               $search_list = Search::userSearchHistory($uid) ? json_encode(Search::userSearchHistory($uid)) : [];
+               if ($search_list) {
+                   $this->redisModel->hset($this->subjectUrl."wap_index_has","search_history_".$uid, $search_list);
+                   $this->redisModel->expire($this->subjectUrl."wap_index_has",120);
+               }else{
+                   $this->redisModel->hdel($this->subjectUrl."wap_index_has","search_history_".$uid);
+               }
+           }else{
+               $search_list = $this->redisModel->hget($this->subjectUrl."wap_index_has","search_history_".$uid);
+           }
+        }else{
+           $search_list=[];
+        }
+        return JsonService::successful($search_list ? json_decode($search_list, true) : []);
     }
     /**
      * 查找搜索内容
@@ -242,7 +291,7 @@ class Index extends AuthController
      * */
     public function more_list($type = 0, $search = '')
     {
-        if ($search == '') $this->failed('没有查找相关数据,点我返回上一页');
+        if ($search == '') $this->failed('没有查找相关数据,点我返回上一页', Url::build('index/index'));
         $this->assign(compact('type', 'search'));
         return $this->fetch();
     }
@@ -261,6 +310,10 @@ class Index extends AuthController
         return JsonService::successful(Search::getMoerList($where));
     }
 
+    /**
+     * @param int $recommend_id
+     * @throws \think\exception\DbException
+     */
     public function get_recommend_info($recommend_id = 0)
     {
         return JsonService::successful(Recommend::get($recommend_id));
@@ -278,12 +331,12 @@ class Index extends AuthController
      */
     public function unified_list($type = 0, $title = '', $recommend_id = 0)
     {
-        if (!$recommend_id) $this->failed('您查看的页面走丢了');
+        if (!$recommend_id) $this->failed('您查看的页面走丢了', Url::build('index/index'));
         $recommend = Recommend::get($recommend_id);
-        if (!$recommend) $this->failed('您查看的栏目不存在');
-        if ($recommend->is_show == 0) $this->failed('您查看的栏目不存在');
+        if (!$recommend) $this->failed('您查看的栏目不存在', Url::build('index/index'));
+        if ($recommend->is_show == 0) $this->failed('您查看的栏目不存在', Url::build('index/index'));
         $banner = RecommendBanner::valiWhere()->where('recommend_id', $recommend_id)->select();
-        $Recommendlist = SpecialSubject::where('is_show', 1)->where('grade_id', $recommend['grade_id'])->field(['name as title', 'id'])->order('sort desc')->select();
+        $Recommendlist = SpecialSubject::where('is_show', 1)->where('is_del', 0)->where('grade_id', $recommend['grade_id'])->field(['name as title', 'id'])->order('sort desc')->select();
         if ($recommend->typesetting == 4) {
             $recommend->typesetting = 3;
         }
@@ -300,7 +353,7 @@ class Index extends AuthController
         return $this->fetch();
     }
 
-    /*
+    /**
      * 标签详情列表获取
      * */
     public function get_unifiend_list()

@@ -4,7 +4,7 @@
 <script src="{__WAP_PATH}zsff/js/jquery.cookie.js"></script>
 <style>
     body {
-        /* background-color: #f5f5f5; */
+        background-color: #f5f5f5;
     }
 
     .thematic-details,
@@ -13,56 +13,22 @@
         background-color: #fff;
     }
 
-    .index .studyCourse .title .more {
-        font-size: 0.25rem;
+    .banner {
+        padding-bottom: .1rem;
+    }
+
+    .indexNew .learn {
+        font-size: 0;
+    }
+
+    .indexNew .learn span {
+        font-size: .22rem;
         color: #999;
-        display: inherit;
     }
 
-    .index .studyCourse .title .titleCon {
-        width: 4rem;
-    }
-
-    .free {
-        font-weight: 400;
-        font-size: .24rem;
-        color: #ffba25;
-    }
-
-    .news {
-        display: -webkit-flex;
-        display: flex;
-        -webkit-align-items: center;
-        align-items: center;
-        padding: .24rem .2rem;
-        background-color: #fff;
-    }
-
-    .news .pictrue {
-        width: 1.24rem;
-        margin-right: .2rem;
-    }
-
-    .news .pictrue img {
-        display: block;
-        width: 100%;
-    }
-
-    .news .swiper-container {
-        -webkit-flex: 1;
-        flex: 1;
-        height: .4rem;
-    }
-
-    .news .swiper-slide a {
-        display: block;
-        height: .4rem;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        font-weight: 400;
-        font-size: .28rem;
-        line-height: .4rem;
+    .indexNew .broadcast .learn span:first-child {
+        font-weight: bold;
+        font-size: .26rem;
     }
 </style>
 {/block}
@@ -70,36 +36,31 @@
 <div v-cloak id="app" class="indexNew">
     <!--关注-->
     {if !$subscribe}
-    <div class="thematic-details">
+    <div class="thematic-details" v-if="topFocus">
         <div class="follow acea-row row-between-wrapper">
-            <div class="picTxt acea-row row-between-wrapper">
-                <div class="pictrue"><img
-                        src="{if $confing.site_logo}{$confing.site_logo}{else}/wap/first/zsff/images/crmeb.png{/if}">
-                </div>
-                <div class="text">
-                    <div class="name line1">{$confing.site_name}</div>
-                    <div class="line1">{$confing.seo_title}</div>
-                </div>
+            <div>点击“立即关注”即可关注公众号</div>
+            <div>
+                <span class="followBnt" @click=" is_code = true">立即关注</span>
+                <span class="iconfont iconguanbi2" @click="topFocus = false"></span>
             </div>
-            <div class="followBnt" @click=" is_code = true">关注</div>
         </div>
     </div>
     {/if}
     <!--搜索-->
     <div class="header">
-        <a class="search acea-row row-center-wrapper" href="{:Url('search')}"><span
-                class="iconfont icon-sousuo"></span>输入你想要找的课程名称</a>
+        <a class="search acea-row row-center-wrapper" href="{:Url('search')}">
+            <span class="iconfont icon-sousuo"></span>输入你想要找的课程名称</a>
     </div>
     <!--幻灯片-->
     <div class="banner">
-        <div id="banner" class="swiper-container">
+        <div id="carousel" class="swiper-container" style="width: 7.1rem;border-radius: .2rem;">
             <div class="swiper-wrapper">
-                <div class="swiper-slide" v-for="(item, index) in swiperlist" :key="index" @click="goBannerLink(item.url)">
-                    <img :src="item.pic" />
+                <div v-for="(item, index) in swiperlist" :key="index" class="swiper-slide">
+                    <img :src="item.pic" :data-url="item.url" style="width: 100%;height: 100%;border-radius: .2rem;object-fit: cover;" />
                 </div>
             </div>
             <!-- 如果需要分页器 -->
-            <div v-if="swiperlist.length > 1" id="banner-pagination" class="swiper-pagination"></div>
+            <div id="carousel-pagination" class="swiper-pagination"></div>
         </div>
     </div>
     <!--导航-->
@@ -115,7 +76,7 @@
         <div id="news" class="swiper-container">
             <div class="swiper-wrapper">
                 <div v-for="(item, index) in newsList" :key="index" class="swiper-slide">
-                    <a :href="$h.U({c:'article', a:'unified_list'})">{{ item.title }}</a>
+                    <a :href="item.url">{{ item.title }}</a>
                 </div>
             </div>
         </div>
@@ -137,172 +98,262 @@
             </a>
         </div>
     </div>
-    <!--直播-->
-    <div class="broadcast" v-if="liveList.length">
-        <div class="public_title acea-row row-between-wrapper">
-            <div class="name">热门直播</div>
-        </div>
-        <div class="swiper-container swiperScroll">
-            <div class="swiper-wrapper">
-                <a class="swiper-slide item" v-for="item in liveList" :href="getDetails(2,item.id)">
-                    <div class="pictrue">
-                        <img :src="item.image">
-                        <div class="state acea-row row-center-wrapper" v-if="item.status == 1">
-                            <img src="/wap/first/zsff/images/live01.png">
-                            <div class="stateTxt">直播中</div>
-                        </div>
-                        <div class="state return acea-row row-center-wrapper" v-else-if="item.status == 2">
-                            <img src="/wap/first/zsff/images/returnVisit.png">
-                            <div class="stateTxt">回放</div>
-                        </div>
-                        <div class="state make acea-row row-center-wrapper" v-else-if="item.status == 3">
-                            <img src="/wap/first/zsff/images/live_time.png">
-                            <div class="stateTxt">直播时间 {{item.start_play_time}}</div>
-                        </div>
-                    </div>
-                    <div class="text">
-                        <div class="name line1" v-text="item.title"></div>
-                        <div class="info"><span class="red">{{item.browse_count}}</span>人正在学习</div>
-                    </div>
-                </a>
-            </div>
-        </div>
-    </div>
     <!-- 自定义排版 -->
     <template v-if="recommend.length">
         <template v-for="(item, index) in recommend">
-            <!-- 左右切换 -->
-            <div v-if="item.typesetting == 4 && item.list.length" :key="index" class="curriculum">
-                <div class="public_title acea-row row-between-wrapper">
-                    <div class="name" v-text="item.title"></div>
-                    <a class="more acea-row row-middle" :href="getNavHref(item)">查看更多<span
-                        class="knowledge iconxiangyou"></span></a>
-                </div>
-                <div class="swiper-container" :class="'swiper-course-'+index" :data-index="index">
-                    <div class="swiper-wrapper">
-                        <div class="swiper-slide" v-for="(vv,inx) in item.data">
-                            <div class="public_list">
-                                <a class="item acea-row" v-for="val in vv.value"
-                                    :href="getDetails(item.type,val.link_id)">
-                                    <div class="pictrue">
-                                        <img :src="val.image">
-                                    </div>
-                                    <div class="text">
-                                        <div class="title acea-row row-middle">
-                                            <div class="name line1">{{val.title}}</div>
-                                        </div>
-                                        <div class="labelList">
-                                            <span class="labelItem" v-for="label in val.label">{{label}}</span>
-                                        </div>
-                                        <div class="acea-row row-between-wrapper">
-                                            <div>
-                                                <div class="money" v-if="item.type==0">¥<span>{{val.money}}</span></div>
-                                                <div class="total" v-if="val.special_type!=4">共{{ val.count }}节</div>
-                                            </div>
-                                            <div class="num acea-row row-center-wrapper" v-if="item.type==0">
-                                                {{val.browse_count}}人已学习</div>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div v-if="item.data.length > 1" class="swiper-pagination"></div>
-                </div>
-            </div>
-            <!-- 大图 -->
-            <div v-if="item.typesetting == 1 && item.list.length" :key="index" class="essential">
-                <div class="public_title acea-row row-between-wrapper">
-                    <div class="name" v-text="item.title"></div>
-                    <a class="more acea-row row-middle" :href="getNavHref(item)">查看更多<span
-                            class="knowledge iconxiangyou"></span></a>
+            <!-- 新闻资讯 -->
+            <div v-if="item.type === 1 && item.list.length" :key="item.id" class="news-section">
+                <div class="title">
+                    <div>{{ item.title }}</div>
+                    <a class="link" href="{:url('article/news_list')}">
+                        查看更多<span class="iconfont iconxiangyou"></span>
+                    </a>
                 </div>
                 <div class="list">
-                    <a class="item" v-for="val in item.list" :href="getDetails(item.type,val.link_id)">
-                        <div class="pictrue"><img :src="val.image">
-                            <div class="label">{{val.special_type_name}}</div>
-                        </div>
+                    <a v-for="(itm, idx) in item.list" :key="itm.link_id" :href="'{:url('article/news_detail')}?id=' + itm.link_id" class="link">
                         <div class="text">
-                            <div class="title acea-row row-middle">
-                                <div class="name line1" v-text="val.title"></div>
-                            </div>
-                            <div class="info acea-row row-between-wrapper">
-                                <div class="labelList">
-                                    <span class="labelItem" v-for="label in val.label">{{label}}</span>
-                                </div>
-                                <div>
-                                    <div class="money" v-if="val.money > 0 && val.pay_type == 1 && item.type==0">
-                                        <span class="yen">￥</span>{{val.money}}
-                                    </div>
-                                    <div class="free" v-else-if="item.type==0">免费</div>
-                                    <div class="total" v-if="val.special_type!=4">共{{ val.count }}节</div>
+                            <div class="name">{{ itm.title }}</div>
+                            <div class="wrap">
+                                <template v-for="(v, i) in itm.label">
+                                    <div v-if="!i" class="hot">{{ v }}</div>
+                                </template>
+                                <div class="browse">
+                                    <span class="iconfont iconliulanliang"></span>{{ itm.browse_count }}
                                 </div>
                             </div>
                         </div>
+                        <img class="img" :src="itm.image">
                     </a>
                 </div>
             </div>
-            <!-- 小图 -->
-            <div v-if="item.typesetting == 3 && item.list.length" :key="index" class="interest">
+            <!--直播-->
+            <div v-else-if="item.type === 5 && item.list.length" :key="item.id" class="broadcast">
                 <div class="public_title acea-row row-between-wrapper">
-                    <div class="name" v-text="item.title"></div>
-                    <a class="more acea-row row-middle" :href="getNavHref(item)">查看更多<span
-                            class="knowledge iconxiangyou"></span></a>
+                    <div class="name">热门直播</div>
                 </div>
-                <div class="public_list">
-                    <a class="item acea-row" v-for="val in item.list"
-                        :href="getDetails(item.type,val.link_id)">
+                <div class="swiper-container swiperScroll">
+                    <div class="swiper-wrapper">
+                        <a class="swiper-slide item" v-for="itm in item.list" :href="getDetails(2,itm.id)">
+                            <div class="pictrue">
+                                <img :src="itm.image">
+                                <div class="state acea-row row-center-wrapper" v-if="itm.status == 1">
+                                    <img src="/wap/first/zsff/images/live01.png">
+                                    <div class="stateTxt">直播中</div>
+                                </div>
+                                <div class="state return acea-row row-center-wrapper" v-else-if="itm.status == 2">
+                                    <img src="/wap/first/zsff/images/returnVisit.png">
+                                    <div class="stateTxt">回放</div>
+                                </div>
+                                <div class="state make acea-row row-center-wrapper" v-else-if="itm.status == 3">
+                                    <img src="/wap/first/zsff/images/live_time.png">
+                                    <div class="stateTxt">直播时间 {{itm.start_play_time}}</div>
+                                </div>
+                            </div>
+                            <div class="text">
+                                <div class="name line1" v-text="itm.title"></div>
+                                <div class="info learn"><span>{{itm.records}}</span><span>人正在学习</span></div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <!-- 讲师 -->
+            <div v-else-if="item.type === 6 && item.list.length" :key="item.id" class="teacher">
+                <div class="teacher-hd">
+                <div class="name">推荐讲师</div>
+                    <a  class="link" href="{:url('wap/special/teacher_list')}">查看更多<span class="iconfont iconxiangyou"></span></a>
+                </div>
+                <div id="teacher" class="swiper-container">
+                    <div class="swiper-wrapper">
+                        <div v-for="(itm, index) in item.list" :key="index" class="swiper-slide">
+                            <a :href="'{:url('special/teacher_detail')}?id=' + itm.id" class="link">
+                                <img class="img" :src="itm.lecturer_head">
+                                <div class="name">{{itm.lecturer_name}}</div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 线下活动 -->
+            <div v-else-if="item.type === 7 && item.list.length" :key="item.id" class="essential activity-offline">
+                <div class="public_title acea-row row-between-wrapper">
+                    <div class="name">线下活动</div>
+                    <a class="more acea-row row-middle" :href="getActivityHref()">查看更多<span class="iconfont iconxiangyou"></span></a>
+                </div>
+                <div class="list">
+                    <a class="item" v-for="itm in item.list" :href="activityDetails(itm.id)">
                         <div class="pictrue">
-                            <img :src="val.image">
-                            <div class="label">{{val.special_type_name}}</div>
+                            <img :src="itm.image">
                         </div>
                         <div class="text">
                             <div class="title acea-row row-middle">
-                                <div class="name line1" v-text="val.title"></div>
+                                <div class="name line1" v-text="itm.title"></div>
                             </div>
-                            <div class="labelList" style="height:.4rem;line-height:.4rem;">
-                                <span class="labelItem" v-for="label in val.label">{{label}}</span>
+                            <div class="info">
+                                <div><span class="iconfont icondidian"></span>{{ itm.province }}{{ itm.city }}{{ itm.district }}{{ itm.detail }}</div>
+                                <div><span class="iconfont iconshijian2"></span>{{ itm.time }}</div>
                             </div>
-                            <div class="acea-row row-middle row-between" style="height:.45rem;" v-if="item.type==0">
-                                <div>
-                                    <div class="money" v-if="val.pay_type == 1 && val.money > 0">¥<span>{{val.money}}</span></div>
-                                    <div class="free" v-else>免费</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <template v-else>
+                <!-- 左右切换 -->
+                <div v-if="item.typesetting == 4 && item.list.length" :key="item.id" class="curriculum">
+                    <div class="public_title acea-row row-between-wrapper">
+                        <div class="name" v-text="item.title"></div>
+                        <a class="more acea-row row-middle" v-if="item.type !== 10" :href="getNavHref(item)">查看更多<span
+                            class="iconfont iconxiangyou"></span></a>
+                    </div>
+                    <div class="swiper-container" :class="'swiper-course-'+index" :data-index="index">
+                        <div class="swiper-wrapper">
+                            <div class="swiper-slide" v-for="(vv,inx) in item.data">
+                                <div class="public_list">
+                                    <a class="item acea-row" v-for="val in vv.value"
+                                        :href="getDetails(item.type,val.link_id)">
+                                        <div class="pictrue">
+                                            <img :src="val.image">
+                                        </div>
+                                        <div class="text">
+                                            <div class="title acea-row row-middle">
+                                                <div class="name line1">{{val.title}}</div>
+                                            </div>
+                                            <div class="labelList">
+                                                <span class="labelItem" v-for="label in val.label">{{label}}</span>
+                                            </div>
+                                            <div class="acea-row row-between-wrapper">
+                                                <div>
+                                                    <div class="free" v-if="val.pay_type == 0 || val.pay_type == 2">免费</div>
+                                                    <div class="money" v-if="val.pay_type == 1 && val.is_pink == 0">￥<span>{{val.money}}</span></div>
+                                                    <div class="money" v-if="val.pay_type == 1 && val.is_pink > 0">￥<span>{{val.pink_money}}</span></div>
+                                                </div>
+                                                <div class="total" v-if="val.special_type!=4 && item.type==0">共{{ val.count }}节</div>
+                                            </div>
+                                            <div v-if="item.type === 10" class="learn"><span>{{ val.browse_count }}</span><span>次学习</span></div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div v-if="item.data.length > 1" class="swiper-pagination"></div>
+                    </div>
+                </div>
+                <!-- 大图 -->
+                <div v-if="item.typesetting == 1 && item.list.length" :key="item.id" class="essential">
+                    <div class="public_title acea-row row-between-wrapper">
+                        <div class="name" v-text="item.title"></div>
+                        <a v-if="item.type !== 10" :href="getNavHref(item)" class="more acea-row row-middle">
+                            查看更多<span class="iconfont iconxiangyou"></span>
+                        </a>
+                    </div>
+                    <div class="list">
+                        <a v-for="val in item.list" :href="getDetails(item.type,val.link_id)"  class="item">
+                            <div :class="{ 'goods-picture': item.type === 4 }" class="pictrue">
+                                <img :src="val.image">
+                                <div class="label">{{ val.special_type_name }}</div>
+                            </div>
+                            <div class="text">
+                                <div class="title acea-row row-middle">
+                                    <div class="name line1" v-text="val.title"></div>
+                                </div>
+                                <div v-if="item.type === 10" class="learn"><span>{{ val.browse_count }}</span><span>次学习</span></div>
+                                <div class="info acea-row row-between-wrapper">
+                                    <div class="labelList">
+                                        <span class="labelItem" v-for="label in val.label">{{ label }}</span>
+                                    </div>
+                                    <div>
+                                        <div class="free" v-if="val.pay_type == 0 || val.pay_type == 2">免费</div>
+                                        <div class="money" v-if="val.pay_type == 1 && val.is_pink == 0">￥<span>{{ val.money }}</span></div>
+                                        <div class="money" v-if="val.pay_type == 1 && val.is_pink > 0">￥<span>{{ val.pink_money }}</span></div>
+                                        <div class="total" v-if="val.special_type!=4 && item.type==0">共{{ val.count }}节</div>
+                                        <div class="total" v-else-if="item.type==4">已售{{ val.count }}件</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <!-- 小图 -->
+                <div v-if="item.typesetting == 3 && item.list.length" :key="item.id" class="interest">
+                    <div class="public_title acea-row row-between-wrapper">
+                        <div class="name" v-text="item.title"></div>
+                        <a v-if="item.type !== 10" :href="getNavHref(item)" class="more acea-row row-middle">
+                            查看更多<span class="iconfont iconxiangyou"></span>
+                        </a>
+                    </div>
+                    <div class="public_list">
+                        <a v-for="val in item.list" :href="getDetails(item.type,val.link_id)"  class="item acea-row">
+                            <div class="pictrue" :class="{ 'goods-picture': item.type === 4 }">
+                                <img :src="val.image">
+                                <div class="label">{{val.special_type_name}}</div>
+                            </div>
+                            <div class="text">
+                                <div class="title acea-row row-middle">
+                                    <div class="name line1" v-text="val.title"></div>
+                                </div>
+                                <div class="labelList" style="height:.4rem;line-height:.4rem;">
+                                    <span v-for="label in val.label" class="labelItem">{{label}}</span>
+                                </div>
+                                <div class="acea-row row-middle row-between" style="height:.45rem;" v-if="item.type==0">
+                                    <div>
+                                        <div class="free" v-if="val.pay_type == 0 || val.pay_type == 2">免费</div>
+                                        <div class="money" v-if="val.pay_type == 1 && val.is_pink == 0">￥<span>{{val.money}}</span></div>
+                                        <div class="money" v-if="val.pay_type == 1 && val.is_pink > 0">￥<span>{{val.pink_money}}</span></div>
+                                    </div>
                                     <div class="total" v-if="val.special_type!=4">共{{ val.count }}节</div>
                                 </div>
-                                <div class="num">{{val.browse_count}}人已学习</div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            </div>
-            <!-- 宫图 -->
-            <div v-if="item.typesetting == 2 && item.list.length" :key="index" class="interest english">
-                <div class="public_title acea-row row-between-wrapper">
-                    <div class="name" v-text="item.title"></div>
-                    <a class="more acea-row row-middle" :href="getNavHref(item)">查看更多<span
-                            class="knowledge iconxiangyou"></span></a>
-                </div>
-                <div class="list acea-row row-between-wrapper">
-                    <a class="item" v-for="val in item.list" :href="getDetails(item.type,val.link_id)">
-                        <div class="pictrue"><img :src="val.image"></div>
-                        <div class="text">
-                            <div class="title acea-row row-middle">
-                                <div class="name line1" v-text="val.title"></div>
-                            </div>
-                            <div class="label acea-row row-middle">
-                                <span class="cell" v-for="label in val.label">{{label}}</span>
-                            </div>
-                            <div class="group acea-row row-middle" v-if="item.type==0">
-                                <div class="free" v-if="val.pay_type == 0 || val.pay_type == 2">免费</div>
-                                <div class="money" v-if="val.pay_type == 1">
-                                    ¥<span class="num">{{val.money}}</span>
+                                <div v-if="item.type === 4" class="acea-row row-middle row-between" style="height:.45rem;">
+                                    <div>
+                                        <div class="money" v-if="val.money > 0">￥<span>{{val.money}}</span></div>
+                                        <div class="free" v-else>免费</div>
+                                    </div>
                                 </div>
-                                <div class="total" v-if="val.special_type!=4">共{{ val.count }}节</div>
+                                <div v-if="item.type === 10" class="learn"><span>{{ val.browse_count }}</span><span>次学习</span></div>
                             </div>
-                        </div>
-                    </a>
+                        </a>
+                    </div>
                 </div>
-            </div>
+                <!-- 宫图 -->
+                <div v-if="item.typesetting == 2 && item.list.length" :key="item.id" class="interest english">
+                    <div class="public_title acea-row row-between-wrapper">
+                        <div class="name" v-text="item.title"></div>
+                        <a v-if="item.type !== 10" :href="getNavHref(item)" class="more acea-row row-middle">
+                            查看更多<span class="iconfont iconxiangyou"></span>
+                        </a>
+                    </div>
+                    <div class="list acea-row row-between-wrapper">
+                        <a v-for="val in item.list" :href="getDetails(item.type,val.link_id)"  class="item">
+                            <div class="pictrue" :class="{ 'goods-picture': item.type === 4 }"><img :src="val.image"></div>
+                            <div class="text" >
+                                <div class="title acea-row row-middle">
+                                    <div class="name line1" v-text="val.title"></div>
+                                </div>
+                                <div class="label acea-row row-middle">
+                                    <span class="cell" v-for="label in val.label">{{label}}</span>
+                                </div>
+                                <div class="group acea-row row-middle" v-if="item.type==0">
+                                    <div class="free" v-if="val.pay_type == 0 || val.pay_type == 2">免费</div>
+                                    <div class="money" v-if="val.pay_type == 1 && val.is_pink == 0">
+                                        ￥<span class="num">{{val.money}}</span>
+                                    </div>
+                                    <div class="money" v-if="val.pay_type == 1 && val.is_pink > 0">
+                                        ￥<span class="num">{{val.pink_money}}</span>
+                                    </div>
+                                    <div class="total" v-if="val.special_type!=4">共{{ val.count }}节</div>
+                                </div>
+                                <div class="group acea-row row-middle" v-if="item.type==4">
+                                    <div class="free" v-if="val.money==0">免费</div>
+                                    <div class="money" v-if="val.money > 0">
+                                        ￥<span class="num">{{val.money}}</span>
+                                    </div>
+                                    <div class="total" >已售{{ val.count }}件</div>
+                                </div>
+                                <div v-if="item.type === 10" class="learn"><span>{{ val.browse_count }}</span><span>次学习</span></div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </template>
         </template>
     </template>
     <p class="loading-line">
@@ -324,21 +375,18 @@
     <div style="height: 1.0rem"></div>
     {include file="public/store_menu"}
 </div>
-
 <script type="text/javascript">
-    var banner = {$banner}, activity = {$activity}, liveList = {$liveList},liveOne={$liveOne};
+    var banner = {$banner}, activity = {$activity}, liveOne={$liveOne};
     require(['vue', 'helper', 'store'], function (Vue, $h, storeApi) {
         new Vue({
             el: '#app',
             data: {
-                liveList: liveList,
                 liveOne: liveOne ? liveOne : {},
                 swiperlist: banner,
                 recommend: [],
                 navList: [],
                 loading: false,
                 loadTitle: '',
-                loading: "",
                 loadend: false,
                 page: 1,
                 limit: 10,
@@ -346,7 +394,8 @@
                 activity: activity,
                 activityOne: {},
                 is_live_one: false,
-                newsList: []
+                newsList: [],
+                topFocus: true,
             },
             created: function () {
                 this.getNewsList();
@@ -365,28 +414,29 @@
                     else { that.is_live_one = false; }
                 }
                 that.$nextTick(function () {
-                    var myBanner = new Swiper('#banner', {
-                        pagination: '#banner-pagination',
-                        paginationClickable: false,
-                        autoplay: 2500,
+                    new Swiper('#carousel', {
                         speed: 1000,
+                        autoplay: 2500,
+                        spaceBetween: 20,
+                        autoplayDisableOnInteraction: false,
+                        pagination: '#carousel-pagination',
+                        paginationClickable: true,
                         loop: true,
-                        effect: "coverflow",
-                        slidesPerView: "auto",
-                        centeredSlides: true,
-                        coverflow: {
-                            rotate: 0, // 旋转的角度
-                            stretch: -20, // 拉伸   图片间左右的间距和密集度
-                            depth: 100, // 深度   切换图片间上下的间距和密集度
-                            modifier: 2, // 修正值 该值越大前面的效果越明显
-                            slideShadows: false // 页面阴影效果
-                        },
                         observer: true,
                         observeParents: true,
-                        autoplayDisableOnInteraction: false
+                        onInit: function (swiper) {
+                            if (swiper.slides.length <= 3) {
+                                swiper.lockSwipes();
+                            }
+                        },
+                        onClick: function (swiper, event) {
+                            var url = event.target.dataset.url;
+                            if (url && url != '#') {
+                                location.href = url;
+                            }
+                        }
                     });
-                })
-
+                });
                 if (this.activity.length) {
                     var activityOne = this.activity.shift();
                     that.$set(that, "activityOne", activityOne);
@@ -398,7 +448,7 @@
                 // 获取新闻列表
                 getNewsList: function () {
                     var that = this;
-                    storeApi.baseGet($h.U({ c: 'article', a: 'get_unifiend_list' }), function (res) {
+                    storeApi.baseGet($h.U({ c: 'article', a: 'news_bulletin' }), function (res) {
                         that.newsList = res.data.data;
                         that.$nextTick(function () {
                             new Swiper('#news', {
@@ -411,8 +461,8 @@
                                 autoplayDisableOnInteraction: false
                             });
                         });
-                    }, function (res) {
-                        $h.pushMsgOnce(res.data.msg);
+                    }, function (err) {
+                        $h.pushMsgOnce('获取失败');
                     });
                 },
                 clickLive:function(type,id){
@@ -429,15 +479,28 @@
                     return $h.U({c: 'special', a: 'activity_details', q: {id: id}});
                 },
                 getDetails: function (type, id) {
-                        return type == 1 ? $h.U({c: 'article', a: 'details', q: {id: id}}) : $h.U({
-                            c: 'special',
-                            a: 'details',
-                            q: {id: id}
-                        });
+                    switch (type) {
+                            case 0:
+                            case 2:
+                            case 8:
+                                return $h.U({c: 'special', a: 'details', q: {id: id}});
+                                break;
+                            case 1:
+                                return $h.U({c: 'article', a: 'details', q: {id: id}});
+                                break;
+                            case 4:
+                                return $h.U({c: 'store', a: 'detail', q: {id: id}});
+                                break;
+                            case 10:
+                                return $h.U({c: 'special', a: 'source_detail', q: {id: id}});
+                                break;
+                    }
                 },
                 getNavHref: function (item, bo) {
                     if (item.type == 3) {
                         return item.link;
+                    }else if (item.type == 4) {
+                        return $h.U({ c: 'store', a: 'index'});
                     } else {
                         if (bo) {
                             return $h.U({ c: 'special', a: 'special_cate', q: { cate_id: item.grade_id } });
@@ -459,9 +522,6 @@
                     storeApi.baseGet($h.U({ c: 'index', a: 'get_recommend' }), function (res) {
                         this.$set(this, 'navList', res.data.data);
                     }.bind(this))
-                },
-                goBannerLink: function (url) {
-                    if (url && url != '#') window.location.href = url;
                 },
                 initSwiper: function () {
                     var that = this;
@@ -509,18 +569,28 @@
                         this.loadTitle = this.loadend ? '我是有底线的' : '上拉加载更多';
                         this.$set(this, 'recommend', recommend);
                         this.initSwiper();
-                        this.EventUtil();
+                        this.$nextTick(function () {
+                            new Swiper('#teacher', {
+                                slidesPerView: 'auto',
+                                spaceBetween: 10,
+                                slidesOffsetBefore: 10,
+                                slidesOffsetAfter: 10,
+                                observer: true,
+                                observeParents: true
+                            });
+                            new Swiper('#group-goods', {
+                                slidesPerView: 'auto',
+                                spaceBetween: 10,
+                                slidesOffsetBefore: 10,
+                                slidesOffsetAfter: 10,
+                                observer: true,
+                                observeParents: true
+                            });
+                        });
                     }.bind(this), function (res) {
                         this.loadTitle = '加载更多';
                         this.loading = false;
                     }.bind(this));
-                },
-                EventUtil: function () {
-                    this.$nextTick(function () {
-                        $h.EventUtil.listenTouchDirection(document, function () {
-                            this.loading == false && this.get_content_recommend();
-                        }.bind(this), false);
-                    })
                 }
             }
         });

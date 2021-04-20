@@ -9,6 +9,7 @@
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
 
+
 namespace app\admin\controller\finance;
 
 use app\admin\controller\AuthController;
@@ -16,7 +17,6 @@ use app\admin\model\user\UserBill;
 use service\JsonService as Json;
 use app\admin\model\finance\FinanceModel;
 use service\SystemConfigService;
-use service\UtilService as Util;
 use service\FormBuilder as Form;
 use service\HookService;
 use think\Url;
@@ -56,7 +56,7 @@ class Finance extends AuthController
      */
     public function billlist()
     {
-        $where = Util::getMore([
+        $where = parent::getMore([
             ['start_time', ''],
             ['end_time', ''],
             ['nickname', ''],
@@ -73,12 +73,12 @@ class Finance extends AuthController
      */
     public function save_bell_export()
     {
-        $where = Util::getMore([
+        $where = parent::getMore([
             ['start_time', ''],
             ['end_time', ''],
             ['nickname', ''],
             ['type', ''],
-            ['category', 'gold_num'],
+            ['category', 'now_money'],
         ]);
         FinanceModel::SaveExport($where);
     }
@@ -97,7 +97,7 @@ class Finance extends AuthController
      */
     public function get_commission_list()
     {
-        $get = Util::getMore([
+        $get = parent::getMore([
             ['page', 1],
             ['limit', 20],
             ['nickname', ''],
@@ -107,6 +107,7 @@ class Finance extends AuthController
         ]);
         return Json::successlayui(User::getCommissionList($get));
     }
+
 
     /**
      * 佣金详情
@@ -125,7 +126,7 @@ class Finance extends AuthController
     public function get_extract_list($uid = '')
     {
         if ($uid == '') return Json::fail('缺少参数');
-        $where = Util::getMore([
+        $where = parent::getMore([
             ['page', 1],
             ['limit', 20],
             ['start_time', ''],

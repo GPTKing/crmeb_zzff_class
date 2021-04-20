@@ -14,86 +14,93 @@
 </style>
 {/block}
 {block name="content"}
-<div class="layui-fluid" style="background: #fff">
-    <div class="layui-row layui-col-space15" id="app">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15" id="app" v-cloak>
         <div class="layui-col-md12">
-            <form action="" class="layui-form">
-                <div class="layui-form-item">
-                    <label class="layui-form-label">弹幕开关</label>
-                    <div class="layui-input-block">
-                        <input type="checkbox" checked="" name="open_barrage" lay-skin="switch" :value="open_barrage" lay-filter='is_show' lay-text="打开|关闭" :checked="open_barrage">
-                    </div>
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    <div style="font-weight: bold;">拼团弹幕</div>
                 </div>
-            </form>
-        </div>
-        <div class="layui-col-md12">
-            <div class="layui-card" v-cloak="">
-                <div class="layui-card-header">添加弹幕</div>
-                <div class="layui-card-body" style="padding: 10px 150px;">
-                    <form action="" class="layui-form">
-                        <div class="layui-form-item m-t-5" v-cloak="">
-                            <label class="layui-form-label">头    像</label>
-                            <div class="layui-input-block">
-                                <div class="upload-image-box" v-if="avatar" @mouseenter="is_show = true" @mouseleave="is_show = false">
-                                    <img :src="avatar" alt="" style="border-radius: 5px;">
-                                    <div class="mask" v-show="is_show" style="display: block">
-                                        <p><i class="fa fa-eye" @click="look(avatar)"></i><i class="fa fa-trash-o" @click="avatar = ''"></i></p>
+                <div class="layui-card-body">
+                    <div class="layui-row layui-col-space15">
+                        <div class="layui-col-md12">
+                            <form action="" class="layui-form">
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">弹幕开关</label>
+                                    <div class="layui-input-block">
+                                        <input type="checkbox" checked="" name="open_barrage" lay-skin="switch" :value="open_barrage" lay-filter='is_show' lay-text="打开|关闭" :checked="open_barrage">
                                     </div>
                                 </div>
-                                <div class="upload-image"  v-show="!avatar" @click="upload(1)">
-                                    <div class="fiexd"><i class="fa fa-plus"></i></div>
-                                    <p>上传图片</p>
+                            </form>
+                        </div>
+                        <div class="layui-col-md12">
+                            <form action="" class="layui-form">
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">
+                                        <div>头像：</div>
+                                        <div>（100*100px）</div>
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <div class="upload-image-box" v-if="avatar" @mouseenter="is_show = true" @mouseleave="is_show = false">
+                                            <img :src="avatar" alt="" style="border-radius: 5px;">
+                                            <div class="mask" v-show="is_show" style="display: block">
+                                                <p><i class="fa fa-eye" @click="look(avatar)"></i><i class="fa fa-trash-o" @click="avatar = ''"></i></p>
+                                            </div>
+                                        </div>
+                                        <div class="upload-image"  v-show="!avatar" @click="upload(1)">
+                                            <div class="fiexd"><i class="fa fa-plus"></i></div>
+                                            <p>上传图片</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">昵称：</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" name="title" style="width: 300px;" v-model="nickname" autocomplete="off" placeholder="请输入昵称" class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">排序：</label>
+                                    <div class="layui-input-block">
+                                        <input type="number" name="sort" style="width: 300px;" v-model="sort" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">动作：</label>
+                                    <div class="layui-input-block">
+                                        <input type="radio" name="action" value="1" title="开团" v-model="action" lay-filter="action">
+                                        <input type="radio" name="action" value="2" title="参团" v-model="action" lay-filter="action">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-input-block">
+                                        <button class="layui-btn layui-btn-normal" type="button" @click="save_barrage">{{id ? '立即修改':'立即提交'}}</button>
+                                        <button class="layui-btn layui-btn-primary clone" type="button" @click="empty_barrage">清空</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="layui-col-md12">
+                            <blockquote class="layui-elem-quote layui-quote-nm" style="margin: 10px;">
+                                点击列表里面的弹幕可进行修改,取消修改请点击【清空】按钮；
+                            </blockquote>
+                            <div class="layui-row">
+                                <div class="layui-col-md1 layui-barrage-box" :class="id==item.id ? 'border-color':'' " v-for="(item,index) in barrageList" @click.stop="set_barrage(item)">
+                                    <p @click.stop="del_barrage(item,index)" class="del-text"><span>删除</span></p>
+                                    <img :src="item.avatar" alt="" style="width: 100%;height: 136px;">
+                                    <p><span>用户名：</span>{{ item.nickname.length > 6 ? item.nickname.slice(0,5) : item.nickname }}</p>
+                                    <p><span>排序：</span>{{ item.sort }}</p>
+                                    <p><span>类型：</span>{{ item.action==1 ? '开团':'参团' }}</p>
+                                </div>
+                                <div class="layui-col-md12 layui-empty-text" v-if="barrageList.length <= 0">
+                                    <p>暂无数据</p>
                                 </div>
                             </div>
-                        <div class="layui-form-item submit">
-                            <label class="layui-form-label">昵    称</label>
-                            <div class="layui-input-block">
-                                <input type="text" name="title" style="width: 50%" v-model="nickname" autocomplete="off" placeholder="请输入昵称" class="layui-input">
+                            <div class="layui-row" style="text-align: right;">
+                                <div ref="barrage_page"></div>
                             </div>
                         </div>
-                        <div class="layui-form-item submit">
-                            <label class="layui-form-label">排    序</label>
-                            <div class="layui-input-block">
-                                <input type="number" name="sort" style="width: 50%" v-model="sort" autocomplete="off" class="layui-input">
-                            </div>
-                        </div>
-                        <div class="layui-form-item">
-                            <label class="layui-form-label">动    作</label>
-                            <div class="layui-input-block">
-                                <input type="radio" name="action" value="1" title="开团" v-model="action" lay-filter="action">
-                                <input type="radio" name="action" value="2" title="参团" v-model="action" lay-filter="action">
-                            </div>
-                        </div>
-                        <div class="layui-form-item submit">
-                            <div class="layui-input-block">
-                                <button class="layui-btn layui-btn-normal" type="button" @click="save_barrage">{{id ? '立即修改':'立即提交'}}</button>
-                                <button class="layui-btn layui-btn-primary clone" type="button" @click="empty_barrage">清空</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-        <div class="layui-col-md12">
-            <div class="layui-card" v-cloak="">
-                <div class="layui-card-header">弹幕列表</div>
-                <blockquote class="layui-elem-quote layui-quote-nm" style="margin: 10px;">
-                    点击列表里面的弹幕可进行修改,取消修改请点击【清空】按钮；
-                </blockquote>
-                <div class="layui-row">
-                    <div class="layui-col-md1 layui-barrage-box" :class="id==item.id ? 'border-color':'' " v-for="(item,index) in barrageList" @click.stop="set_barrage(item)">
-                        <p @click.stop="del_barrage(item,index)" class="del-text"><span>删除</span></p>
-                        <img :src="item.avatar" alt="" style="width: 100%;height: 136px;">
-                        <p><span>用户名：</span>{{ item.nickname.length > 6 ? item.nickname.slice(0,5) : item.nickname }}</p>
-                        <p><span>排序：</span>{{ item.sort }}</p>
-                        <p><span>类型：</span>{{ item.action==1 ? '开团':'参团' }}</p>
                     </div>
-                    <div class="layui-col-md12 layui-empty-text" v-if="barrageList.length <= 0">
-                        <p>暂无数据</p>
-                    </div>
-                </div>
-                <div class="layui-row" style="text-align: right;">
-                    <div ref="barrage_page"></div>
                 </div>
             </div>
         </div>
@@ -187,8 +194,9 @@
                       });
                       layList.layer.confirm('添加成功，是保留当前内容？', {
                           btn: ['保留','清空'] //按钮
-                      }, function(){
+                      }, function(index){
                           that.get_barrage_list();
+                          layList.layer.close(index);
                       }, function(){
                           that.avatar='';
                           that.nickname='';
@@ -264,6 +272,7 @@
                 }
             },
             mounted:function () {
+                var that=this;
                 this.$nextTick(function () {
                     layList.form.render();
                 });

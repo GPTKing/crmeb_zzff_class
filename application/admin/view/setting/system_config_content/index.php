@@ -1,7 +1,7 @@
 {extend name="public/container"}
 {block name="head_top"}
     <title>编辑内容</title>
-<link href="{__ADMIN_PATH}plug/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
+<!--<link href="{__ADMIN_PATH}plug/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">-->
 <link href="{__ADMIN_PATH}module/wechat/news/css/style.css" type="text/css" rel="stylesheet">
 <link href="{__FRAME_PATH}css/plugins/chosen/chosen.css" rel="stylesheet">
 <script type="text/javascript" src="{__ADMIN_PATH}plug/umeditor/third-party/jquery.min.js"></script>
@@ -12,8 +12,7 @@
 <script src="{__FRAME_PATH}js/plugins/chosen/chosen.jquery.js"></script>
 <script src="{__ADMIN_PATH}plug/vue/dist/vue.min.js"></script>
 <script type="text/javascript" src="{__ADMIN_PATH}js/request.js"></script>
-<script type="text/javascript" charset="utf-8"
-        src="{__ADMIN_PATH}plug/ueditor/third-party/zeroclipboard/ZeroClipboard.js"></script>
+<script type="text/javascript" charset="utf-8" src="{__ADMIN_PATH}plug/ueditor/third-party/zeroclipboard/ZeroClipboard.js"></script>
 <script type="text/javascript" charset="utf-8" src="{__ADMIN_PATH}plug/ueditor/ueditor.config.js"></script>
 <script type="text/javascript" charset="utf-8" src="{__ADMIN_PATH}plug/ueditor/ueditor.all.min.js"></script>
 <script type="text/javascript" src="{__ADMIN_PATH}plug/ueditor/lang/zh-cn/zh-cn.js"></script>
@@ -64,8 +63,8 @@
 
         .btn-success {
             color: #fff;
-            background-color: #5cb85c;
-            border-color: #4cae4c;
+            background-color: #0093dd;
+            border-color: #0093dd;
         }
 
         .btn {
@@ -113,13 +112,6 @@
             border-color: #1a7bb9;
             color: #FFF;
         }
-
-        .dim {
-            bottom: 7px;
-            right: 8px;
-            z-index: 1003;
-            position: fixed !important;
-        }
         .m-t-5 {
             margin-top: 5px;
         }
@@ -136,10 +128,10 @@
             <div class="layui-card">
                 <div class="layui-card-header">{$title}</div>
                 <div class="layui-card-body">
-                    <button class="btn btn-success  dim" @click="submit" type="button"><i class="fa fa-upload"></i>
-                    </button>
-                    <textarea id="myEditor" style="width:100%;">{$content ? $content : ''}</textarea>
+
+                    <textarea id="myEditor" style="width:100%;height: 500px">{$content ? $content : ''}</textarea>
                 </div>
+                <button class="btn btn-success" style="margin-left: 45%;" @click="submit" type="button">提交编辑</button>
             </div>
         </div>
     </div>
@@ -224,6 +216,5 @@
         _vue._data.newListIndex.image_input = pic;
         _vue._data.newList[_vue._data.indexItem].image_input = pic;
     };
-</script>
 </script>
 {/block}

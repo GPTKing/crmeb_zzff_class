@@ -1,14 +1,13 @@
 {extend name="public/container"}
 {block name="content"}
-<div class="row">
-	<div class="col-sm-12">
-		<div class="ibox">
-			<div class="ibox-title">
-				<button type="button" class="btn btn-w-m btn-primary" onclick="$eb.createModalFrame(this.innerText,'{:Url('create')}')">添加数据组</button>
-				<div class="ibox-tools">
-
-				</div>
-			</div>
+<div class="layui-fluid">
+	<div class="layui-card">
+	    <div class="layui-card-header">
+            <div class="layui-btn-group">
+                <button type="button" class="layui-btn layui-btn-normal layui-btn-sm" onclick="$eb.createModalFrame('添加数据组','{:Url('create')}')"><i class="layui-icon">&#xe608;</i>添加数据组</button>
+            </div>
+        </div>
+		<div class="layui-card-body">
 			<div class="ibox-content">
 				<div class="row">
 					<div class="col-sm-8 m-b-xs">
@@ -36,7 +35,7 @@
 					<table class="table table-striped  table-bordered">
 						<thead>
 						<tr>
-							<th class="text-center">编号</th>
+							<th class="text-center" style="width:60px;">编号</th>
 							<th class="text-center">KEY</th>
 							<th class="text-center">数据组名称</th>
 							<th class="text-center">简介</th>
@@ -59,9 +58,9 @@
 								{$vo.info}
 							</td>
 							<td class="text-center">
-								<a class="btn btn-info btn-xs" href="{:Url('setting.systemGroupData/index',array('gid'=>$vo['id']))}"><i class="fa fa-paste"></i> 数据列表</a>
-								<button class="btn btn-info btn-xs"  onclick="$eb.createModalFrame(this.innerText,'{:Url('edit',array('id'=>$vo['id']))}')" ><i class="fa fa-paste"></i> 编辑</button>
-								<button class="btn btn-warning btn-xs" data-url="{:Url('delete',array('id'=>$vo['id']))}" type="button"><i class="fa fa-warning"></i> 删除</button>
+								<a class="layui-btn layui-btn-normal layui-btn-xs" href="{:Url('setting.systemGroupData/index',array('gid'=>$vo['id']))}"><i class="layui-icon">&#xe60a;</i>数据列表</a>
+								<button class="layui-btn layui-btn-normal layui-btn-xs"  onclick="$eb.createModalFrame('编辑','{:Url('edit',array('id'=>$vo['id']))}')" ><i class="layui-icon">&#xe642;</i>编辑</button>
+								<button class="layui-btn layui-btn-danger layui-btn-xs" data-url="{:Url('delete',array('id'=>$vo['id']))}" type="button"><i class="layui-icon">&#xe640;</i>删除</button>
 							</td>
 						</tr>
 						{/volist}
@@ -76,7 +75,7 @@
 {/block}
 {block name="script"}
 <script>
-    $('.btn-warning').on('click',function(){
+    $('.layui-btn-danger').on('click',function(){
         window.t = $(this);
         var _this = $(this),url =_this.data('url');
         $eb.$swal('delete',function(){

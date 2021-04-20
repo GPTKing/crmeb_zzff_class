@@ -7,7 +7,8 @@
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
-//
+// +----------------------------------------------------------------------
+
 namespace app\wap\model\user;
 
 
@@ -16,6 +17,7 @@ use service\QrcodeService;
 use think\Cookie;
 use think\Session;
 use traits\ModelTrait;
+use service\SystemConfigService;
 
 class PhoneUser extends ModelBasic
 {
@@ -70,12 +72,8 @@ class PhoneUser extends ModelBasic
             Cookie::set('is_login', 1);
             Session::set($name, $phone, 'wap');
             Session::set('__login_phone_num' . $userinfo['uid'], $phone, 'wap');
-            try {
-                $res = QrcodeService::getTemporaryQrcode('binding', $userinfo['uid']);
-            } catch (\Exception $e) {
-                $res['url'] = '';
-                $res['id'] = '';
-            }
+            $res['url'] = SystemConfigService::get('wechat_qrcode');
+            $res['id'] = 0;
             self::commit();
             return ['userinfo' => $user, 'url' => $res['url'], 'qcode_id' => $res['id'], 'isfollow' => $isfollow];
         } catch (\Exception $e) {

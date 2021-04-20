@@ -24,10 +24,23 @@
         overflow: hidden;
     }
 
+    .course-list.index .studyCourse .swiper-list3 .pictrue {
+        position: relative;
+        width: 7.1rem;
+        height: 3.8rem;
+        border-radius: .1rem;
+        margin-right: auto;
+        margin-left: auto;
+        overflow: hidden;
+    }
+
     .course-list.index .swiper-list2 .item .pictrue img {
         display: block;
         width: 100%;
         height: 100%;
+        object-fit: cover;
+        pointer-events: none;
+        -webkit-touch-callout: none;
     }
 
     .course-list.index .swiper-list2 .item .text {
@@ -76,13 +89,13 @@
     .course-list.index .swiper-list2 .item .free {
         font-weight: 400;
         font-size: .24rem;
-        color: #ffba25;
+        color: #FF6B00;
     }
 
     .course-list.index .swiper-list2 .item .money {
         font-weight: 500;
         font-size: .24rem;
-        color: #f55;
+        color: #FF6B00;
     }
 
     .course-list.index .swiper-list2 .item .money span {
@@ -165,10 +178,10 @@
         height: .4rem;
         padding-right: .12rem;
         padding-left: .12rem;
-        border-radius: .03rem;
+        border-radius: .1rem;
         background-color: rgba(44, 142, 255, .06);
         font-weight: 400;
-        font-size: .24rem;
+        font-size: .2rem;
         line-height: .4rem;
         color: #2c8eff;
     }
@@ -193,7 +206,7 @@
     .layout-first .item .text .group .money {
         font-weight: 500;
         font-size: .24rem;
-        color: #f55;
+        color: #FF6B00;
     }
 
     .layout-first .item .text .group .money span {
@@ -205,7 +218,7 @@
         font-weight: 400;
         font-size: .24rem;
         line-height: .45rem;
-        color: #ffba25;
+        color: #FF6B00;
     }
 
     .layout-first .item .text .group .total {
@@ -339,12 +352,13 @@
         <span v-show="loading==true" class="fa fa-spinner loadingpic" style="font-size: 0.4rem"></span>
         <span v-text="loadTitle">加载更多</span>
     </p>
+    <quick-menu></quick-menu>
 </div>
 {/block}
 {block name='foot'}
 <script>
     var type={$type},recommend_id={$recommend_id},typesetting={$typesetting},banner={$banner},Recommendlist={$Recommendlist},grade_id={$grade_id};
-    require(['vue','helper','store'],function(Vue,$h,storeApi) {
+    require(['vue','helper','store', '{__WAP_PATH}zsff/js/quick.js'],function(Vue,$h,storeApi) {
         new Vue({
             el: '#app',
             data: {

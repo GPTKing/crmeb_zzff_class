@@ -7,7 +7,8 @@
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
-//
+// +----------------------------------------------------------------------
+
 namespace app\wap\model\special;
 
 use app\wap\model\user\User;
@@ -37,7 +38,7 @@ class SpecialCourse extends ModelBasic
 
     public static function getSpecialSourceList($special_id, $limit = 10, $page = 1,$uid=0)
     {
-        $special = Special::get($special_id);
+        $special = Special::where('id',$special_id)->where(['is_del'=>0,'is_show'=>1])->find();
         if (!$special) return compact('page', 'list');
         //获得专栏下面的专题
         $cloumnSource = SpecialSource::getSpecialSource($special_id, false, $limit, $page);
@@ -45,16 +46,17 @@ class SpecialCourse extends ModelBasic
         if (!$cloumnSource) return compact('page', 'list');
         foreach ($cloumnSource as $k => $v) {
             if ($special['type'] == SPECIAL_COLUMN) {
-                $cloumnTask = Special::get($v['source_id']);
+                $cloumnTask = Special::where('id',$v['source_id'])->where(['is_del'=>0,'is_show'=>1])->find();
                 $cloumnTask = $cloumnTask ? $cloumnTask->toArray() : [];
                 //获得专题下面的素材
                 $specialTask = array();
                 $specialSource = SpecialSource::getSpecialSource($v['source_id']);
                 if(count($specialSource) > 0){
                     foreach ($specialSource as $sk => $sv) {
-                        $task = SpecialTask::where('is_show',1)->where('id',$sv['source_id'])->find();
+                        $task = SpecialTask::where(['is_show'=>1,'is_del'=>0])->where('id',$sv['source_id'])->field('id,special_id,title,detail,type,is_pay,image,abstract,sort,play_count,is_show,add_time,live_id')->find();
                         if ($task ? $task = $task->toArray() : false){
                             $task['special_id'] = $sv['special_id'];
+                            $task['is_free'] = $sv['pay_status'];
                             $task['pay_status'] = $sv['pay_status'];
                             $taskSpecialIsPay = self::specialIsPay($special_id,$uid);
                             if (!$taskSpecialIsPay){//如果整个专题免费，那么里面素材都免非，否则就默认素材本身的状态
@@ -65,15 +67,14 @@ class SpecialCourse extends ModelBasic
 
                     }
                 }
-                array_multisort(array_column($specialTask,'sort'),SORT_DESC,$specialTask);
                 if ($cloumnTask) {
                     $cloumnTask['special_task'] = $specialTask;
                     $cloumnTask['pay_status'] = $v['pay_status'];//付费,先默认素材本身的付费状态
+                    $cloumnTask['is_free'] = $v['pay_status'];
                     $specialIsPay = self::specialIsPay($v['source_id'],$uid);
                     if (!$specialIsPay){//如果整个专题免费，那么里面素材都免非，否则就默认素材本身的状态
                         $cloumnTask['pay_status'] = $specialIsPay;
                     }
-                    $cloumnTask['pay_status'] = $specialIsPay;
                     $cloumnTask['cloumn_special_id'] = $special_id;
                     if ($cloumnTask['is_show'] == 1) {
                         $list[] = $cloumnTask;
@@ -84,6 +85,7 @@ class SpecialCourse extends ModelBasic
                 $task = SpecialTask::getSpecialTaskOne($v['source_id']);
                 if ($task ? $task =  $task->toArray() : false) {
                 $task['pay_status'] = $v['pay_status'];//付费
+                $task['is_free'] = $v['pay_status'];
                 $specialIsPay = self::specialIsPay($special_id,$uid);
                 if (!$specialIsPay){//如果整个专题免费，那么里面素材都免非，否则就默认素材本身的状态
                     $task['pay_status'] = $specialIsPay;
@@ -95,14 +97,24 @@ class SpecialCourse extends ModelBasic
                 }
             }
         }
-       array_multisort(array_column($list,'sort'),SORT_DESC,$list);
         $page++;
         return compact('page', 'list');
     }
 
+    /**
+     * @param $special_id
+     * @param bool $source_id
+     * @param int $limit
+     * @param int $page
+     * @param int $uid
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
     public static function get_cloumn_task($special_id, $source_id = false, $limit = 10, $page = 1,$uid=0)
     {
-        $special = Special::get($special_id);
+        $special = Special::where('id',$special_id)->where(['is_del'=>0,'is_show'=>1])->find();
         if (!$special) return [];
         $cloumn_source = SpecialSource::getSpecialSource($special_id, $source_id);
         if (!$cloumn_source) return [];
@@ -112,8 +124,10 @@ class SpecialCourse extends ModelBasic
         if (!$special_source) return compact('page', 'list');
         foreach ($special_source as $k => $v) {
             $task = SpecialTask::getSpecialTaskOne($v['source_id']);
-            $task_special = Special::get($v['special_id']);
+            if(!$task) continue;
+            $task_special = Special::where('id',$v['special_id'])->where(['is_del'=>0,'is_show'=>1])->find();
             $specialIsPay = self::specialIsPay($v['special_id'],$uid);
+            $task['is_free'] = $v['pay_status'];
             $task['pay_status'] = $specialIsPay;
             $task['special_id'] = $v['special_id'];
             if ($task['is_show'] == 1 && $task_special['is_show'] == 1) {

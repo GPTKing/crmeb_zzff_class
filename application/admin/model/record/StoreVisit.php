@@ -1,5 +1,4 @@
 <?php
-
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
@@ -10,18 +9,12 @@
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
 
-
 namespace app\admin\model\store;
-
 
 use traits\ModelTrait;
 use basic\ModelBasic;
 use app\admin\model\user\User;
-/**
- *
- * Class StoreOrder
- * @package app\admin\model\store
- */
+
 class StoreVisit extends ModelBasic
 {
     use ModelTrait;

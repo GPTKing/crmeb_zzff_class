@@ -1,12 +1,14 @@
 {extend name="public/container"}
 {block name="content"}
 <div class="layui-fluid">
-    <div class="layui-row layui-col-space15">
+    <div class="layui-row layui-col-space15"  id="app">
         <div class="layui-col-md12">
             <div class="layui-card">
-                <div class="layui-card-header">签到记录</div>
+                <div class="layui-card-header">
+                    <div style="font-weight: bold;">签到记录</div>
+                </div>
                 <div class="layui-card-body">
-                    <div class="layui-row lay-col-space15">
+                    <div class="layui-row layui-col-space15">
                         <div class="layui-col-md12">
                             <form class="layui-form layui-form-pane" action="">
                                 <div class="layui-form-item">
@@ -17,14 +19,18 @@
                                         </div>
                                     </div>
                                     <div class="layui-inline">
-                                        <button class="layui-btn layui-btn-sm layui-btn-normal" lay-submit="search" lay-filter="search">搜索</button>
+                                        <div class="layui-input-inline">
+                                            <button class="layui-btn layui-btn-sm layui-btn-normal" lay-submit="search" lay-filter="search">
+                                                <i class="layui-icon">&#xe615;</i>搜索</button>
+                                            <button class="layui-btn layui-btn-sm layui-btn-normal" onclick="window.location.reload()"><i class="layui-icon">&#xe669;</i>刷新</button>
+                                        </div>
                                     </div>
                                 </div>
                             </form>
                         </div>
-                        <div class="layui-col-md12">
-                            <table id="List" lay-filter="List"></table>
-                        </div>
+                         <div class="layui-col-md12">
+                             <table class="layui-hide" id="List" lay-filter="List"></table>
+                         </div>
                     </div>
                 </div>
             </div>
@@ -40,7 +46,7 @@
 
     layList.tableList({o:'List',t:'too'},layList.U({a:'getUserSignList'}),function (){
         return [
-            {field: 'id', title: '编号', sort: true,event:'id',width:'10%',align:'center'},
+            {field: 'id', title: '编号', width:60,align:'center'},
             {field: 'title', title: '标题',align:'center'},
             {field: 'balance', title: '金币余量',align:'center'},
             {field: 'number', title: '明细数字',align:'center'},

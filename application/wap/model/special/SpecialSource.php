@@ -7,14 +7,11 @@
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
-//
+// +----------------------------------------------------------------------
 
 namespace app\wap\model\special;
 
 
-use app\admin\model\live\LiveStudio;
-use app\admin\model\order\StoreOrder;
-use app\admin\model\system\RecommendRelation;
 use traits\ModelTrait;
 use basic\ModelBasic;
 
@@ -44,7 +41,6 @@ class SpecialSource extends ModelBasic
                 $where['special_id'] = $special_id;
                 $data->where($where);
             }
-
         }
         if ($source_id) {
             if (!is_array($source_id)) {
@@ -55,43 +51,9 @@ class SpecialSource extends ModelBasic
             }
         }
         if ($page) {
-            $data->page($page, !$limit ? 10 : $limit);
+            $data->page((int)$page, !$limit ? 10 : (int)$limit);
         }
-        return $data->select();
+        return $data->order('sort DESC,id DESC')->select();
     }
-
-    /**更新及添加专题素材
-     * @param $source_list_ids  一维数组，素材id
-     * @param int $special_id 专题id
-     * @return bool
-     */
-    public static function saveSpecialSource($source_list_ids, int $special_id)
-    {
-        if (!$special_id || !is_numeric($special_id)) {
-            return false;
-        }
-        if (!$source_list_ids || !is_array($source_list_ids)) {
-            return false;
-        }
-        try {
-            $specialSourceAll = self::getSpecialSource($special_id)->toArray();
-
-            if ($specialSourceAll) {
-                self::where(['special_id' => $special_id])->delete();
-            }
-            $inster['special_id'] = $special_id;
-            foreach ($source_list_ids as $sk => $sv) {
-                $inster['source_id'] = $sv['id'];
-                $inster['pay_status'] = $sv['pay_status'];
-                $inster['add_time'] = time();
-                self::set($inster);
-            }
-                return true;
-
-        } catch (\Exception $e) {
-            return false;
-        }
-    }
-
 
 }

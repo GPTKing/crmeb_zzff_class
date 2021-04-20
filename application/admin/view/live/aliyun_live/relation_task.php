@@ -10,18 +10,14 @@
                         <div class="layui-form-item">
                             <div class="layui-inline">
                                 <label class="layui-form-label">时间范围</label>
-                                <div class="layui-input-inline" style="width: 200px;">
-                                    <input type="text" name="start_time" placeholder="开始时间" id="start_time" class="layui-input">
-                                </div>
-                                <div class="layui-form-mid">-</div>
-                                <div class="layui-input-inline" style="width: 200px;">
-                                    <input type="text" name="end_time" placeholder="结束时间" id="end_time" class="layui-input">
+                                <div class="layui-input-inline" style="width: 260px;">
+                                    <input type="text" name="datetime" class="layui-input" id="datetime" placeholder="时间范围">
                                 </div>
                             </div>
                             <div class="layui-inline">
-                                <label class="layui-form-label">任务名称</label>
+                                <label class="layui-form-label">用户名称</label>
                                 <div class="layui-input-block">
-                                    <input type="text" name="title" class="layui-input" placeholder="请输入用户名称">
+                                    <input type="text" name="nickname" class="layui-input" placeholder="请输入用户名称">
                                 </div>
                             </div>
                             <div class="layui-inline">
@@ -66,8 +62,12 @@
     var live_id='{$live_id}';
     //实例化form
     layList.form.render();
-    layList.date({elem:'#start_time',theme:'#393D49',type:'datetime'});
-    layList.date({elem:'#end_time',theme:'#393D49',type:'datetime'});
+    layList.date({
+        elem: '#datetime',
+        theme: '#0092DC',
+        type: 'datetime',
+        range: '~'
+    });
     //加载列表
     layList.tableList('List',"{:Url('get_relation_task')}?live_id={$live_id}",function (){
         return [
@@ -94,9 +94,19 @@
     }
     //查询
     layList.search('search',function(where){
-        if(where.end_time && !where.start_time) return layList.msg('请选择开始时间');
-        if(where.start_time && !where.end_time) return layList.msg('请选择结束时间');
-        layList.reload(where,true);
+        var arr_time = [];
+        var start_time = '';
+        var end_time = '';
+        if (where.datetime) {
+            arr_time = where.datetime.split('~');
+            start_time = arr_time[0].trim();
+            end_time = arr_time[1].trim();
+        }
+        layList.reload({
+            start_time: start_time,
+            end_time: end_time,
+            nickname: where.nickname
+        },true);
     });
     layList.switch('is_show',function (odj,value) {
         action.set_value('is_show',value,odj.elem.checked ? 1 : 0);
@@ -109,6 +119,7 @@
                 action.set_value('course_name',id,value);
                 break;
             case 'sort':
+                if(value < 0) return layList.msg('排序不能小于0');
                 action.set_value('sort',id,value);
                 break;
         }

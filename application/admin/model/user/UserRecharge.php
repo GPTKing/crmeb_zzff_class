@@ -30,15 +30,12 @@ use basic\ModelBasic;
          $model = new self;
          $model = $model->alias('A');
          if($where['order_id'] != '') {
-             $model = $model->whereOr('A.order_id','like',"%$where[order_id]%");
-             $model = $model->whereOr('A.id',(int)$where['order_id']);
-             $model = $model->whereOr('B.nickname','like',"%$where[order_id]%");
+             $model = $model->where('A.order_id|B.nickname|A.id','like',"%$where[order_id]%");
          }
          $model = $model->where('A.paid',1);
          $model = $model->field('A.*,B.nickname');
          $model = $model->join('__USER__ B','A.uid = B.uid','RIGHT');
          $model = $model->order('A.id desc');
-
          return self::page($model,$where);
 
      }

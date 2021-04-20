@@ -9,9 +9,7 @@
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
 
-
 namespace app\admin\model\system;
-
 
 use traits\ModelTrait;
 use basic\ModelBasic;
@@ -29,6 +27,8 @@ class SystemLog extends ModelBasic
     use ModelTrait;
 
     protected $insert = ['add_time'];
+
+    const logTime=7776000;
 
     protected function setAddTimeAttr()
     {
@@ -108,7 +108,7 @@ class SystemLog extends ModelBasic
      */
     public static function deleteLog(){
         $model = new self;
-        $model->where('add_time','<',time()-7776000);
+        $model->where('add_time','<',bcsub(time(),self::logTime,0));
         $model->delete();
     }
 }

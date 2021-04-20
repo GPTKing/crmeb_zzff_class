@@ -7,7 +7,8 @@
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
-//
+// +----------------------------------------------------------------------
+
 namespace app\wap\model\special;
 
 use basic\ModelBasic;
@@ -18,7 +19,7 @@ class Grade extends ModelBasic
     use ModelTrait;
 
     public static function getPickerData(){
-        $data=self::order('sort desc')->select();
+        $data=self::where('is_del',0)->where('is_show',1)->order('sort desc')->select();
         $pickdata=[];
         foreach ($data as $item){
             $val['value']=$item['id'];

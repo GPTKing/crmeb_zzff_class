@@ -3,13 +3,13 @@
 {block name="head_top"}
 <link rel="stylesheet" type="text/css" href="{__WAP_PATH}zsff/css/video-js.min.css"/>
 <script src="{__WAP_PATH}zsff/js/video.min.js"></script>
-<script src="{__WAP_PATH}zsff/js/video.zh.js"></script>
+<script src="{__WAP_PATH}zsff/js/zh-CN.js"></script>
 <style>
     body{padding-bottom:1rem;}
     .thematic-details{background-color:#f5f5f5;}
     .video-js .vjs-big-play-button{top: 50%;left: 50%;transform: translate(-50%,-50%);}
     .layui-layer-shade{background-image: url("/wap/first/zsff/images/close.png")!important;background-repeat: no-repeat!important;background-size: 0.8rem 0.8rem;background-position: 50% 88%;}
-    .navCon{position: relative;}
+    .navCon{position: relative;padding: 0 0.3rem;}
     .swiper-details .swiper-nav .free{position:absolute;font-size: 0.2rem;color: #fff;left:67%;top: 0;margin-top: -0.5rem;animation: stone linear 1s infinite alternate;-webkit-animation: free linear 1s infinite alternate;}
     .swiper-details .swiper-nav .free .freeCon{width:1.1rem;height:0.4rem;border-radius:0.05rem;background-color:#ea2f2f;position:relative;left:0.5rem}
     .swiper-details .swiper-nav .free .freeCon:after{content: "";width: 0;height: 0;border-left: 0.1rem solid transparent;border-right: 0.1rem solid transparent;border-top: 0.13rem solid #ea2f2f;position:absolute;bottom: -0.1rem;left: 50%;margin-left: -0.1rem;}
@@ -32,13 +32,12 @@
     .video_footer_left{width:.9rem;height:1rem;line-height:1rem;text-align:center;}
     .video_footer_left .cont{display:inline-block;vertical-align:middle;font-weight:400;font-size:.18rem;line-height:.36rem;color:#666;}
     .video_footer_btn{-webkit-flex:1;flex:1;height: 0.76rem;border-radius:37px;}
-    .video_footer_btn_left{width: 50%;height: 100%;border-radius:37px 0px 0px 37px;background:linear-gradient(90deg,rgba(248,162,1,1) 0%,rgba(255,186,37,1) 100%);}
+    .video_footer_btn_left{width: 50%;height: 100%;border-radius:37px 0px 0px 37px;background:#FF6B00;}
     .video_footer_btn_right{width: 50%;height: 100%;border-radius:0px 37px 37px 0px;background:linear-gradient(90deg,rgba(64,157,255,1) 0%,rgba(30,133,251,1) 100%);}
     .video_footer_btn_left_pic{font-size: 0.28rem;line-height:.22rem; color: #fff;text-align: center;}
     .video_footer_btn_left_num{font-size: 0.2rem;line-height:.2rem; color: #fff;text-align: center;}
     .video_footer_btn_left_pic + .video_footer_btn_left_num{margin-top:.09rem;}
     footer .video_footer_btn .on{width: 100% !important;border-radius: 37px !important;}
-    footer .video_footer_btn.item2{width: 6.2rem;}
     video{width: 100%}
     .labelItem {
         font-size: 0.24rem;
@@ -51,62 +50,305 @@
     }
     .catalogue{background-color:#fff;}
     .video-listn{background-color:#fff;}
+    .teacher{margin-top:.16rem;background-color:#fff;}
+    .teacher .teacher-hd{padding:.2rem .3rem 0;font-weight:bold;font-size:.3rem;line-height:.42rem;color:#333;}
+    .teacher .teacher-bd{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-align:center;-webkit-align-items:center;align-items:center;padding:.28rem .3rem .3rem;}
+    .teacher .teacher-bd .img{width:1.1rem;height:1.1rem;border-radius:50%;object-fit:cover;}
+    .teacher .teacher-bd .text{-webkit-box-flex:1;-webkit-flex:1;flex:1;min-width:0;margin-right:.08rem;margin-left:.2rem;}
+    .teacher .teacher-bd .name{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-weight:bold;font-size:.3rem;line-height:.42rem;color:#282828;}
+    .teacher .teacher-bd .label{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-align:center;-webkit-align-items:center;align-items:center;margin-top:.06rem;}
+    .teacher .teacher-bd .label .cell{height:.34rem;padding:0 .12rem;border-radius:.04rem;background-color:#fff7e6;font-size:.22rem;line-height:.34rem;color:#feb720;}
+    .teacher .teacher-bd .label .cell ~ .cell{margin-left:.1rem;}
+    .teacher .teacher-bd .attr{margin-top:.09rem;font-size:.22rem;line-height:.37rem;color:#385270;}
+    .teacher .teacher-bd .iconfont{font-size:.2rem;color:#999;}
+    .teacher-section {
+        margin-top: 0.14rem;
+        background-color: #fff;
+    }
+
+    .teacher-table {
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: flex;
+        -webkit-box-align: center;
+        -webkit-align-items: center;
+        align-items: center;
+        height: 1.5rem;
+    }
+
+    .teacher-table .item {
+        -webkit-box-flex: 1;
+        -webkit-flex: 1;
+        flex: 1;
+        position: relative;
+        min-width: 0;
+        font-size: 0.24rem;
+        text-align: center;
+        color: #999999;
+    }
+
+    .teacher-table .item:last-child::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 0;
+        width: 0.02rem;
+        height: 0.4rem;
+        background-color: #e8e8e8;
+        -webkit-transform: translateY(-50%);
+        transform: translateY(-50%);
+    }
+
+    .teacher-table .item .learn {
+        font-size: 0;
+    }
+
+    .teacher-table .item .learn span {
+        font-size: .24rem;
+    }
+
+    .teacher-table .item .learn span:nth-child(2) {
+        font-weight: bold;
+        font-size: .28rem;
+    }
+
+    .teacher-table >div:last-child > div:first-child {
+        margin-bottom: 0.06rem;
+    }
+
+    .teacher-table .num {
+        font-size: 0.38rem;
+        color: #333333;
+    }
+
+    .teacher-table img {
+        width: 0.5rem;
+        height: 0.5rem;
+        border: 2px solid #FFFFFF;
+        border-radius: 50%;
+        margin-left: -0.15rem;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        background-color: #2C8EFF;
+        vertical-align: middle;
+        object-fit: cover;
+        pointer-events: none;
+        -webkit-touch-callout: none;
+    }
+
+    .teacher-detail {
+        padding: 0 0.3rem 0.3rem;
+    }
+
+    .teacher-detail a {
+        display: block;
+        padding: 0.3rem;
+        border-radius: 0.04rem;
+        background-color: #f9fafc;
+    }
+
+    .teacher-detail .iconfont {
+        color: #666666;
+    }
+
+    .teacher-detail .detail-hd {
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: flex;
+        -webkit-box-align: center;
+        -webkit-align-items: center;
+        align-items: center;
+    }
+
+    .teacher-detail .detail-hd .head {
+        width: 0.9rem;
+        height: 0.9rem;
+        border-radius: 50%;
+        overflow: hidden;
+    }
+
+    .teacher-detail .detail-hd img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .teacher-detail .detail-hd .text {
+        -webkit-box-flex: 1;
+        -webkit-flex: 1;
+        flex: 1;
+        min-width: 0;
+        margin: 0 0.18rem;
+        font-weight: bold;
+        font-size: 0.3rem;
+        color: #282828;
+    }
+
+    .teacher-detail .detail-hd span {
+        display: inline-block;
+        height: 0.34rem;
+        padding: 0 0.12rem;
+        border-radius: 0.1rem;
+        background-color: #FFF0E5;
+        font-weight: normal;
+        font-size: 0.2rem;
+        line-height: 0.34rem;
+        color: #FF6B00;
+    }
+
+    .teacher-detail .detail-bd {
+        margin-top: 0.2rem;
+        font-size: 0.26rem;
+        line-height: 0.38rem;
+        color: #666666;
+    }
+
+    .scroll-section {
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: flex;
+        -webkit-box-align: center;
+        -webkit-align-items: center;
+        align-items: center;
+        margin-top: 0.14rem;
+        background-color: #FFFCF6;
+        font-size: 0.24rem;
+    }
+
+    .scroll-section .label {
+        width: 2rem;
+        padding-left: 0.75rem;
+        background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACwAAAAsCAYAAAAehFoBAAADgklEQVRYR+2ZQXbaMBCG/zFdkFXJCaqcoOkJCpu+mk3TE4ScoOQEISdIcoLQE6Td4Pe6SXKCkhNEvQFZNRuYPsmykRQbY6CVF2UHNvKn8a9/RiPCX/hwIrrMuADhEMAdtXBKH+R0F4+iXQxij8GJOGNg5IzLmNEeDqgnZ9s+b2fAfCs6/IwbAN0iKGJ8pr781ghgI4EbEDoZEANfoSJL+KJ+Y+C8FUs38hvQbx3hAgk8ETCkWI7niRgRcNYI4BIJPFALg2yBNQa4TAJRG0N7YdUF5kQMGLgGY0p76BUt0tqSWCUBX5J1gRcTcQfCez1OCbQG5kQcMzCoXAOMjvHW7FZHAtsC80QcMWmnSZkZV62+HNrjEk/EkAkXlbDeDcoFfAlsC6z+P5+Iy8xZ1HffDmmRiEcAogZw7gJV/6kriWw8RxqAjGJ5kF1TwJx/AXpVEAAkxVKucR82BTYOpJ7x2rdEBziKZe1FuAp8U2AtDcvDVQKK+nJfS8SO8L8C5kQIVRwxYdaK5UnRpHWUf2MKwhsNCpyoZBQE2Il8gRPkLpH5cvrD9yiWR0GAffsqK4z0mwCUKegPtbEfBNhodEzAsWFxnMCWyCIRqo5+m1tcCA1b9iV9jVZ5ebAIa7uyNKoSUSuWL7KtrluAWz0Rxn1o4KVGLeuyo+wBT4MCK7DFROSyKLNVJ7mF1LABzis0auFd0Wb1P3BZel4nNdvFV+Ml4SWGpyiW+SbWynZLlwAegi467w0029ZMcfOYtQbK0rNd0KtWQbAIzxNxTdm2jHEf9WVhA2YxET+zbZmeVAhbszOcKR17FMs7f/E2pviZJyIvfFZ1hJwiPmh5+UMc8hwjZkh/V5y7Q1rALzUesoBfta3KrnlbpF9RX+qNchANVwG/cBAT3cYC284ARh7dFNiqlqpmbmrSGUUY0Ud5VXX/Oqm5oGBf2l26+XQcZOPOjz4KSF9VaY+iLrBvd0UOkvXWBsxr9NbShrXeX+XRJlxSLM+Lol0X2GsGFiaT2o0T04tTnXTdlTHgU3qFE7+WrQts9fkeqI3uTtqtZi+mGiHjvDVquAkY2dGuC6zHvhWdVYc3tSPs7LfSzufLaBNOVardBLhqIW8FnEWEnzEG8MmZDONSLfLGHcrkMk6b0Qp8qW1rBo069nLyf0G0ATxRG6JRB4uOHNLmh5KEssCVxwpVmvWv/wGVY//ZbDJkGgAAAABJRU5ErkJggg==") 0.3rem center/0.26rem 0.22rem no-repeat;
+        color: #FEB720;
+    }
+
+    .scroll-section .swiper-container {
+        position: relative;
+        -webkit-box-flex: 1;
+        -webkit-flex: 1;
+        flex: 1;
+        min-width: 0;
+        height: 0.62rem;
+        padding-left: 0.16rem;
+        line-height: 0.62rem;
+    }
+
+    .scroll-section .swiper-container::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 0;
+        width: 1px;
+        height: 0.24rem;
+        border-left: 1px solid #999999;
+        -webkit-transform: translateY(-50%);
+        transform: translateY(-50%);
+    }
+
+    .process-section {
+        margin-top: .14rem;
+        background-color: #FFFFFF;
+    }
+
+    .process-section .title {
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: flex;
+        -webkit-box-align: center;
+        -webkit-align-items: center;
+        align-items: center;
+        height: .86rem;
+        padding-right: .3rem;
+        padding-left: .3rem;
+        font-size: .28rem;
+        color: #282828;
+    }
+
+    .process-section .list {
+        display: -webkit-box;
+        display: flex;
+        -webkit-box-pack: justify;
+        justify-content: space-between;
+        -webkit-box-align: center;
+        align-items: center;
+        height: 1.1rem;
+        padding-right: .3rem;
+        padding-left: .3rem;
+        border-top: 1px solid #EEEEEE;
+    }
+
+    .process-section .list .item {
+        padding-right: 0 !important;
+    }
+
+    .process-section .list .item ~ .item {
+        padding-left: .67rem;
+        border: none !important;
+        background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADgAAAAoCAYAAACrUDmFAAAGKklEQVRoQ91a3W8U1xX/nXvvrGcnXhwEdgIlKSp22sSO8ceWGKsJS1pBhKhUVeC3PvSp/TP2L8hLnvoQ5SlShJGiSCiv3lAFTDS7yDYmFnaiQojs2vhz2a/ZmXuqY60j4jhpsBdp4nncPXPv/Z3f+b5DiNFz586dRLVaPeC6rtFa16Moqi0tLVXPnj0b7vaYtNsXm/ne2NiYOXLkSLJYLLYrpY4rpVJhGAaO4ywHQfDA87yVq1evhtls1j7tvrEAODMzkyqVSseIqI+ZzzHzrwGUieiutfZTIrrjuu5GT09P8IsEODEx0QGgJ4qiM8z8VwCdAKoA7jLzNQDjxph7xpilp2UyFgz6vv8yEb0J4AyAtwEcBxAx8woRfc3M4wAE6NTTMhkLgIVC4ai19pRS6g8A/sjMXQBaAIjPlffCZCwATkxMPBcEwQtKqd8DuAwgDeAwgCSAcC9MxgIgM6tcLpfwPO+3xpjzzDxMRN0AjuyVyVgAlMgoIG/evPm81volx3HS1to/S1TdK5OxAbgFstlMxgrgs2AydgCbzWQsATaTydgCbBaTsQbYDCYFIGWzWbp48aIuFoucyWQiIuKdilpmpnw+b+S/a9euRT9W3YtcLpfTIpfJZKQa4Z9YU42OjtLly5cxOjqKkZGRTfkn999tniyXyyt05coV3draajo6OtwwDLlSqZR/rP/yfd8B4MnmrutWuru76zsdXNqf9vZ21xhD8/PzdalGdlKcHHxubs5ZX1/XjuNQqVSyDx8+DEZGRqLtCt5NngyC4J4wMmitdYlIkmzAzN8CWFpYWNi4cOFCTTYaGxtzU6nUQSJql+rCWivsPLLWLq2trS2eP3++1DAnMzc351UqlcNRFL0cRdFzjbZnWSn1oK+vb10Uks1m1aVLlwwzH6zVasdlb7EkIloHcD+VSi13dnaK8r7X//1cJoloWowsiqJZAfgegFZmPkpEa9KaWGtva62nBwYGluTgvu8LqLRSqr9RXSSY+WsiKgRBkDt9+vR/RG52dvZAuVwWYP3W2j8R0a8AbACYAPDxxsbGXWFyenraIaLWIAh6rbV/AfAqESlmvsfMn4RhOHHo0KG1rq6uTQVvN9f/V/EAWAYwB2CVfN8vyGYAXiSiR0IYgByA6wMDA/dl8Xw+30lEF5g5A+CUWCgzywIi92E6nZ4SOenroih6Xdoea630dSeI6DGAfzPze8Vi8WYmkwny+bwrJZjW+k1r7T8axbUweBvA+0R03XGc+Z6eHnn3Bw8z68nJSXGpAQB/AyBdiCjzQMOSqg2yasLgQwCJxp8C8AsiyjHzp4ODgwIChULhNQCXGgC7mVmq/HkAnxHRvwYHB/MiNz4+fkxrPaSUkr5OiubfAKgz8+cA3k0mk9dlxpJMJsWPjxljziil/m6tHSDaDOiTRPShrGuM+aq3t3e1GQCvM7P0Xm1KqRVmvk1E0mB+x6Dv+8LEOwCGAPxOGASwII2oMeajvr4+sXlMTU29EASBjB3eICIB+RIzB0opH8AHWmu/t7e3msvlki0tLS8mEolTRCSK6xb6AMwQ0Sda61ue5z3o6uoS896biRYKhX8y8wFmPqaUEpPIh2E4Y639ZmhoaHODycnJg2EYnmBmAdcLQKLpV0T0pdZ66uTJk4sid+PGjaQx5rAx5hVr7TAAGSKJX89GUfR5Op0Wk7eNFOJ6nndCa/2WdPBEpInogSi2ra1tdnV1tZxOpyUCf/fsKsj4vv+6Ukp88GhD2zOlUmmhXq9XttKFjPPET2u1mvhpVyOK3q/VagsAVoaHhytyiq3oGEVRR71ef03ekciotf7vTozcunXrkOM4rzDzYfErIlomopn+/v5H29PPrtOE7/ttURSZlpYWcVrrum5R/OTJvLV18MePH7uJRKJVKUXFYrGsta5uz1sie+7cuRal1OZ8k4jqnudVOzs7ZUr2vfmmKK5UKqW01glZ01obLC4uFrfS0xZ1P5e57aONzUS/kxPH6bfdMPfkcCrWAHfL3JPjxdgC3CtzW1YYS4DNYC62AJvFXCwBNpO52AFsNnOxAvgsmIsVwH0/ut/3ly/7/vps31+A7vsr7H3/EcJWSH8Wn5H8D2fpbyp9zLJtAAAAAElFTkSuQmCC") left center/.28rem .2rem no-repeat;
+    }
+
+    .process-section .list .item span {
+        display: inline-block;
+        box-sizing: border-box;
+        vertical-align: middle;
+        font-size: .26rem;
+        line-height: .37rem;
+        color: #282828;
+    }
+
+    .process-section .list .item span:first-child {
+        width: .28rem;
+        height: .28rem;
+        border: .02rem solid #282828;
+        border-radius: 50%;
+        margin-right: .06rem;
+        font-size: .22rem;
+        line-height: .24rem;
+        text-align: center;
+        color: #282828;
+    }
 </style>
 {/block}
 {block name="content"}
-<div class="thematic-details" id="app" v-cloak="">
+<div v-cloak id="app" class="thematic-details">
     {if !$subscribe}
-    <div class="follow acea-row row-between-wrapper">
-        <div class="picTxt acea-row row-between-wrapper">
-            <div class="pictrue"><img src="{$confing.site_logo}"></div>
-            <div class="text">
-                <div class="name line1">{$confing.site_name}</div>
-                <div class="line1">{$confing.seo_title}</div>
-            </div>
+    <div class="follow acea-row row-between-wrapper" v-if="topFocus">
+        <div class="picTxt">点击“立即关注”即可关注公众号</div>
+        <div>
+            <div class="followBnt" @click="is_code=true">立即关注</div>
+            <span class="iconfont iconguanbi2" @click="topFocus = false"></span>
         </div>
-        <div class="followBnt" @click="is_code=true">关注</div>
     </div>
     {/if}
-    <!--END-->
     <div class="swiper-details">
         <div class="banner slider-banner">
-            <ul class="swiper-wrapper" v-cloak="">
+            <ul class="swiper-wrapper">
                 <li class="swiper-slide" v-for="swiper in swiperlist">
-                    <img :src="swiper"/>
+                    <img :src="swiper" />
                 </li>
             </ul>
             <div class="swiper-pagination"></div>
         </div>
-        <div class="successTip" v-if="barrageStatus == true">
-            <div class="picTxt acea-row row-middle" v-for="(item,index) in Barragelist" v-show="num==index?true:false">
-                <div class="pictrue"><img :src="item.avatar"></div>
-                <div class="acea-row row-middle">
-                    <div class="name line1">{{item.nickname}}</div>
-                    <div v-text="item.status_name"></div>
-                </div>
-            </div>
-        </div>
         <div class="swiper">
+            <div class="name" v-text="special.title" style="padding:0.25rem 0.3rem 0;font-size:0.32rem;line-height:0.5rem;color:#333333;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;">加载中</div>
             <div class="swiper-int">
                 <div class="swiper-int-top">
                     <div class="swiper-int-top-left">
-                        <div class="name" v-text="special.title">加载中</div>
                         <div v-if="special.label.length" class="attr">
                             <div v-for="item in special.label">{{item}}</div>
                         </div>
                     </div>
-                    <div class="collect" @click="collect">
-                        <div :class="['knowledge', special.collect ? 'iconshoucang2' : 'iconshoucang11']"></div>
-                        <div>{{special.collect ? '已收藏': '收藏'}}</div>
+                    <div class="acea-row row-middle" style="margin-top: .14rem;">
+                        <div class="pin-money" v-if="is_pay==false">
+                            <span class="price">￥<b>{{special.money }}</b></span>
+                        </div>
+                        <div class="pin-money" v-else v-show="is_pay==false">拼课价<span class="money">￥{{special.pink_money}}</span></div>
                     </div>
                 </div>
-                <div class="acea-row row-middle">
-                    <div class="pin-money" v-if="is_pay==false && is_partake==false">
-                        <span class="price">¥<b>{{ special.money }}</b></span>
-                        <span class="total">共{{count}}节</span>
-                    </div>
-                    <div class="pin-money" v-else v-show="is_pay==false">拼课价<span class="money">¥ {{special.pink_money}}</span></div>
-                    <div class="collect">已有{{special.browse_count}}人学习</div>
+                <div class="collect" @click="collect">
+                    <div :class="['iconfont', special.collect ? 'iconshoucang2' : 'iconshoucang11']"></div>
+                    <div>{{special.collect ? '已收藏': '收藏'}}</div>
                 </div>
             </div>
         </div>
@@ -114,7 +356,42 @@
             <div class="reminder line1">和小伙伴一起学习，有老师答疑哦~</div>
             <div class="chatBnt acea-row row-center-wrapper" @click=" open = false ">加入群聊</div>
         </div>
-        <div class="swiper-nav" ref="list" >
+        <div class="teacher-section">
+            <div class="teacher-table">
+                <div class="item">
+                    <div class="num">{{ count }}</div>
+                    <div>总节数</div>
+                </div>
+                <div class="item">
+                    <div>
+                        <template v-for="(item, index) in record.record">
+                            <img v-if="index < 5" :key="index" :src="item.avatar">
+                        </template>
+                    </div>
+                    <div class="learn"><span>已有</span><span>{{ record.recordCoujnt }}</span><span>人学习</span></div>
+                </div>
+            </div>
+            <div v-if="lecturer" class="teacher-detail">
+                <a :href="$h.U({c:'special',a:'teacher_detail'})+'?id=' + special.lecturer_id">
+                    <div class="detail-hd">
+                        <div class="head">
+                            <img :src="lecturer.lecturer_head">
+                        </div>
+                        <div class="text">
+                            <div>{{ lecturer.lecturer_name }}</div>
+                            <div v-if="lecturer.label.length">
+                                <template v-for="(item, index) in lecturer.label">
+                                    <span v-if="index < 3" :key="index">{{ item }}</span>
+                                </template>
+                            </div>
+                        </div>
+                        <div class="iconfont iconxiangyou"></div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <div class="swiper-nav" ref="list">
             <div class="navCon acea-row row-middle">
                 <div v-if="special.type == 5" class="item" :class="active==index?'on':''" v-for="(nav,index) in cloumnNavlist" @click=" active = index">
                     {{nav.title}}
@@ -127,121 +404,118 @@
                 </div>
             </div>
         </div>
-        <!-- /*通用详情
-         */-->
+        <!-- 通用详情 -->
         <div class="swiper-conter" v-show="active==0" v-html="special.content"></div>
-        <!-- /**专题目录和专栏目录
-         **/-->
+        <!-- 专题目录/专栏目录 -->
         <div v-show="active==1 && special.type != 4">
-            <div v-if="updateOtherTaskList.length" ref="list">
+            <div ref="list">
                 <!-- 专栏目录 -->
                 <ul v-if="special.type === 5" class="parent-catalogue">
-                    <li v-for="(item, index) in updateOtherTaskList" :key="item.id" :class="[parentActive === index ? 'active' : '']" @click="parentActive = index">
-                        <div class="parent-title">
-                            <div class="name">{{item.title}}</div>
-                            <div :class="[parentActive === index ? 'iconxiangshang' : 'iconxiangxia', 'knowledge']"></div>
-                        </div>
-                        <ul v-if="item.special_task.length" class="catalogue">
-                            <li v-for="(itm, idx) in item.special_task" :key="itm.id" :class="{ gray: itm.taskTrue }" @click="play(itm)">
-                                <img v-if="itm.type === '视频'" class="label" src="{__WAP_PATH}zsff/images/media1.png">
-                                <img v-else-if="itm.type === '图文'" class="label" src="{__WAP_PATH}zsff/images/media2.png">
-                                <img v-else-if="itm.type === '音频'" class="label" src="{__WAP_PATH}zsff/images/media3.png">
-                                <div v-else class="label">{{ itm.type }}</div>
-                                <div class="title">{{idx < 9 ? '0' + (idx + 1) : idx + 1}} | {{itm.title}}</div>
-                                <template v-if="item.pay_status">
-                                    <div v-if="itm.pay_status" class="knowledge iconsuozi"></div>
+                    <template v-for="(item, index) in otherTaskList">
+                        <li :key="item.id" :class="{ active: item.active }" @click="show(item)">
+                            <div class="parent-title">
+                                <div class="name">{{item.title}}</div>
+                                <div :class="[item.active ? 'iconxiangshang' : 'iconxiangxia', 'iconfont']"></div>
+                            </div>
+                            <ul v-if="item.special_task.length" class="catalogue">
+                                <li v-for="(itm, idx) in item.special_task" :key="itm.id" :class="{ gray: itm.taskTrue }" @click="play(itm)">
+                                    <div class="image">
+                                        <img v-if="item.type === 1" class="img" src="{__WAP_PATH}zsff/images/media1.png">
+                                        <img v-else-if="item.type === 2" class="img" src="{__WAP_PATH}zsff/images/media2.png">
+                                        <img v-else-if="item.type === 3 || item.type === 4" class="img" src="{__WAP_PATH}zsff/images/media3.png">
+                                    </div>
+                                    <div class="title">{{idx < 9 ? '0' + (idx + 1) : idx + 1}} | {{itm.title}}</div>
+                                    <template v-if="itm.is_free">
+                                        <div v-if="itm.pay_status" class="iconfont iconsuozi"></div>
+                                        <div v-else class="iconfont iconziyuan2"></div>
+                                    </template>
                                     <div v-else class="free">免费</div>
-                                </template>
-                                <div v-else class="free">免费</div>
-                            </li>
-                        </ul>
-                    </li>
+                                </li>
+                            </ul>
+                        </li>
+                    </template>
                 </ul>
                 <!-- 专题目录 -->
                 <ul v-else class="catalogue">
-                    <li v-for="(item, index) in updateOtherTaskList" :key="item.id" :class="{ gray: item.taskTrue }" @click="play(item)">
-                        <img v-if="item.type === '视频'" class="label" src="{__WAP_PATH}zsff/images/media1.png">
-                        <img v-else-if="item.type === '图文'" class="label" src="{__WAP_PATH}zsff/images/media2.png">
-                        <img v-else-if="item.type === '音频'" class="label" src="{__WAP_PATH}zsff/images/media3.png">
-                        <div v-else class="label">{{ item.type }}</div>
+                    <li v-for="(item, index) in otherTaskList" :key="item.id" :class="{ gray: item.taskTrue }" @click="play(item)">
+                        <div class="image">
+                            <img v-if="item.type === 1" class="img" src="{__WAP_PATH}zsff/images/media1.png">
+                            <img v-else-if="item.type === 2" class="img" src="{__WAP_PATH}zsff/images/media2.png">
+                            <img v-else-if="item.type === 3 || item.type === 4" class="img" src="{__WAP_PATH}zsff/images/media3.png">
+                        </div>
                         <div class="title">{{index < 9 ? '0' + (index + 1) : index + 1}} | {{item.title}}</div>
-                        <div v-if="item.pay_status" class="knowledge iconsuozi"></div>
+                        <template v-if="item.is_free">
+                            <div v-if="item.pay_status" class="iconfont iconsuozi"></div>
+                            <div v-else class="iconfont iconziyuan2"></div>
+                        </template>
                         <div v-else class="free">免费</div>
                     </li>
                 </ul>
             </div>
-            <p class="loading-line" style="background-color: #ffffff" v-cloak="">
+            <p class="loading-line" style="background-color: #ffffff">
                 <span v-show="otherLoading==true" class="fa fa-spinner loadingpic" style="font-size: 0.4rem"></span>
                 <span v-text="otherLoadTitle">加载更多</span>
             </p>
         </div>
-        <!-- /**直播回放目录
-         **/-->
-         <div v-if="special.type === 4 && active" class="replay-directory">
+        <!-- 直播回放目录 -->
+        <div v-if="special.type === 4 && active" class="replay-directory">
             <ul v-if="liveTaskList.length">
                 <li v-for="(item, index) in liveTaskList" :key="index" :class="{ active: RecordId === item.RecordId }" class="item" @click="playBackRecord(item.RecordId)">
                     <div class="label">回放</div>
-                    <div class="name">{{ index | serial }} | {{ special.title }}</div>
+                    <div class="name">{{ index | serial }} | {{item.playback_name ? item.playback_name : special.title }}</div>
                     <div></div>
                 </li>
             </ul>
             <div class="foot">
                 <span v-show="liveLoading" class="fa fa-spinner loadingpic"></span>
-                <!-- <div class="tip">{{ liveLoadTitle }}</div> -->
             </div>
-         </div>
-        <div class="video-list" v-show="active==2 && special.type == 5" v-cloak=""  style="-webkit-overflow-scrolling: touch;">
+        </div>
+        <div class="video-list" v-show="active==2 && special.type == 5" style="-webkit-overflow-scrolling: touch;">
             <div v-if="columnTaskList.length && active==2" ref="list">
-                <div class="video-listn">
-                    <div class="item acea-row row-between-wrapper" v-for="vo in updateOtherTaskList" @click="play(vo)">
+                <div class="video-listn" style="padding:0.3rem 0;">
+                    <div class="item acea-row row-between-wrapper" v-for="vo in otherTaskList" @click="setMeal(vo)">
                         <div class="pictrue" @click="play(vo)" style="position: relative">
                             <img :src="vo.image">
-                            <div class="label">{{ vo.type }}</div>
+                            <div class="label">{{specialType[vo.type]}}</div>
                         </div>
                         <div class="underline">
                             <div class="text acea-row row-between row-column">
-                                <div class="name line1" v-text="vo.title" @click="play(vo)"></div>
+                                <div class="name line1" v-text="vo.title" @click="setMeal(vo)"></div>
                                 <div v-if="vo.label.length" class="attr">
                                     <div v-for="item in vo.label">{{item}}</div>
                                 </div>
                                 <template v-if="special.pay_type">
                                     <template v-if="vo.pay_status">
-                                        <template v-if="isMember">
-                                            <div v-if="vo.member_pay_type" class="price">¥{{vo.member_money === '0.00' ? vo.money : vo.member_money}}</div>
-                                            <div v-else class="free">免费</div>
+                                        <div class="price">￥<span>{{vo.money}}</span></div>
                                         </template>
-                                        <div v-else class="price">¥<span>{{vo.money}}</span></div>
-                                    </template>
-                                    <div v-else class="free">免费</div>
+                                     <div v-else class="free">去学习</div>
                                 </template>
-                                <div v-else class="free">免费</div>
+                                <div v-else class="free">去学习</div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <p class="loading-line" style="background-color: #ffffff" v-cloak="">
+            <p class="loading-line" style="background-color: #ffffff">
                 <span v-show="columnLoading==true" class="fa fa-spinner loadingpic" style="font-size: 0.4rem"></span>
-                <!-- <span v-text="columnLoadTitle">加载更多</span> -->
             </p>
-            <!-- <div style="height:1.5rem"></div> -->
         </div>
     </div>
-
-    <footer class="acea-row row-middle" ref="storeMenu" v-if="is_pay==false && is_partake==false && is_gift==false && isPink==false">
+    <footer class="acea-row row-middle" ref="storeMenu" v-if="is_pay==false && is_gift==false && isPink==false">
         <a class="link" href="{:Url('wap/index/index')}">
             <div class="cont">
                 <img src="{__WAP_PATH}zsff/images/special01.png">
                 <div>首页</div>
             </div>
         </a>
-        <a class="link" href="{:Url('service/service_list')}">
+        <a class="link" href="javascript:" @click="customerService">
             <div class="cont">
                 <img src="{__WAP_PATH}zsff/images/special02.png">
                 <div>客服</div>
             </div>
         </a>
-        <a v-if="(special.pay_type == 1 && special.type == 4) || special.money > 0" class="link" href="javascript:;" @click="OpenPay(1)">
+        <a v-if="(special.pay_type == 1 && special.type == 4) || special.money > 0" class="link" href="javascript:;"
+            @click="OpenPay(1)">
             <div class="cont">
                 <img src="{__WAP_PATH}zsff/images/special03.png">
                 <div>送朋友</div>
@@ -249,28 +523,25 @@
         </a>
         <div class="wrap">
             <div class="video_footer_btn acea-row" :class="special.pay_type == 1 ? '': 'item2'">
-                <div class="video_footer_btn_right acea-row row-column row-center-wrapper on"  v-if="special.type == 4">
-                    <span class="video_footer_btn_left_pic" @click="OpenPay(6)" v-if="special.pay_type == 0 || is_pay">进入直播间</span>
-                    <span class="video_footer_btn_left_pic" @click="OpenPay(2)" v-if="isMember == 0 && special.pay_type == 1">￥{{special.money}}</span>
+                <div class="video_footer_btn_right acea-row" :class="'on'" v-if="special.type == 4">
+                    <span class="acea-row row-center-wrapper video_footer_btn_left_pic" style="flex: 1;" @click="OpenPay(6)" v-if="special.pay_type == 0 || is_pay">进入直播间</span>
+                    <span class="acea-row row-center-wrapper video_footer_btn_left_pic" style="flex: 1;" @click="OpenPay(2)" v-if="special.pay_type == 1">￥{{special.money}}</span>
                 </div>
-
-                <div class="video_footer_btn_right acea-row row-column row-center-wrapper on"  v-if="special.type != 4">
-                    <span v-if="special.pay_type == 0 || is_pay" @click="OpenPay(5)" class="video_footer_btn_left_pic">免费学习</span>
-                    <span v-if="isMember == 0 && special.pay_type == 1" @click="OpenPay(2)" class="video_footer_btn_left_pic">￥{{special.money}}</span>
+                <div class="video_footer_btn_right acea-row" :class="'on'" v-if="special.type != 4">
+                    <span v-if="special.pay_type == 0 || is_pay" @click="OpenPay(5)" class="acea-row row-center-wrapper video_footer_btn_left_pic" style="flex: 1;">免费学习</span>
+                    <span v-if="special.pay_type == 1" @click="OpenPay(2)" class="acea-row row-center-wrapper video_footer_btn_left_pic" style="flex: 1;">￥{{special.money}}</span>
                 </div>
             </div>
         </div>
     </footer>
-
-
-    <footer class="acea-row row-wrap-all" ref="storeMenu" v-if="is_pay==true && is_partake==false && is_gift==false && paid && isPink==false">
+    <footer class="acea-row row-wrap-all" ref="storeMenu" v-if="is_pay==true && is_gift==false && paid && isPink==false">
         <a class="link" href="{:Url('wap/index/index')}">
             <div class="cont">
                 <img src="{__WAP_PATH}zsff/images/special01.png">
                 <div>首页</div>
             </div>
         </a>
-        <a class="link" href="{:Url('service/service_list')}">
+        <a class="link" href="javascript:;" @click="customerService">
             <div class="cont">
                 <img src="{__WAP_PATH}zsff/images/special02.png">
                 <div>客服</div>
@@ -293,21 +564,6 @@
             </div>
         </div>
     </footer>
-    <footer class="acea-row row-wrap-all" v-if="is_partake" ref="storeMenu">
-        <a class="link" href="{:Url('wap/index/index')}">
-            <div class="cont">
-                <img src="{__WAP_PATH}zsff/images/special01.png">
-                <div>首页</div>
-            </div>
-        </a>
-        <a class="link" href="{:Url('service/service_list')}">
-            <div class="cont">
-                <img src="{__WAP_PATH}zsff/images/special02.png">
-                <div>客服</div>
-            </div>
-        </a>
-    </footer>
-
     <footer class="acea-row row-middle" v-if="is_gift" ref="storeMenu">
         <a class="link" href="{:Url('wap/index/index')}">
             <div class="cont">
@@ -315,7 +571,7 @@
                 <div>首页</div>
             </div>
         </a>
-        <a class="link" href="{:Url('service/service_list')}">
+        <a class="link" href="javascript:;" @click="customerService">
             <div class="cont">
                 <img src="{__WAP_PATH}zsff/images/special02.png">
                 <div>客服</div>
@@ -329,8 +585,7 @@
             </div>
         </div>
     </footer>
-
-    <div class="groupCode" :hidden="open" v-cloak="">
+    <div class="groupCode" :hidden="open">
         <div class="code"><img :src="special.service_code"></div>
         <div class="codeTip">长按扫一扫<br>加客服好友进群哦</div>
     </div>
@@ -338,13 +593,25 @@
         <img :src="wechat_qrcode" alt="" style="width: 5rem;height: 5rem;margin: 0 auto;">
     </div>
     <div class="mask" @touchmove.prevent :hidden="open" @click="open=true"></div>
-    <payment @change="changeVal" :payment="payment" :money="money" :special_id="special.id" :iswechat="isWechat" :isYue="is_yue" :link_pay_uid="link_pay_uid" :pay_type_num="pay_type_num"></payment>
+    <payment
+        :payment="payment"
+        :money="money"
+        :now_money="now_money"
+        :special_id="special.id"
+        :link_pay_uid="link_pay_uid"
+        :pay_type_num="pay_type_num"
+        :pink-id="pinkId"
+        :is-wechat="isWechat"
+        :is-alipay="is_alipay"
+        :is-balance="is_yue"
+        :template-id="templateId"
+        @change="changeVal"
+    ></payment>
     <enter :appear="appear" @change="changeVal" :url="url" :site_name="site_name"></enter>
-
     <div class="password" :class="password?'on':''">
         <div class="title">请输入密码</div>
-        <input type="password" v-model="qr_password"  autocomplete="off">
-        <input type="hidden" v-model="studio_pwd"  autocomplete="off">
+        <input type="password" v-model="qr_password" autocomplete="off">
+        <input type="hidden" v-model="studio_pwd" autocomplete="off">
         <div class="psdBnt" @click="goLive">确定</div>
     </div>
     <div class="mask" v-show="password" @touchmove.prevent @click="password = false "></div>
@@ -352,600 +619,662 @@
 {/block}
 {block name='foot'}
 <script type="text/javascript">
-    var swiperlist={$swiperlist},special={$special},count={$count},pinkId={$pinkId},
-        orderId='{$orderId ? $orderId : ""}',link_pay_uid={$link_pay_uid},wechat_qrcode='{$code_url}',is_yue={$is_yue ? 'true' : 'false'},
-        isWechat={$isWechat ? 'true' : 'false'},isPay={$isPay ? 'true':'false'},partake={$partake},gift={$gift},
+    var swiperlist={$swiperlist},special={$special},pinkId={$pinkId},
+        orderId='{$orderId ? $orderId : ""}',link_pay_uid={$link_pay_uid},wechat_qrcode='{$code_url}',is_yue={$is_yue ? 'true' : 'false'},is_alipay={$is_alipay ? 'true' : 'false'},
+        isWechat={$isWechat ? 'true' : 'false'},isPay={$isPay ? 'true':'false'},gift={$gift},now_money={$now_money},
         link_pay={$link_pay},isPink={$isPink ? 'true':'false'},BarrageShowTime={$BarrageShowTime ? $BarrageShowTime : 5},
         barrage_index={$barrage_index ? $barrage_index : 0},uid={$userInfo['uid'] ? $userInfo['uid']:0},liveInfo={$liveInfo},site_name = '{$Auth_site_name}',isMember={$is_member};
-    window.overallShare=false;
-    require(['vue','helper','store','special-type','reg-verify','{__WAP_PATH}zsff/js/payment.js','{__WAP_PATH}zsff/js/enter.js'],function(Vue,$h,app,specialType) {
-        new Vue({
-            el: '#app',
-            filters: {
-                serial: function (value) {
-                    return value < 9 ? '0' + (value + 1) : value + 1;
-                }
-            },
-            data: {
-                parentActive: 0,
-                site_name:site_name,
-                RecordId:'',
-                count:count,
-                special:special,
-               // pinkUser:pinkUser,
-                swiperlist:swiperlist,
-                //pinkIngList:pinkIngList,
-                otherTaskList:[],
-                columnTaskList:[],
-                liveTaskList:[],
-                cloumnNavlist:[{'title':'专栏详情'}, {'title':'专栏目录'}, {'title':'专栏套餐'}],
-                otherNavlist:[{'title':'专题详情'}, {'title':'专题目录'}],
-                liveNavlist:[{'title':'直播介绍'}, {'title':'回放目录'}],
-                active:0,
-                open:true,
-                payment:true,
-                appear:true,
-                is_pay:isPay,
-                otherLoading:false,
-                columnLoading:false,
-                liveLoading:false,
-                otherLoadend:false,
-                columnLoadend:false,
-                liveLoadend:false,
-                pay_type_num:-1,
-                pinkId:pinkId || 0,
-                pinkInfo:{
-                    pinkT:{
-                        difftime:{hour:"00", minute:"00", second:"00"}
+    window.overallShare = false;
+        require(['vue', 'helper', 'store', 'special-type', 'reg-verify', 'payment', '{__WAP_PATH}zsff/js/enter.js', 'quick'], function (Vue, $h, app, specialType) {
+            new Vue({
+                el: '#app',
+                filters: {
+                    serial: function (value) {
+                        return value < 9 ? '0' + (value + 1) : value + 1;
                     }
                 },
-                Barragelist:[],
-                otherLoadTitle:'上拉加载更多',
-                columnLoadTitle:'上拉加载更多',
-                liveLoadTitle:'上拉加载更多',
-                money:special.money,
-                where:{
-                    page:1,
-                    limit:10,
-                    special_id:special.id || 0,
-                    source_id:0,
-                },
-                orderId:null,
-                is_partake:false,
-                is_gift:false,
-                paid:isPay,
-                link_pay_uid:0,
-                wechat_qrcode:wechat_qrcode,
-                is_code:false,
-                isWechat:isWechat,
-                is_live:special.is_live,
-                url:isWechat ? $h.U({c:'index',a:'login'}):$h.U({c:'login',a:'phone_check'}),
-                isPink:isPink,
-                barrageStatus:true,
-                num:barrage_index,
-                stream_name:liveInfo.stream_name || '',
-                password:false,
-                liveInfo:liveInfo,
-                qr_password:'',
-                studio_pwd:liveInfo.studio_pwd,
-                is_yue:is_yue //余额是否开启
-            },
-            computed: {
-                updateOtherTaskList: function (value) {
-                    return this.otherTaskList.map(function (value) {
-                        value.type = specialType[value.type];
-                        if (value.hasOwnProperty('special_task')) {
-                            value.special_task.map(function (item) {
-                                return item.type = specialType[item.type];
-                            });
+                data: {
+                    parentActive: 0,
+                    site_name: site_name,
+                    RecordId: '',
+                    count: 0,
+                    special: special,
+                    swiperlist: swiperlist,
+                    pinkIngList: [],
+                    otherTaskList: [],
+                    columnTaskList: [],
+                    liveTaskList: [],
+                    cloumnNavlist: [{ 'title': '详情' }, { 'title': '目录' }, { 'title': '套餐' }],
+                    otherNavlist: [{ 'title': '详情' }, { 'title': '目录' }],
+                    liveNavlist: [{ 'title': '直播介绍' }, { 'title': '回放目录' }],
+                    active: 0,
+                    open: true,
+                    payment: true,
+                    appear: true,
+                    is_pay: isPay,
+                    isMember: isMember,
+                    otherLoading: false,
+                    columnLoading: false,
+                    liveLoading: false,
+                    otherLoadend: false,
+                    columnLoadend: false,
+                    liveLoadend: false,
+                    otherLoaded:false,
+                    columnLoaded:false,
+                    liveLoaded:false,
+                    pay_type_num: -1,
+                    pinkId: pinkId || 0,
+                    pinkInfo: {
+                        pinkT: {
+                            difftime: { hour: "00", minute: "00", second: "00" }
                         }
-                        return value;
-                    });
-                }
-            },
-            watch:{
-                active:function (n) {
+                    },
+                    Barragelist: [],
+                    otherLoadTitle: '上拉加载更多',
+                    columnLoadTitle: '上拉加载更多',
+                    liveLoadTitle: '上拉加载更多',
+                    money: special.money,
+                    where: {
+                        page: 1,
+                        limit: 10,
+                        special_id: special.id || 0,
+                        source_id: 0,
+                    },
+                    orderId: null,
+                    is_gift: false,
+                    paid: isPay,
+                    link_pay_uid: 0,
+                    uid: uid,
+                    wechat_qrcode: wechat_qrcode,
+                    is_code: false,
+                    isWechat: isWechat,
+                    is_live: special.is_live,
+                    url: isWechat ? $h.U({ c: 'index', a: 'login' }) : $h.U({ c: 'login', a: 'phone_check' }),
+                    isPink: isPink,
+                    barrageStatus: true,
+                    num: barrage_index,
+                    stream_name: liveInfo.stream_name || '',
+                    password: false,
+                    liveInfo: liveInfo,
+                    qr_password: '',
+                    studio_pwd: liveInfo.studio_pwd,
+                    is_alipay: is_alipay, //支付宝是否开启
+                    is_yue: is_yue, //余额是否开启
+                    now_money: now_money, //余额
+                    lecturer: null,
+                    specialType: specialType,
+                    topFocus: true,
+                    record: [],
+                    templateId: ''
+                },
+                watch: {
+                    active: function (n) {
+                        var that = this;
+                        if (n == 1 && that.special.type != 4 && that.special.type != 5) {
+                            this.getCourseList();
+                        }
+                        if (n == 1 && that.special.type == 4) {
+                            this.getLiveTask();
+                        }
+                    },
+                    pay_type_num: function () {
+                        this.subscribeTemplate();
+                    }
+                },
+                mounted: function () {
                     var that = this;
-                    if(n==1 && that.special.type !=4 && that.special.type !=5){
-                        this.getCourseList();
-                    }
-                    if(n==1 && that.special.type ==4){
-                        this.getLiveTask();
-                    }
-                    if(n==2 && this.special.type == 5){
-                        // this.getCloumnTask();
-                    }
-                }
-            },
-            created:function(){
-               // this.CountDown({name:'pinkIngList',time_name:"stop_time"});
-            },
-            mounted:function(){
-                var that=this;
-                this.$nextTick(function () {
-                    mapleWx($jssdk(), function () {
-                        this.onMenuShareAll({
-                            title:that.special.title ,
-                            desc: that.special.abstract,
-                            imgUrl: that.special.image,
-                            link: location.href.indexOf('?')==-1 ? location.href+'?spread_uid='+uid : location.href+'&spread_uid='+uid,
-                        });
-                    });
-                    $('.swiper-conter').append('<div style="height:1.5rem"></div>');
-                    setTimeout(function () {
-                        new Swiper('.banner', {
-                            pagination: '.swiper-pagination',
-                            paginationClickable: false,
-                            autoplay:2500,
-                            speed: 1000,
-                            autoplayDisableOnInteraction: false,
-                            observer:true,
-                            observeParents:true,
-                        });
-                    },500);
-                    switch (location.hash){
-                        case '#tash':
-                            if(that.special.type != 4) that.active=1;
-                            $('body,html').animate({scrollTop:$(that.$refs.list).offset().top},800);
-                            break;
-                        case '#act1':
-                            that.active=0;
-                            $('body,html').animate({scrollTop:$(that.$refs.list).offset().top},800);
-                            break;
-                        case '#act2':
-                            if(that.special.type != 4) that.active=1;
-                            $('body,html').animate({scrollTop:$(that.$refs.list).offset().top},800);
-                            break;
-                        case '#partake':
-                            that.is_partake=true;
-                            break;
-                        case '#gift':
-                            that.is_gift=true;
-                            break;
-                        case '#link_pay':
-                            that.link_pay_uid=link_pay_uid;
-                            break;
-                    }
-                    if(partake) that.is_partake=true;
-                    if(gift) that.is_gift=true;
-                    if(link_pay) that.link_pay_uid=link_pay_uid;
-                    that.barrage();
-                });
-                switch(this.special.type){
-                    case 5:
-                        this.getCourseList();
-                        this.getCloumnTask();
-                        break;
-                    case 4:
-                        this.getLiveTask();
-                        break;
-                    case 1:
-                    case 2:
-                    case 3:
-                    case 6:
-                        this.getCourseList();
-                        break;
-                }
-                if(that.pinkId){
-                    app.baseGet($h.U({c:'special',a:'get_pink_info',q:{pinkId:that.pinkId}}),function (res) {
-                        that.pinkInfo=res.data.data;
-                        that.CountDown({name:'pinkInfo.pinkT',time_name:'stop_time'});
-                    },function (res){
-                        $h.showMsg(res.msg,function(){
-                            window.location.href=$h.U({c:'special',a:'details',q:{id:that.special.id}});
-                        });
-                    });
-                }
-                var width=$('.swiper-conter').width();
-                $('.video-ue').each(function (index) {
-                    var id="video-ue-"+index,videoUrl=$(this).attr('src');
-                    $(this).attr('id',id);
-                    $(this).children('video').attr('src',videoUrl);
-                    $(this).append("<source src='"+videoUrl+"' type='video/mp4' />")
-                    $(this).addClass("video-js");
-                    videojs(id, {}, function(){
-                        this.width(width);
-                        this.src(videoUrl);
-                    });
-                })
-            },
-            methods:{
-                goLive:function(){
-                    if(!this.qr_password) return $h.showMsg('请输入密码');
-                    if(this.qr_password != this.studio_pwd) return $h.showMsg('密码不正确');
-                    window.location.href = $h.U({c:'live',a:'index',q:{stream_name:this.stream_name}});
-                },
-                barrage:function(){
-                    var that = this;
-                    if(typeof BarrageShowTime=='string') BarrageShowTime=parseInt(BarrageShowTime);
-                    BarrageShowTime=BarrageShowTime*1000;
-                    app.baseGet($h.U({c:'special',a:'get_barrage_list',q:{special_id:special.id}}),function (res) {
-                        that.$set(that,'Barragelist',res.data.data);
-                        var len = that.Barragelist.length;
-                        if(!len) return;
-                        setInterval(function () {
-                            that.num = that.num == len-1?0:that.num+1;
-                            that.barrageStatus = !that.barrageStatus;
-                            app.baseGet($h.U({c:'special',a:'set_barrage_index',q:{index:that.num}}));
-                        },BarrageShowTime);
-                    });
-                },
-                follow:function(){
-                    return $h.openImage(wechat_qrcode);
-                },
-                /*getPartakePinkUrl:function(){
-                    return $h.U({c:'special',a:'details',q:{id:this.special.id}});
-                },*/
-                pay_order:function(data){
-                    this.orderId=data.result.orderId || '';
-                    switch (data.status){
-                        case "PAY_ERROR":case 'ORDER_EXIST':case 'ORDER_ERROR':
-                            this.extendOrder(data.msg);
-                            break;
-                        case 'WECHAT_PAY':
-                            this.wechatPay(data.result.jsConfig);
-                            break;
-                        case 'SUCCESS':
-                            this.successOrder(data.msg);
-                            break;
-                        case 'ZHIFUBAO_PAY':
-                            window.location.href=$h.U({c:'Alipay',a:'index',q:{info:data.result,params:'special'}});
-                            break;
-                    }
-                },
-                wechatPay:function(config){
-                    var that = this;
-                    mapleWx($jssdk(),function(){
-                        this.chooseWXPay(config,function(){
-                            that.successOrder();
-                        },{
-                            fail:that.extendOrder,
-                            cancel:that.extendOrder
-                        });
-                    });
-                },
-                successOrder:function(msg){
-                    var that=this;
-                    $h.showMsg({
-                        title:msg ? msg :'支付成功',
-                        icon:'success',
-                        success:function (){
-                            switch (parseInt(that.pay_type_num)){
-                                case 1:
-                                    window.location.href=$h.U({c:'special',a:'gift_special',q:{orderId:that.orderId}});
-                                    break;
-                                case 2:
-                                    that.paid=true;
-                                    that.is_pay=true;
-                                    that.payment=true;
-                                    break;
-                                case 3:
-                                    window.location.href=$h.U({c:'special',a:'pink',q:{orderId:that.orderId}});
-                                    break;
+                    this.$nextTick(function () {
+                        that.addLearningRecords();
+                        that.getNumberCourses();
+                        that.subscribeTemplate();
+                        $h.EventUtil.listenTouchDirection(document, function () {
+                            if (this.active == 1) {
+                                if (this.special.type == 4) {
+                                    this.getLiveTask();
+                                } else if (this.special.type == 5) {
+                                    this.getCourseList();
+                                }
+                            } else if (this.active == 2) {
+                                this.getCourseList();
                             }
-                        }
-                    });
-                },
-                extendOrder:function(msg){
-                    var that=this;
-                    var msg=msg ? msg :'支付失败';
-                    $h.showMsg({
-                        title:typeof msg=='object' ? '支付失败' :msg,
-                        success:function () {
-                            if(that.orderId) app.baseGet($h.U({c:'special',a:'del_order',q:{orderId:that.orderId}}));
-                        }
-                    })
-                },
-                play:function(item){
-                    if(item.pay_status == 1 && this.is_pay==false) return $h.showMsg('请先购买~');
-                    if(item.is_pay == 2){
-                        this.password = true;
-                        this.studio_pwd = item.studio_pwd;
-                        this.stream_name = item.stream_name;
-                        return ;
-                    }
-                    var that = this;
-                    if (that.special.type == 5) {
-                        switch(that.active){
-                            case 1:
-                                this.goPlayTsak(item);
-                                break;
-                            case 2:
-                                location.href = $h.U({c:"special",a:"details",q:{id:item.id}});
-                                break;
-                        }
-                    }else{
-                        this.goPlayTsak(item);
-                    }
-                },
-                //获取课程列表
-                getCourseList:function(){
-                    var that=this;
-                    if(this.otherLoading) return;
-                    if(this.otherLoaded) return;
-                    this.otherLoadTitle='';
-                    this.otherLoading=true;
-                    app.baseGet($h.U({c:'special',a:'get_course_list',q:this.where}),function (res) {
-                        var data=res.data.data;
-                        var list=data.list || [];
-                        var taskList=$h.SplitArray(list,that.otherTaskList);
-                        that.where.page=data.page;
-                        that.otherLoaded=list.length < that.where.limit;
-                        that.F=that.otherLoaded ? '我也是有底线的': '上拉加载更多';
-                        that.otherLoading=false;
-                        that.$set(that,'otherTaskList',taskList);
-                        that.$nextTick(function () {
-                            that.bScrollInit();
-                        });
-                    },function (res) {
-                        that.otherLoading=false;
-                        that.otherLoadTitle='加载更多';
-                    });
-                },
-                //获取专栏专题素材列表
-                getCloumnTask:function(){
-                    var that=this;
-                    if(this.columnLoading) return;
-                    if(this.columnLoaded) return;
-                    this.columnLoadTitle='';
-                    this.columnLoading=true;
-                    app.baseGet($h.U({c:'special',a:'get_cloumn_task',q:this.where}),function (res) {
-                        var data=res.data.data;
-                        var list=data.list || [];
-                        var taskList=$h.SplitArray(list,that.columnTaskList);
-                        that.where.page=data.page;
-                        that.columnLoaded=list.length < that.where.limit;
-                        that.columnLoadTitle=that.columnLoaded ? '我也是有底线的': '上拉加载更多';
-                        that.columnLoading=false;
-                        that.$set(that,'columnTaskList',taskList);
-                        that.$nextTick(function () {
-                            that.bScrollInit();
-                        });
-                    },function (res) {
-                        that.columnLoading=false;
-                        that.columnLoadTitle='加载更多';
-                    });
-                },
-                //获取直播回放
-                getLiveTask:function(){
-                    var that=this;
-                    if(this.liveLoading) return;
-                    if(this.liveLoaded) return;
-                    this.liveLoadTitle='';
-                    this.liveLoading=true;
-                    app.baseGet($h.U({c:'live',a:'get_live_record_list',q:{special_id:that.special.id,}}),function (res) {
-                        var data=res.data.data;
-                        var list=data.list || [];
-                        var taskList=$h.SplitArray(list,that.liveTaskList);
-                        that.where.page=data.page;
-                        that.liveLoaded=list.length < that.where.limit;
-                        that.liveLoadTitle=that.liveLoaded ? '我也是有底线的': '上拉加载更多';
-                        that.liveLoading=false;
-                        that.$set(that,'liveTaskList',taskList);
-                        that.$nextTick(function () {
-                            that.bScrollInit();
-                        });
-                    },function (res) {
-                        that.liveLoading=false;
-                        that.liveLoadTitle='加载更多';
-                    });
-                },
-                //播放素材
-                goPlayTsak:function(item){
-                    var that = this;
-                    app.baseGet($h.U({c:'special',a:'get_task_link',q:{task_id:item.id,special_id:item.special_id}}),function (res) {
-                        if(that.special.type == 4){
-                            window.location.href = $h.U({c:'live',a:'index',q:{stream_name:item.stream_name, special_id:item.special_id, live_id:item.live_id}});
-                        }else{
-                            app.baseGet($h.U({ c: 'special', a: 'play_num', q: { task_id: item.id, special_id: item.special_id } }),function (res) {
-                                if(res.data.code==200){
-                                    window.location.href = $h.U({c:"special",a:"task_info",q:{id:item.id,specialId:item.special_id}});
-                                }else{
-                                    return $h.showMsg('更新数据有误！');
-                                }
+                        }.bind(this));
+                        mapleWx($jssdk(), function () {
+                            this.onMenuShareAll({
+                                title: that.special.title,
+                                desc: that.special.abstract,
+                                imgUrl: that.special.image,
+                                link: location.href.indexOf('?') == -1 ? location.href + '?spread_uid=' + uid : location.href + '&spread_uid=' + uid,
                             });
+                        });
+                        $('.swiper-conter').append('<div style="height:1.5rem"></div>');
+                        setTimeout(function () {
+                            new Swiper('.banner', {
+                                pagination: '.swiper-pagination',
+                                paginationClickable: false,
+                                autoplay: 2500,
+                                speed: 1000,
+                                autoplayDisableOnInteraction: false,
+                                observer: true,
+                                observeParents: true,
+                            });
+                        }, 500);
+                        switch (location.hash) {
+                            case '#tash':
+                                if (that.special.type != 4) that.active = 1;
+                                $('body,html').animate({ scrollTop: $(that.$refs.list).offset().top }, 800);
+                                break;
+                            case '#act1':
+                                that.active = 0;
+                                $('body,html').animate({ scrollTop: $(that.$refs.list).offset().top }, 800);
+                                break;
+                            case '#act2':
+                                if (that.special.type != 4) that.active = 1;
+                                $('body,html').animate({ scrollTop: $(that.$refs.list).offset().top }, 800);
+                                break;
+                            case '#gift':
+                                that.is_gift = true;
+                                break;
+                            case '#link_pay':
+                                that.link_pay_uid = link_pay_uid;
+                                break;
                         }
-                    },function (err) {
-                        return $h.pushMsgOnce(err);
-                    })
+                        if (gift) that.is_gift = true;
+                        if (link_pay) that.link_pay_uid = link_pay_uid;
+                    });
+                    switch (this.special.type) {
+                        case 5:
+                            this.getCourseList();
+                            this.getCloumnTask();
+                            break;
+                        case 4:
+                            this.getLiveTask();
+                            break;
+                        case 1:
+                        case 2:
+                        case 3:
+                        case 6:
+                            this.getCourseList();
+                            break;
+                    }
+                    var width = $('.swiper-conter').width();
+                    $('.video-ue').each(function (index) {
+                        var id = "video-ue-" + index, videoUrl = $(this).attr('src');
+                        $(this).attr('id', id);
+                        $(this).children('video').attr('src', videoUrl);
+                        $(this).append("<source src='" + videoUrl + "' type='video/mp4' />")
+                        $(this).addClass("video-js");
+                        videojs(id, {}, function () {
+                            this.width(width);
+                            this.src(videoUrl);
+                        });
+                    });
                 },
-                //滑动底部加载
-                bScrollInit:function(){
-                    var that = this;
-                    $h.EventUtil.listenTouchDirection(document,function (){
-                        if (that.special.type == 5) {
-                            that.columnLoading == false && that.getCloumnTask();
+                methods: {
+                    subscribeTemplate: function () {
+                        app.baseGet($h.U({
+                            c: 'special',
+                            a: 'getTemplateIds',
+                            q: {
+                                pay_type_num: this.pay_type_num,
+                                special_id: this.special.id
+                            }
+                        }), function (res) {
+                            this.templateId = res.data.msg;
+                        }.bind(this));
+                    },
+                    show: function(item) {
+                        item.active = !item.active
+                    },
+                    // 获取浏览人数
+                    getLearningRecords: function () {
+                        var that = this;
+                        $h.loadFFF();
+                        app.baseGet($h.U({c: 'Special', a: 'learningRecords', q: {id: that.special.id}
+                        }), function (res) {
+                            var obj = res.data.data;
+                            $h.loadClear();
+                            that.record = obj;
+                        });
+                    },
+                    // 记录浏览人数
+                    addLearningRecords: function () {
+                        var that = this;
+                        $h.loadFFF();
+                        app.baseGet($h.U({c: 'Special', a: 'addLearningRecords', q: {id: that.special.id}
+                        }), function (res) {
+                            $h.loadClear();
+                            that.getLearningRecords();
+                        });
+                    },
+                    //  专题下章节数量
+                    getNumberCourses: function () {
+                        var that = this;
+                        $h.loadFFF();
+                        app.baseGet($h.U({c: 'Special', a: 'numberCourses', q: {id: that.special.id}
+                        }), function (res) {
+                            that.count = res.data.data;
+                            $h.loadClear();
+                        });
+                    },
+                    goLive: function () {
+                        if (!this.qr_password) return $h.showMsg('请输入密码');
+                        if (this.qr_password != this.studio_pwd) return $h.showMsg('密码不正确');
+                        document.cookie = this.stream_name + "studio_pwd" + "=" + this.studio_pwd + ";expires=7200" + ";path=/";
+                        console.log(this.stream_name + "stuido_pwd" + "=" + this.studio_pwd);
+                        window.location.href = $h.U({ c: 'live', a: 'index', q: { stream_name: this.stream_name } });
+                    },
+                    goPink: function (pink_id,uid) {
+                        if(uid==this.uid && isPink){
+                            window.location.href=$h.U({ c: 'special', a: 'pink', q: { pink_id:pinkId ,special_id:this.special.id,is_help:0} });
                         }else{
-                            that.otherLoading == false && that.getCourseList();
+                            window.location.href=$h.U({ c: 'special', a: 'pink', q: { pink_id:pink_id >0 ? pink_id : pinkId ,special_id:this.special.id,is_help:1} });
                         }
-                    },false);
-                },
-                //收藏和取消收藏
-                collect:function(){
-                    app.baseGet($h.U({c:'special',a:'collect',q:{id:this.special.id}}),function (res) {
-                        if(this.special.collect)
-                            $h.pushMsgOnce('取消收藏成功');
-                        else
-                            $h.pushMsgOnce('收藏成功');
-                        this.special.collect=this.special.collect ? false : 1;
-                    }.bind(this));
-                },
-                //打开支付插件,并检测登录状态,没有登录,打开登录插件
-                OpenPay:function(is_pink){
-                    this.pay_type_num = is_pink;
-                    app.baseGet($h.U({c:'index',a:'user_login'}),function (res) {
-                        switch (is_pink){
-                            case 1:
-                               // this.money=this.special.is_pink ? this.special.pink_money : this.special.money;
-                                this.money= this.special.money;
-                                this.payment=false;
+                    },
+                    follow: function () {
+                        return $h.openImage(wechat_qrcode);
+                    },
+                    getPartakePinkUrl: function () {
+                        return $h.U({ c: 'special', a: 'details', q: { id: this.special.id } });
+                    },
+                    pay_order: function (data) {
+                        this.orderId = data.result.orderId || '';
+                        switch (data.status) {
+                            case "PAY_ERROR": case 'ORDER_EXIST': case 'ORDER_ERROR':
+                                this.extendOrder(data.msg);
                                 break;
-                            case 2:
-                                if(isMember){
-                                    this.money=this.special.member_pay_type ? this.special.member_money :0;
-                                }else{
-                                    this.money=this.special.money;
-                                }
-                                this.payment=false;
+                            case 'WECHAT_PAY':
+                                this.wechatPay(data.result.jsConfig);
                                 break;
-                            case 3:
-                                this.money=this.special.pink_money;
-                                this.payment=false;
+                            case 'SUCCESS':
+                                this.successOrder(data.msg);
                                 break;
-                            case 4:
-                                this.payment=true;
-                                app.baseGet($h.U({c:'special',a:'receive_gift',q:{orderId:orderId}}),function (res) {
-                                    $h.showMsg({
-                                        title:res.data.msg,
-                                        icon:'success',
-                                        success:function () {
-                                            window.location.href=$h.U({c:'index',c:'index'});
-                                        }
-                                    })
-                                });
-                                break;
-                            case 5:
-                                location.hash='#tash';
-                                $('body,html').animate({scrollTop:$(this.$refs.list).offset().top},800);
-                                this.is_pay=true;
-                                this.paid=false;
-                                this.active=1;
-                                break;
-                            case 6:
-                                if(this.liveInfo.studio_pwd && this.special.pay_type==2){
-                                    this.password = true;
-                                }else {
-                                    window.location.href = $h.U({
-                                        c: 'live',
-                                        a: 'index',
-                                        q: {stream_name: this.stream_name,record_id:this.RecordId}
-                                    });
-                                }
+                            case 'ZHIFUBAO_PAY':
+                                window.location.href = $h.U({ c: 'Alipay', a: 'index', q: { info: data.result, params: 'special' } });
                                 break;
                         }
-                    }.bind(this),function (res) {
-                        this.appear=false;
-                    }.bind(this));
-                },
-                ReceiveGift:function(){
-                    var that=this;
-                    if(!orderId) return;
-                    app.baseGet($h.U({c:'special',a:'receive_gift',q:{orderId:orderId}}),function (res) {
+                    },
+                    wechatPay: function (config) {
+                        var that = this;
+                        mapleWx($jssdk(), function () {
+                            this.chooseWXPay(config, function () {
+                                that.successOrder();
+                            }, {
+                                fail: that.extendOrder,
+                                cancel: that.extendOrder
+                            });
+                        });
+                    },
+                    successOrder: function (msg) {
+                        var that = this;
                         $h.showMsg({
-                            title:res.data.msg,
-                            icon:'success',
-                            success:function () {
-                                window.location.href=$h.U({c:'index',a:'index'});
+                            title: msg ? msg : '支付成功',
+                            icon: 'success',
+                            success: function () {
+                                switch (parseInt(that.pay_type_num)) {
+                                    case 1:
+                                        window.location.href = $h.U({ c: 'special', a: 'gift_special', q: { orderId: that.orderId } });
+                                        break;
+                                    case 2:
+                                        that.paid = true;
+                                        that.is_pay = true;
+                                        that.payment = true;
+                                        that.updateMaterialStatus();
+                                        break;
+                                    case 3:
+                                        window.location.href = $h.U({ c: 'special', a: 'pink', q: { orderId: that.orderId } });
+                                        break;
+                                }
+                            }
+                        });
+                    },
+                    updateMaterialStatus:function(){
+                        var that=this;
+                        that.otherLoading=false;
+                        that.otherLoaded=false;
+                        that.where.page=1;
+                        that.$set(that, 'otherTaskList', []);
+                        that.getCourseList();
+                    },
+                    extendOrder: function (msg) {
+                        var that = this;
+                        var msg = msg ? msg : '支付失败';
+                        $h.showMsg({
+                            title: typeof msg == 'object' ? '支付失败' : msg,
+                            success: function () {
+                                if (that.orderId) app.baseGet($h.U({ c: 'special', a: 'del_order', q: { orderId: that.orderId } }));
                             }
                         })
-                    });
-                },
-                //关闭登录
-                loginClose:function(value){
-                    this.appear=value;
-                },
-                //关闭支付
-                payClose:function(value){
-                    this.payment=value;
-                },
-                //登录完成回调事件
-                logComplete:function(){
-                    this.appear=true;
-                    if(this.pay_type_num==3 || this.pay_type_num==1)
-                        this.money=this.special.is_pink ? this.special.pink_money : this.special.money;
-                    else
-                        this.money=this.special.money;
-                    if(this.pay_type_num != 4) this.payment=false;
-                    if(this.pay_type_num == 6) this.payment=true;
-                },
-                //所有插件回调处理事件
-                changeVal:function (opt){
-                    if(typeof opt !='object') opt={};
-                    var action=opt.action || '';
-                    var value=opt.value || '';
-                    this[action] && this[action](value);
-                },
-                CountDown:function (opt,that) {
-                    if(typeof opt!='object') opt={};
-                    var name=opt.name || '',value=null,that=that ? that: this;
-                    if(name.indexOf('.')===-1)
-                        value=that[name];
-                    else{
-                        var nameArray=name.split('.');
-                        value=that[nameArray[0]][nameArray[1]];
-                    }
-                    var tiem=opt.time || 1000,timeName=opt.time_name || 'datatime', strName={hour:"00", minute:"00", second:"00"},
-                        outputName=opt.output || 'difftime';
-                    if(!name) return false;
-                    if(value===undefined) return false;
-                    opt.nowTime=function(){
-                        if(Array.isArray(value)){
-                            for(var i=0;i<value.length;i++){
-                                var intDiff = value[i][timeName] - Date.parse(new Date()) / 1000;//获取数据中的时间戳的时间差；
+                    },
+                    setMeal:function(item){
+                        var that = this;
+                        if (that.special.type == 5) {
+                            location.href = $h.U({ c: "special", a: "details", q: { id: item.id } });
+                        }
+                    },
+                    play: function (item) {
+                        if (item.pay_status == 1 && this.is_pay == false) return $h.showMsg('请先购买~');
+                        if (item.is_pay == 2) {
+                            this.password = true;
+                            this.studio_pwd = item.studio_pwd;
+                            this.stream_name = item.stream_name;
+                            return;
+                        }
+                        var that = this;
+                        if (that.special.type == 5) {
+                            switch (that.active) {
+                                case 1:
+                                    this.goPlayTsak(item);
+                                    break;
+                                case 2:
+                                    location.href = $h.U({ c: "special", a: "details", q: { id: item.id } });
+                                    break;
+                            }
+                        } else {
+                            this.goPlayTsak(item);
+                        }
+                    },
+                    //获取课程列表
+                    getCourseList: function () {
+                        var that = this;
+                        if (this.otherLoading) return;
+                        if (this.otherLoaded) return;
+                        this.otherLoadTitle = '';
+                        this.otherLoading = true;
+                        app.baseGet($h.U({ c: 'special', a: 'get_course_list', q: this.where }), function (res) {
+                            var data = res.data.data,
+                                list = data.list || [],
+                                taskList = [];
+                            list.forEach(function (item, index) {
+                                item.active = index ? false : true;
+                            });
+                            taskList = $h.SplitArray(list, that.otherTaskList);
+                            that.where.page = data.page;
+                            that.otherLoaded = list.length < that.where.limit;
+                            that.otherLoadTitle = that.otherLoaded ? '我也是有底线的' : '上拉加载更多';
+                            that.otherLoading = false;
+                            that.$set(that, 'otherTaskList', taskList);
+                            that.$nextTick(function () {
+                                that.bScrollInit();
+                            });
+                        }, function (res) {
+                            that.otherLoading = false;
+                            that.otherLoadTitle = '加载更多';
+                        });
+                    },
+                    //获取专栏专题素材列表
+                    getCloumnTask: function () {
+                        var that = this;
+                        if (this.columnLoading) return;
+                        if (this.columnLoaded) return;
+                        this.columnLoadTitle = '';
+                        this.columnLoading = true;
+                        app.baseGet($h.U({ c: 'special', a: 'get_cloumn_task', q: this.where }), function (res) {
+                            var data = res.data.data;
+                            var list = data.list || [];
+                            var taskList = $h.SplitArray(list, that.columnTaskList);
+                            that.where.page = data.page;
+                            that.columnLoaded = list.length < that.where.limit;
+                            that.columnLoadTitle = that.columnLoaded ? '我也是有底线的' : '上拉加载更多';
+                            that.columnLoading = false;
+                            that.$set(that, 'columnTaskList', taskList);
+                            that.$nextTick(function () {
+                                that.bScrollInit();
+                            });
+                        }, function (res) {
+                            that.columnLoading = false;
+                            that.columnLoadTitle = '加载更多';
+                        });
+                    },
+                    //获取直播回放
+                    getLiveTask: function () {
+                        var that = this;
+                        if (this.liveLoading) return;
+                        if (this.liveLoaded) return;
+                        this.liveLoadTitle = '';
+                        this.liveLoading = true;
+                        app.baseGet($h.U({ c: 'live', a: 'get_live_record_list', q: { special_id: that.special.id,page:that.where.page,limit:that.where.limit } }), function (res) {
+                            var data = res.data.data.data;
+                            var list = data || [];
+                            var taskList = $h.SplitArray(list, that.liveTaskList);
+                            that.where.page = that.where.page + 1;
+                            that.liveLoaded = list.length < that.where.limit;
+                            that.liveLoadTitle = that.liveLoaded ? '我也是有底线的' : '上拉加载更多';
+                            that.liveLoading = false;
+                            that.$set(that, 'liveTaskList', taskList);
+                            that.$nextTick(function () {
+                                that.bScrollInit();
+                            });
+                        }, function (res) {
+                            that.liveLoading = false;
+                            that.liveLoadTitle = '加载更多';
+                        });
+                    },
+                    //播放素材
+                    goPlayTsak: function (item) {
+                        var that = this;
+                        app.baseGet($h.U({ c: 'special', a: 'get_task_link', q: { task_id: item.id, special_id: item.special_id } }), function (res) {
+                            if (that.special.type == 4) {
+                                window.location.href = $h.U({ c: 'live', a: 'index', q: { stream_name: item.stream_name, special_id: item.special_id, live_id: item.live_id } });
+                            } else {
+                                app.baseGet($h.U({ c: 'special', a: 'play_num', q: { task_id: item.id, special_id: item.special_id } }),function (res) {
+                                  if(res.data.code==200){
+                                     if (that.special.type == 1 || item.type==1) {
+                                        window.location.href = $h.U({ c: "special", a: "task_text_info", q: { id: item.id, specialId: item.special_id } });
+                                      } else {
+                                        window.location.href = $h.U({ c: "special", a: "task_info", q: { id: item.id, specialId: item.special_id } });
+                                      }
+                                  }else{
+                                      return $h.showMsg('更新数据有误！');
+                                  }
+                                });
+                            }
+                        }, function (err) {
+                            return $h.pushMsgOnce(err);
+                        })
+                    },
+                    //滑动底部加载
+                    bScrollInit: function () {
+                        var that = this;
+                        $h.EventUtil.listenTouchDirection(document, function () {
+                            if (that.special.type == 5) {
+                                that.columnLoading == false && that.getCloumnTask();
+                            } else {
+                                that.otherLoading == false && that.getCourseList();
+                            }
+                        }, false);
+                    },
+                    //收藏和取消收藏
+                    collect: function () {
+                        app.baseGet($h.U({ c: 'special', a: 'collect', q: { id: this.special.id } }), function (res) {
+                            if (this.special.collect)
+                                $h.pushMsgOnce('取消收藏成功');
+                            else
+                                $h.pushMsgOnce('收藏成功');
+                            this.special.collect = this.special.collect ? false : 1;
+                        }.bind(this));
+                    },
+                    customerService:function(){
+                        app.baseGet($h.U({ c: 'index', a: 'user_login' }), function (res) {
+                            window.location.href = $h.U({ c: 'service', a: 'service_list' });
+                        }.bind(this), function (res) {
+                            this.appear = false;
+                        }.bind(this));
+                    },
+                    //打开支付插件,并检测登录状态,没有登录,打开登录插件
+                    OpenPay: function (is_pink) {
+                        this.pay_type_num = is_pink;
+                        app.baseGet($h.U({ c: 'index', a: 'user_login' }), function (res) {
+                            switch (is_pink) {
+                                case 1:
+                                    this.money = this.special.money;
+                                    this.payment = false;
+                                    break;
+                                case 2:
+                                    this.money = this.special.money;
+                                    this.payment = false;
+                                    break;
+                                case 4:
+                                    this.payment = true;
+                                    app.baseGet($h.U({ c: 'special', a: 'receive_gift', q: { orderId: orderId } }), function (res) {
+                                        $h.showMsg({
+                                            title: res.data.msg,
+                                            icon: 'success',
+                                            success: function () {
+                                                window.location.href = $h.U({ c: 'special', a: 'grade_list' });
+                                            }
+                                        })
+                                    });
+                                    break;
+                                case 5:
+                                    location.hash = '#tash';
+                                    $('body,html').animate({ scrollTop: $(this.$refs.list).offset().top }, 800);
+                                    this.is_pay = true;
+                                    this.paid = false;
+                                    this.active = 1;
+                                    break;
+                                case 6:
+                                    if (this.liveInfo.studio_pwd && this.special.pay_type == 2) {
+                                        this.password = true;
+                                    } else {
+                                        window.location.href = $h.U({
+                                            c: 'live',
+                                            a: 'index',
+                                            q: { stream_name: this.stream_name, record_id: this.RecordId }
+                                        });
+                                    }
+                                    break;
+                            }
+                        }.bind(this), function (res) {
+                            this.appear = false;
+                        }.bind(this));
+                    },
+                    ReceiveGift: function () {
+                        var that = this;
+                        if (!orderId) return;
+                        app.baseGet($h.U({ c: 'special', a: 'receive_gift', q: { orderId: orderId } }), function (res) {
+                            $h.showMsg({
+                                title: res.data.msg,
+                                icon: 'success',
+                                success: function () {
+                                    window.location.href = $h.U({ c: 'index', a: 'index' });
+                                }
+                            })
+                        });
+                    },
+                    //关闭登录
+                    loginClose: function (value) {
+                        this.appear = value;
+                    },
+                    //关闭支付
+                    payClose: function (value) {
+                        this.payment = value;
+                    },
+                    //登录完成回调事件
+                    logComplete: function () {
+                        var that=this;
+                        that.appear = true;
+                        app.baseGet($h.U({ c: 'special', a: 'isMember' }), function (res) {
+                            that.now_money=res.data.data.now_money;
+                            switch (that.pay_type_num) {
+                                case 1:
+                                    that.money = that.special.money;
+                                    break;
+                                case 3:
+                                    that.money = that.special.pink_money;
+                                    break;
+                            }
+                        });
+                        if (that.pay_type_num != 4) that.payment = false;
+                        if (that.pay_type_num == 6) that.payment = true;
+                    },
+                    //所有插件回调处理事件
+                    changeVal: function (opt) {
+                        if (typeof opt != 'object') opt = {};
+                        var action = opt.action || '';
+                        var value = opt.value || '';
+                        this[action] && this[action](value);
+                    },
+                    CountDown: function (opt, that) {
+                        if (typeof opt != 'object') opt = {};
+                        var name = opt.name || '', value = null, that = that ? that : this;
+                        if (name.indexOf('.') === -1)
+                            value = that[name];
+                        else {
+                            var nameArray = name.split('.');
+                            value = that[nameArray[0]][nameArray[1]];
+                        }
+                        var tiem = opt.time || 1000, timeName = opt.time_name || 'datatime', strName = { hour: "00", minute: "00", second: "00" },
+                            outputName = opt.output || 'difftime';
+                        if (!name) return false;
+                        if (value === undefined) return false;
+                        opt.nowTime = function () {
+                            if (Array.isArray(value)) {
+                                for (var i = 0; i < value.length; i++) {
+                                    var intDiff = value[i][timeName] - Date.parse(new Date()) / 1000;//获取数据中的时间戳的时间差；
+                                    var days = 0, hour = 0, minute = 0, second = 0;
+                                    if (intDiff > 0) {
+                                        hour = Math.floor(intDiff / (60 * 60)) - (days * 24);
+                                        minute = Math.floor(intDiff / 60) - (hour * 60);
+                                        second = Math.floor(intDiff) - (hour * 60 * 60) - (minute * 60);
+                                        if (hour <= 9) hour = '0' + hour;
+                                        if (minute <= 9) minute = '0' + minute;
+                                        if (second <= 9) second = '0' + second;
+                                        strName = {
+                                            hour: hour,
+                                            minute: minute,
+                                            second: second
+                                        };
+                                    } else {
+                                        strName = {
+                                            hour: "00",
+                                            minute: "00",
+                                            second: "00"
+                                        };
+                                    }
+                                    value[i][outputName] = strName;
+                                }
+                                that.$set(that, name, value);
+                            } else {
+                                var intDiff = value[timeName] - Date.parse(new Date()) / 1000;
                                 var days = 0, hour = 0, minute = 0, second = 0;
                                 if (intDiff > 0) {
                                     hour = Math.floor(intDiff / (60 * 60)) - (days * 24);
-                                    minute = Math.floor(intDiff / 60) -  (hour * 60);
+                                    minute = Math.floor(intDiff / 60) - (hour * 60);
                                     second = Math.floor(intDiff) - (hour * 60 * 60) - (minute * 60);
                                     if (hour <= 9) hour = '0' + hour;
                                     if (minute <= 9) minute = '0' + minute;
                                     if (second <= 9) second = '0' + second;
-                                    strName={
-                                        hour:hour,
-                                        minute:minute,
-                                        second:second
+                                    strName = {
+                                        hour: hour,
+                                        minute: minute,
+                                        second: second
                                     };
                                 } else {
-                                    strName={
-                                        hour:"00",
-                                        minute:"00",
-                                        second:"00"
+                                    strName = {
+                                        hour: "00",
+                                        minute: "00",
+                                        second: "00"
                                     };
                                 }
-                                value[i][outputName]=strName;
+                                if (name.indexOf('.') === -1)
+                                    that.$set(that[name], outputName, strName);
+                                else {
+                                    var nameArray = name.split('.');
+                                    that.$set(that[nameArray[0]][nameArray[1]], outputName, strName);
+                                }
                             }
-                            that.$set(that,name,value);
-                        }else{
-                            var intDiff = value[timeName] - Date.parse(new Date()) / 1000;
-                            var days = 0, hour = 0, minute = 0, second = 0;
-                            if (intDiff > 0) {
-                                hour = Math.floor(intDiff / (60 * 60)) - (days * 24);
-                                minute = Math.floor(intDiff / 60) -  (hour * 60);
-                                second = Math.floor(intDiff) - (hour * 60 * 60) - (minute * 60);
-                                if (hour <= 9) hour = '0' + hour;
-                                if (minute <= 9) minute = '0' + minute;
-                                if (second <= 9) second = '0' + second;
-                                strName={
-                                    hour:hour,
-                                    minute:minute,
-                                    second:second
-                                };
-                            } else {
-                                strName={
-                                    hour:"00",
-                                    minute:"00",
-                                    second:"00"
-                                };
-                            }
-                            if(name.indexOf('.')===-1)
-                                that.$set(that[name],outputName,strName);
-                            else{
-                                var nameArray=name.split('.');
-                                that.$set(that[nameArray[0]][nameArray[1]],outputName,strName);
-                            }
-                        }
-                    };
-                    opt.nowTime();
-                    setInterval(opt.nowTime,tiem);
+                        };
+                        opt.nowTime();
+                        setInterval(opt.nowTime, tiem);
+                    },
+                    //播放回放
+                    playBackRecord: function (item) {
+                        this.RecordId = item;
+                        this.OpenPay(6);
+                    },
                 },
-                //播放回放
-                playBackRecord:function (item) {
-                    this.RecordId = item;
-                    this.OpenPay(6);
-                },
-            },
-        });
-    })
+            });
+        })
 
 </script>
 {/block}

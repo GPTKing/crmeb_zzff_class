@@ -19,83 +19,59 @@
 <script src="{__ADMIN_PATH}frame/js/ajaxfileupload.js"></script>
 {/block}
 {block name="content"}
-<div class="row">
-    <div class="col-sm-12">
-        <div class="ibox">
-            <div class="ibox-title">
-                <div class="text-left">个人资料</div>
-                <div class="ibox-tools">
-
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    <div style="font-weight: bold;">个人资料</div>
+                </div>
+                <div class="layui-card-body">
+                    <div class="layui-row">
+                        <div class="layui-col-md4 layui-col-md-offset3">
+                            <form method="post" class="layui-form" id="signupForm" action="">
+                                <input type="hidden" value="{$adminInfo.id}" name="id"/>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">账号</label>
+                                    <div class="layui-input-block" style="width: 500px;">
+                                        <input type="text" class="form-control" name="account" value="{$adminInfo.account}" validate="" disabled/>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">姓名</label>
+                                    <div class="layui-input-block" style="width: 500px;">
+                                        <input type="text" class="form-control" name="real_name" value="{$adminInfo.real_name}" validate="required:true" id="real_name"/>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">原始密码</label>
+                                    <div class="layui-input-block" style="width: 500px;">
+                                        <input type="password" class="form-control" name="pwd"  id="pwd"/>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">新密码</label>
+                                    <div class="layui-input-block" style="width: 500px;">
+                                        <input type="password" class="form-control" name="new_pwd" id="new_pwd"/>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">确认新密码</label>
+                                    <div class="layui-input-block" style="width: 500px;">
+                                        <input type="password" class="form-control" name="new_pwd_ok" id="new_pwd_ok"/>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-input-block" style="width: 500px;">
+                                        <button class="layui-btn layui-btn-normal" type="button">提交</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="ibox-content">
-                <form method="post" class="form-horizontal" id="signupForm" action="">
-                    <input type="hidden" value="{$adminInfo.id}" name="id"/>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">账号</label>
-                        <div class="col-sm-10">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <input type="text" class="form-control" name="account" value="{$adminInfo.account}" validate="" disabled/>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="hr-line-dashed"></div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">姓名</label>
-                        <div class="col-sm-10">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <input type="text" class="form-control" name="real_name" value="{$adminInfo.real_name}" validate="required:true" id="real_name"/>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="hr-line-dashed"></div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">原始密码</label>
-                        <div class="col-sm-10">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <input type="password" class="form-control" name="pwd"  id="pwd"/>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="hr-line-dashed"></div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">新密码</label>
-                        <div class="col-sm-10">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <input type="password" class="form-control" name="new_pwd" id="new_pwd"/>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="hr-line-dashed"></div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">确认新密码</label>
-                        <div class="col-sm-10">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <input type="password" class="form-control" name="new_pwd_ok" id="new_pwd_ok"/>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="hr-line-dashed"></div>
-                    <div class="form-group" style="text-align: center;">
-                        <div class="col-sm-4 col-sm-offset-2">
-                            <button class="btn btn-primary add" type="button">提交</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-
         </div>
-
     </div>
 </div>
 {/block}
@@ -106,7 +82,7 @@
     $().ready(function() {
         $("#signupForm").validate();
     })
-    $('.add').on('click',function (e) {
+    $('.layui-btn-normal').on('click',function (e) {
          var list = [];
          list.real_name = $('#real_name').val();
          list.pwd = $('#pwd').val();

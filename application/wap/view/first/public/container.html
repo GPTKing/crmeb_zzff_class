@@ -5,6 +5,7 @@
     <title>{block name="title"}{/block}</title>
     {include file="public/style" /}
     {block name="head_top"}{/block}
+    <script type="text/javascript" src="http://res2.wx.qq.com/open/js/jweixin-1.6.0.js"></script>
     <script type="text/javascript" src="{__PLUG_PATH}wxApi.js"></script>
     <script>
         $jssdk = function(){return <?=\service\WechatService::jsSdk()?>;}

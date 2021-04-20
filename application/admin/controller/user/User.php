@@ -1,5 +1,4 @@
 <?php
-
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
@@ -13,14 +12,13 @@
 namespace app\admin\controller\user;
 
 use app\admin\controller\AuthController;
-use app\admin\model\special\Grade;
 use app\admin\model\special\Special;
 use app\admin\model\special\SpecialSubject;
+use app\admin\model\special\SpecialSource;
 use app\wap\model\special\SpecialBuy;
 use service\FormBuilder as Form;
 use think\Db;
 use traits\CurdControllerTrait;
-use service\UtilService as Util;
 use service\JsonService as Json;
 use think\Request;
 use think\Url;
@@ -33,8 +31,9 @@ use behavior\wap\UserBehavior;
 use app\admin\model\store\StoreVisit;
 use app\admin\model\wechat\WechatMessage;
 use app\admin\model\order\StoreOrder;
+use app\wap\model\store\StoreOrder as StoreOrderModel;
 use service\SystemConfigService;
-use app\admin\model\user\MemberRecord as MemberRecordModel;
+
 /**
  * 用户管理控制器
  * Class User
@@ -51,7 +50,7 @@ class User extends AuthController
      */
     public function index()
     {
-        $this->assign('count_user', UserModel::count());
+        $this->assign(['count_user'=>UserModel::count(),'count_vip'=>UserModel::where('level',1)->count()]);
         $this->assign('gold_name', SystemConfigService::get("gold_name"));
         return $this->fetch();
     }
@@ -67,7 +66,7 @@ class User extends AuthController
             if ($status == '' || $uid == 0) return Json::fail('参数错误');
             UserModel::where(['uid' => $uid])->update(['status' => $status]);
         } else {
-            $uids = Util::postMore([
+            $uids = parent::postMore([
                 ['uids', []]
             ]);
             UserModel::destrSyatus($uids['uids'], $status);
@@ -78,29 +77,23 @@ class User extends AuthController
     public function user_data($uid = 0)
     {
         $spread = UserModel::where(['spread_uid' => $uid])->column('uid');
-
         $count['pay_count'] = Db::name('special_buy')->where('uid', $uid)->count();
         $count['bill_count'] = UserBill::where(['category' => 'now_money'])->where('uid', $uid)
             ->where('type', 'in', ['rake_back', 'rake_back_one', 'rake_back_two', 'extract'])
             ->count();
-//        array_push($spread, $uid);
         $count['order_count'] = UserBill::where('u.uid', $uid)->alias('u')->join('__STORE_ORDER__ a', 'a.id=u.link_id')
             ->where('u.category', 'now_money')->where('u.type', 'in', ['rake_back', 'rake_back_one'])
             ->where(['a.paid' => 1, 'a.is_gift' => 0, 'a.is_receive_gift' => 0])->count();
         $count['spread_count'] = UserModel::where('uid', 'in', $spread)->count();
-        $this->assign('gradeList', json_encode(Grade::getAll()));
+        $this->assign('gradeList', json_encode(SpecialSubject::specialCategoryAll(1)));
         $this->assign('uid', $uid);
         $this->assign('count', json_encode($count));
         return $this->fetch();
     }
 
-    public function member_record($uid = 0){
-        $this->assign(MemberRecordModel::userOneRecord($uid));
-        return $this->fetch();
-    }
     public function get_subjec_list($grade_id = 0)
     {
-        return Json::successful(SpecialSubject::where(['grade_id' => $grade_id, 'is_show' => 1])->order('sort desc,add_time desc')->field('id,name')->select());
+        return Json::successful(SpecialSubject::where(['grade_id' => $grade_id, 'is_show' => 1,'is_del' => 0])->order('sort desc,add_time desc')->field('id,name')->select());
     }
 
     public function get_special_list($subjec_id = 0)
@@ -110,13 +103,28 @@ class User extends AuthController
 
     public function save_give()
     {
-        $post = Util::postMore([
+        $post = parent::postMore([
             ['uid', 0],
             ['special_id', 0],
         ]);
         if (!$post['uid'] || !$post['special_id']) return Json::fail('缺少参数无法赠送');
+        $special = Special::get($post['special_id']);
         if (SpecialBuy::be(['uid' => $post['uid'], 'special_id' => $post['special_id'], 'is_del' => 0])) return Json::fail('此用户已经拥有此专题无需赠送');
-        if (SpecialBuy::set(['uid' => $post['uid'], 'special_id' => $post['special_id'], 'add_time' => time(), 'type' => 3]))
+        if ($special['type'] == SPECIAL_COLUMN) {
+            $special_source = SpecialSource::getSpecialSource($special['id']);
+            if ($special_source){
+                foreach($special_source as $k => $v) {
+                    $task_special = Special::get($v['source_id']);
+                    if ($task_special['is_show'] == 1){
+                        SpecialBuy::setBuySpecial('', $post['uid'], $v['source_id'], 3,$post['special_id']);
+                    }
+                }
+            }
+            $res=SpecialBuy::setBuySpecial('', $post['uid'], $post['special_id'], 3);
+        }else{
+            $res=SpecialBuy::setBuySpecial('', $post['uid'], $post['special_id'], 3);
+        }
+        if ($res)
             return Json::successful('赠送成功');
         else
             return Json::fail('赠送失败');
@@ -130,7 +138,7 @@ class User extends AuthController
 
     public function get_pay_list()
     {
-        $where = Util::getMore([
+        $where = parent::getMore([
             ['uid', 0],
             ['limit', 10],
             ['page', 1],
@@ -140,7 +148,7 @@ class User extends AuthController
 
     public function get_spread_list()
     {
-        $where = Util::getMore([
+        $where = parent::getMore([
             ['uid', 0],
             ['limit', 10],
             ['page', 1],
@@ -150,7 +158,7 @@ class User extends AuthController
 
     public function get_order_list()
     {
-        $where = Util::getMore([
+        $where = parent::getMore([
             ['uid', 0],
             ['limit', 10],
             ['page', 1],
@@ -163,7 +171,7 @@ class User extends AuthController
 
     public function get_bill_list()
     {
-        $where = Util::getMore([
+        $where = parent::getMore([
             ['limit', 10],
             ['page', 1],
             ['uid', 0],
@@ -184,11 +192,9 @@ class User extends AuthController
             case "3":
             case '4':
                 $user->is_promoter = (int)$type;
-                $user->is_senior = 0;
                 break;
             case "5":
                 $user->is_promoter = 1;
-                $user->is_senior = 1;
                 $user->spread_uid = 0;
                 break;
         }
@@ -205,7 +211,7 @@ class User extends AuthController
      */
     public function get_user_list()
     {
-        $where = Util::getMore([
+        $where = parent::getMore([
             ['page', 1],
             ['limit', 20],
             ['nickname', ''],
@@ -251,10 +257,10 @@ class User extends AuthController
 
     public function update(Request $request, $uid)
     {
-        $data = Util::postMore([
+        $data = parent::postMore([
             ['money_status', 0],
             ['is_promoter', 1],
-            ['is_senior', 1],
+            ['is_senior', 0],
             ['money', 0],
             ['nickname', ''],
             ['integration_status', 0],
@@ -333,7 +339,7 @@ class User extends AuthController
      */
     public function user_analysis()
     {
-        $where = Util::getMore([
+        $where = parent::getMore([
             ['nickname', ''],
             ['status', ''],
             ['is_promoter', ''],
@@ -646,6 +652,7 @@ class User extends AuthController
             'is_layui' => true,
             'headerList' => UserModel::getHeaderList($uid),
             'count' => UserModel::getCountInfo($uid),
+            'gold_name'=>SystemConfigService::get("gold_name")
         ]);
         return $this->fetch();
     }
@@ -654,8 +661,16 @@ class User extends AuthController
     {
         $list = SpecialBuy::where(['a.uid' => $uid, 'a.is_del' => 0])
             ->join('__STORE_ORDER__ o', 'a.order_id=o.order_id', 'left')
-            ->join("__SPECIAL__ s", 's.id=a.special_id')
+            ->join("__SPECIAL__ s", 's.id=a.special_id')->order('a.add_time desc')
             ->alias('a')->field(['a.*', 'o.total_num', 'o.pay_price', 's.title'])->page((int)$page, (int)$limit)->select();
+        $list=count($list) ? $list->toArray() : [];
+        foreach ($list as &$value){
+            if($value['type']=='赠送获得') {
+                $value['order_id']='赠送获得';
+                $value['total_num']='1';
+                $value['pay_price']='0';
+            }
+        }
         return Json::successful($list);
     }
 

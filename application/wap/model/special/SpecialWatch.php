@@ -7,10 +7,10 @@
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
-//
+// +----------------------------------------------------------------------
+
 namespace app\wap\model\special;
 
-use app\wap\model\live\LiveStudio;
 use basic\ModelBasic;
 use traits\ModelTrait;
 use think\Db;

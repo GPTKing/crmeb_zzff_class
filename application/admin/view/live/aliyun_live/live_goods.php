@@ -85,14 +85,10 @@
     layList.date({elem:'#start_time',theme:'#393D49',type:'datetime'});
     layList.date({elem:'#end_time',theme:'#393D49',type:'datetime'});
     //加载列表
-    layList.tableList({
-        o:'List',
-        done:function () {
-
-        }
+    layList.tableList({o:'List', done:function () {}
     },"{:Url('live_goods_list',['live_id'=>$live_id])}",function (){
         return [
-            {field: 'live_goods_id', title: '编号', sort: true,event:'live_goods_id',width:'5%',align: 'center'},
+            {field: 'live_goods_id', title: '编号', sort: true,event:'live_goods_id',width:'8%',align: 'center'},
             {field: 'title', title: '专题名称',align: 'center'},
             {field: 'subject_name', title: '所属分类',align: 'center'},
             {field: 'image', title: '封面图',templet:'#image',align: 'center'},
@@ -177,6 +173,7 @@
         var id=obj.data.live_goods_id,value=obj.value;
         switch (obj.field) {
             case 'gsort':
+                if(value < 0) return layList.msg('排序不能小于0');
                 action.set_value('sort',id,value,'live_goods');
                 break;
             case 'gfake_sales':

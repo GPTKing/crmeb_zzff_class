@@ -11,11 +11,9 @@
 
 namespace app\wap\controller;
 
-use app\wap\model\store\StoreOrder;
 use basic\WapBasic;
 use service\AlipayTradeWapService;
 use service\UtilService;
-use app\wap\model\activity\EventSignUp;
 
 /**
  * 支付宝支付

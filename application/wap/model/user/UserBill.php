@@ -7,13 +7,13 @@
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
-//
+// +----------------------------------------------------------------------
+
 
 namespace app\wap\model\user;
 
 
 use app\wap\model\special\Special;
-use app\wap\model\store\StoreOrder;
 use basic\ModelBasic;
 use traits\ModelTrait;
 
@@ -73,14 +73,14 @@ class UserBill extends ModelBasic
         switch ((int)$where['type']) {
             case 0:
                 $model=$model->join('store_order o', 'o.id = a.link_id')->whereIn('o.uid', $uids);
-                $model = $model->where('a.category', 'now_money')->where('a.type', 'in', ['brokerage']);
+                $model = $model->where('a.category', 'now_money')->where('a.type', 'in', ['brokerage','brokerage_return']);
                 break;
             case 1:
                 $model=$model->join('store_order o', 'o.id = a.link_id')->whereIn('o.uid', $uids1);
-                $model = $model->where('a.category', 'now_money')->where('a.type', 'brokerage');
+                $model = $model->where('a.category', 'now_money')->where('a.type', 'in', ['brokerage','brokerage_return']);
                 break;
             case 2:
-                $model = $model->where('a.category', 'now_money')->where('a.type', 'extract');
+                $model = $model->where('a.category', 'now_money')->where('a.type','in','extract,extract_success,extract_fail');
                 break;
         }
         if ($where['data']) {
@@ -91,7 +91,7 @@ class UserBill extends ModelBasic
             $endtime = bcadd(strtotime($where['data']), bcmul($day, 86400, 0), 0);
             $model = $model->where('a.add_time', 'between', [$starttime, $endtime]);
         }
-        $list = $model->field(['a.get_uid', 'a.mark', 'a.title', 'a.number','FROM_UNIXTIME(a.add_time,"%Y-%c-%d %H:%i:%s") as add_time', 'a.pm', 'a.link_id'])
+        $list = $model->field(['a.get_uid', 'a.mark', 'a.title', 'a.number', 'a.category', 'a.type','FROM_UNIXTIME(a.add_time,"%Y-%c-%d %H:%i:%s") as add_time', 'a.pm', 'a.link_id'])
             ->page((int)$where['page'], (int)$where['limit'])->select();
         $list = count($list) ? $list->toArray() : [];
         foreach ($list as &$item) {
@@ -100,7 +100,10 @@ class UserBill extends ModelBasic
                 $item['nickname'] = User::where('uid', $item['get_uid'])->value('nickname');
                 $item['title'] = Special::PreWhere()->where('id', self::getDb('store_order')->where('id', $item['link_id'])->value('cart_id'))->value('title');
             }
-//            $item['add_time'] =date('Y-m-d H:i:s',$item['add_time']);
+            if ((int)$where['type'] == 2 && $item['category']=='now_money' && $item['type']=='extract_success' && $item['pm']==0) {
+                $item['pm']=3;
+                $item['number']='提现成功';
+            }
         }
         $page = $where['page'] + 1;
         return compact('list', 'page');
@@ -121,7 +124,25 @@ class UserBill extends ModelBasic
         return self::getModelTime($where,self::where('uid','in',$uid)->where('category',$category)
             ->where('type',$type)->where('pm',1)->where('status',1))->sum('number');
     }
-
+    /*
+     * 获取返还佣金
+     * */
+    public static function getReturnBrokerage($uid,$category = 'now_money',$type='brokerage_return',$where)
+    {
+        return self::getModelTime($where,self::where('uid','in',$uid)->where('category',$category)
+            ->where('type',$type)->where('pm',0)->where('status',1))->sum('number');
+    }
+    /**获取用户佣金金额
+     * @param int $uid
+     */
+    public static function getCommissionAmount($uid=0){
+        $brokerage=self::where('uid','in',$uid)->where('category','now_money')
+            ->where('type','brokerage')->where('pm',1)->where('status',1)->sum('number');
+        $brokerage_return=self::where('uid','in',$uid)->where('category','now_money')
+            ->where('type','brokerage_return')->where('pm',0)->where('status',1)->sum('number');
+        $commission=bcsub($brokerage,$brokerage_return,2);
+        return $commission;
+    }
     public static function getUserGoldBill(array $where,$page = 0,$limit = 10)
     {
         $model = self::where('status',1);

@@ -1,5 +1,4 @@
 <?php
-
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
@@ -17,7 +16,6 @@ use app\admin\model\special\Grade;
 use app\admin\model\special\Special;
 use think\Url;
 use service\FormBuilder as Form;
-use service\UtilService as Util;
 use service\JsonService as Json;
 use app\admin\controller\AuthController;
 
@@ -28,80 +26,90 @@ use app\admin\controller\AuthController;
  */
 class Subject extends AuthController
 {
-    public function index($pid=0)
+    public function index()
     {
-        $this->assign('grade', Grade::getAll());
-        $this->assign('pid',$pid);
         return $this->fetch();
     }
 
     public function get_subject_list()
     {
-        $where = Util::getMore([
+        $where = parent::getMore([
             ['page', 1],
             ['limit', 20],
             ['pid',$this->request->param('pid','')],
             ['name', ''],
         ]);
-        return Json::successlayui(SpecialSubject::get_subject_list($where));
+        return Json::successful(SpecialSubject::get_subject_list($where));
     }
-
     /**
-     * 显示创建资源表单页.
-     *
-     * @return \think\Response
+     * 创建分类
+     * @param int $id
+     * @return mixed
+     * @throws \think\exception\DbException
      */
     public function create($id = 0)
     {
-        if ($id) $subject = SpecialSubject::get($id);
-        $form = Form::create(Url::build('save', ['id' => $id]), [
-            Form::select('grade_id', '一级分类', isset($subject) ? (string)$subject->grade_id : 0)->setOptions(function () {
-                $list = Grade::getAll();
-                $menus = [['value' => 0, 'label' => '顶级菜单']];
-                foreach ($list as $menu) {
-                    $menus[] = ['value' => $menu['id'], 'label' => $menu['name']];
-                }
-                return $menus;
-            })->filterable(1),
-            Form::input('name', '分类名称', isset($subject) ? $subject->name : ''),
-            Form::frameImageOne('pic', '图标', Url::build('admin/widget.images/index', array('fodder' => 'pic')), isset($subject) ? $subject->pic : '')->icon('image')->width('70%')->height('500px'),
-            Form::number('sort', '排序', isset($subject) ? $subject->sort : 0),
-            Form::radio('is_show', '状态', isset($subject) ? $subject->is_show : 1)->options([['label' => '显示', 'value' => 1], ['label' => '隐藏', 'value' => 0]])
-        ]);
-        $form->setMethod('post')->setTitle($id ? '修改二级分类':'添加二级分类')->setSuccessScript('parent.$(".J_iframe:visible")[0].contentWindow.location.reload();');
-        $this->assign(compact('form'));
-        return $this->fetch('public/form-builder');
+        $cate=[];
+        if ($id){
+            $cate = SpecialSubject::get($id);
+        }
+        $this->assign(['cate'=>json_encode($cate),'id'=>$id]);
+        return $this->fetch();
     }
-
+    /**获取一级分类
+     * @param int $sid
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function get_cate_list($level = 0)
+    {
+        $cate=SpecialSubject::specialCategoryAll(1);
+        $array=[];
+        $oneCate['id']=0;
+        $oneCate['name']='顶级分类';
+        array_push($array,$oneCate);
+        foreach ($cate as $key=>$value){
+            array_push($array,$value);
+        }
+        return Json::successful($array);
+    }
     /**
      * 新增或者修改
      *
      * @return json
      */
-    public function save($id = 0)
+    public function save($id = 0,$sid=0)
     {
-        $post = Util::postMore([
+        $post = parent::postMore([
             ['name', ''],
             ['pic', ''],
-            ['is_show', 1],
             ['grade_id', 0],
             ['sort', 0],
+            ['is_show', 0],
         ]);
         if (!$post['name']) return Json::fail('请输入分类名称');
-        if (!$post['pic']) return Json::fail('请选择分类图标');
-        if (!$post['grade_id']) return Json::fail('请选择一级分类');
+        if($post['grade_id']){
+            if (!$post['pic']) return Json::fail('请选择分类图标');
+        }
         if ($id) {
-            SpecialSubject::update($post, ['id' => $id]);
-            return Json::successful('修改成功');
+            $res=SpecialSubject::edit($post,$id);
+            if ($res)
+                return Json::successful('修改成功');
+            else
+                return Json::fail('修改失败');
         } else {
             $post['add_time'] = time();
-            if (SpecialSubject::set($post))
+                if(SpecialSubject::be(['name'=>$post['name'],'is_del'=>0])){
+                    return Json::fail('分类名称已存在！');
+                }
+                $res=SpecialSubject::set($post);
+            if ($res)
                 return Json::successful('添加成功');
             else
                 return Json::fail('添加失败');
         }
     }
-
     /**
      * 快速编辑
      *
@@ -139,8 +147,14 @@ class Subject extends AuthController
     public function delete($id = 0)
     {
         if (!$id) return Json::fail('缺少参数');
-        if (Special::where('subject_id', $id)->where('is_del', 0)->count()) return Json::fail('暂无法删除,请先去除专题关联');
-        if (SpecialSubject::del($id))
+        $subject=SpecialSubject::get($id);
+        if($subject['grade_id']){
+            if (Special::where('subject_id', $id)->where('is_del', 0)->count()) return Json::fail('暂无法删除,请先去除专题关联');
+        }else{
+            if (SpecialSubject::where('grade_id', $id)->where('is_del', 0)->count()) return Json::fail('暂无法删除,请删除下级分类');
+        }
+        $data['is_del']=1;
+        if (SpecialSubject::update($data,['id'=>$id]))
             return Json::successful('删除成功');
         else
             return Json::fail('删除成功');

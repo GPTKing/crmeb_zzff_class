@@ -34,15 +34,14 @@
 
     .nothing {
         position: absolute;
-        top: 30%;
+        top: 50%;
         left: 50%;
-        width: 4rem;
-        height: 4rem;
-        background: url("{__WAP_PATH}zsff/images/nothing.png") center/contain no-repeat;
+        width: 4.14rem;
+        height: 3.36rem;
         -webkit-transform: translate(-50%, -50%);
         transform: translate(-50%, -50%);
     }
-</style> 
+</style>
 {/block}
 {block name="content"}
 <div v-cloak id="app">
@@ -50,7 +49,7 @@
         <a v-for="item in makeGradeList" :key="item.id" :href="item.path" class="item">
             <div class="image">
                 <img :src="item.image">
-                <div class="label">{{ item.type }}</div>
+                <div class="label">{{type==1 ?  item.types :  item.type}}</div>
             </div>
             <div class="text">
                 <div class="name">{{ item.title }}</div>
@@ -60,12 +59,7 @@
                     </template>
                 </div>
                 <div class="price">
-                    <template v-if="item.is_pink">
-                        <div class="money">¥<span>{{ item.pink_money }}</span></div>
-                        <div class="group-price-icon">拼团特惠</div>
-                        <div v-if="item.types!=4" class="total">共{{item.count}}节</div>
-                    </template>
-                    <template v-else>
+                    <template>
                         <div v-if="item.money === '0.00'" class="free">免费</div>
                         <div v-else class="money">¥<span>{{ item.money }}</span></div>
                         <div v-if="item.types!=4" class="total">共{{item.count}}节</div>
@@ -77,7 +71,13 @@
             <span class="fa fa-spinner"></span>
         </div>
         <div v-if="loadend && page > 2" class="loaded">已全部加载</div>
-        <div v-if="!gradeList.length && !loading" class="nothing"></div>
+        <div v-if="!gradeList.length && !loading" >
+            {if $type}
+            <img class="nothing"  src="/wap/first/zsff/images/no_collection.png">
+            {else}
+            <img class="nothing"  src="/wap/first/zsff/images/no_data_available.png">
+            {/if}
+        </div>
         <div style="height: 1.2rem"></div>
     </div>
     <div class="my-course" ref="app">
@@ -105,12 +105,13 @@
         <div style="height: 1.0rem"></div>
         {/if}
     </div>
+    <quick-menu></quick-menu>
 </div>
 {/block}
 {block name="foot"}
 <script>
     var wechat_qrcode = '{$subscribeQrcode}', type = '{$type}',site_name = '{$Auth_site_name}';
-    require(['vue', 'helper', 'store', 'special-type', '{__WAP_PATH}zsff/js/enter.js'], function (Vue, $h, storeApi, specialType) {
+    require(['vue', 'helper', 'store', 'special-type', '{__WAP_PATH}zsff/js/enter.js','quick'], function (Vue, $h, storeApi, specialType) {
         new Vue({
             el: '#app',
             data: {
@@ -119,6 +120,7 @@
                 loadend: false,
                 loading: false,
                 active: 0,
+                type: type,
                 gradeList: [],
                 min: 2,
                 page: 1,
@@ -135,8 +137,7 @@
                 makeGradeList: function () {
                     return this.gradeList.map(function (value) {
                         if(type==1){
-                            value.types=value.type;
-                            value.type = specialType[value.type];
+                            value.types = specialType[value.type];
                         }
                         value.path = $h.U({c: 'special', a: 'details', q: { id: value.s_id }}) + (this.active == 0 ? '#tash' : '');
                         return value;

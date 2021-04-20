@@ -64,25 +64,25 @@ class SystemMenus extends ModelBasic
         $where = ['pid'=>0];
         $query = self::field($field);
         $query = $filter ? $query->where(self::legalWhere($where)) : $query->where($where);
-        return $query->order('sort DESC')->select();
+        return $query->order('sort DESC,id DESC')->select();
     }
 
     public static function menuList()
     {
-        $menusList = self::where('is_show','1')->where('access','1')->order('sort DESC')->select();
+        $menusList = self::where('is_show','1')->where('access','1')->order('sort DESC,id DESC')->select();
         return self::tidyMenuTier(true,$menusList);
     }
 
     public static function ruleList()
     {
-        $ruleList = self::order('sort DESC')->select();
+        $ruleList = self::order('sort DESC,id DESC')->select();
         return self::tidyMenuTier(false,$ruleList);
     }
 
     public static function rolesByRuleList($rules)
     {
         $res = SystemRole::where('id','IN',$rules)->field('GROUP_CONCAT(rules) as ids')->find();
-        $ruleList = self::where('id','IN',$res['ids'])->whereOr('pid',0)->order('sort DESC')->select();
+        $ruleList = self::where('id','IN',$res['ids'])->whereOr('pid',0)->order('sort DESC,id DESC')->select();
         return self::tidyMenuTier(false,$ruleList);
     }
 
@@ -99,8 +99,9 @@ class SystemMenus extends ModelBasic
         if($adminAuth === null) $adminAuth = $adminFilter == true ? SystemAdmin::activeAdminAuthOrFail() : [];//当前登录用户的菜单
         foreach ($menusList as $k=>$menu){
             $menu = $menu->getData();
-            if($menu['pid'] == $pid){
+            if($menu['pid'] == $pid && $menu['pid']!=269){
                 unset($menusList[$k]);
+                if(in_array($menu['id'],['148','378','349','273','419','278','478','477','464','476']))continue;
                 $params = json_decode($menu['params'],true);//获取参数
                 $authName = self::getAuthName($menu['action'],$menu['controller'],$menu['module'],$params);// 按钮链接
                 if($pid != 0 && $adminFilter && in_array($authName,$allAuth) && !in_array($authName,$adminAuth)) continue;
@@ -117,7 +118,7 @@ class SystemMenus extends ModelBasic
     public static function delMenu($id)
     {
         if(self::where('pid',$id)->count())
-            return self::setErrorInfo('请先删除改菜单下的子菜单!');
+            return self::setErrorInfo('请先删除该菜单下的子菜单!');
         return self::del($id);
     }
 
@@ -125,7 +126,6 @@ class SystemMenus extends ModelBasic
     {
         $model = new self;
         if($params['is_show'] !== '') $model = $model->where('is_show',$params['is_show']);
-//        if($params['access'] !== '') $model = $model->where('access',$params['access']);//子管理员是否可用
         if($params['pid'] !== ''&& !$params['keyword'] ) $model = $model->where('pid',$params['pid']);
         if($params['keyword'] !== '') $model = $model->where('menu_name|id|pid','LIKE',"%$params[keyword]%");
         $model = $model->order('sort DESC,id DESC');

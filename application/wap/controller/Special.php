@@ -12,11 +12,9 @@
 namespace app\wap\controller;
 
 use app\admin\model\special\SpecialBarrage;
-use app\wap\model\activity\EventRegistration;
-use app\wap\model\activity\EventSignUp;
 use app\wap\model\live\LiveStudio;
-use app\wap\model\special\Grade;
 use app\wap\model\special\Special as SpecialModel;
+use app\wap\model\live\LivePlayback;
 use app\wap\model\special\SpecialBuy;
 use app\wap\model\special\SpecialContent;
 use app\wap\model\special\SpecialCourse;
@@ -27,17 +25,21 @@ use app\wap\model\special\SpecialSubject;
 use app\wap\model\special\SpecialTask;
 use app\wap\model\special\SpecialWatch;
 use app\wap\model\store\StoreOrder;
-use app\wap\model\store\StorePink;
 use app\wap\model\user\User;
 use service\CanvasService;
 use service\JsonService;
 use service\SystemConfigService;
 use service\UtilService;
+use think\cache\driver\Redis;
 use think\Cookie;
 use think\exception\HttpException;
 use think\response\Json;
 use think\Session;
 use think\Url;
+use think\Db;
+use think\Request;
+use service\VodService;
+use app\wap\model\routine\RoutineTemplate;
 
 class Special extends AuthController
 {
@@ -48,21 +50,56 @@ class Special extends AuthController
     {
         return [
             'details',
-            'get_pink_info',
             'get_course_list',
             'play',
             'play_num',
             'grade_list',
             'set_barrage_index',
-            'get_barrage_list',
             'special_cate',
             'get_grade_cate',
             'get_subject_cate',
             'get_special_list',
-            'get_cloumn_task'
+            'lecturerList',
+            'lecturerSpecial',
+            'teacher_detail',
+            'teacher_list',
+            'get_cloumn_task',
+            'activity_details',
+            'isMember',
+            'activityType',
+            'learningRecords',
+            'numberCourses',
+            'addLearningRecords',
+            'source_detail',
+            'getSourceDetail',
+            'relatedCourses',
+            'getTemplateIds'
         ];
     }
+    /**获取视频上传地址和凭证
+     * @param string $videoId
+     * @param int $type
+     */
+    public function get_video_playback_credentials($type=1,$videoId='')
+    {
+        $url=VodService::videoUploadAddressVoucher('',$type,$videoId);
+        return JsonService::successful($url);
+    }
 
+    /**获取用户相关的订阅消息模版ID
+     * @param $pay_type_num
+     * @param $special_id
+     */
+    public function getTemplateIds($pay_type_num,$special_id)
+    {
+        $wechat_notification_message = SystemConfigService::get('wechat_notification_message');
+        if($wechat_notification_message==1) {
+            $templateIds='';
+        }else{
+            $templateIds = RoutineTemplate::getTemplateIdList($pay_type_num, $special_id);
+        }
+        return JsonService::successful($templateIds);
+    }
     /**
      * 专题详情
      * @param $id int 专题id
@@ -71,18 +108,18 @@ class Special extends AuthController
      * @param $gift_order_id string 礼物订单号
      * @return
      */
-    public function details($id = 0, $pinkId = 0, $gift_uid = 0, $gift_order_id = null, $link_pay_uid = 0, $partake = 0, $gift = 0, $link_pay = 0/*, $activity = 0*/)
+    public function details($id = 0, $pinkId = 0, $gift_uid = 0, $gift_order_id = null, $link_pay_uid = 0, $partake = 0, $gift = 0, $link_pay = 0)
     {
-        if (!$id) $this->failed('缺少参数,无法访问');
+        if (!$id) $this->failed('缺少参数,无法访问', Url::build('index/index'));
         if ($gift_uid && $gift_order_id) {
-            if ($gift_uid == $this->uid) $this->failed('您不能领取自己的礼物');
-            if (!User::get($gift_uid)) $this->failed('赠送礼物的用户存在');
+            if ($gift_uid == $this->uid) $this->failed('您不能领取自己的礼物', Url::build('special/grade_list'));
+            if (!User::get($gift_uid)) $this->failed('赠送礼物的用户不存在', Url::build('my/my_gift'));
             $order = StoreOrder::where(['is_del' => 0, 'order_id' => $gift_order_id])->find();
-            if (!$order) $this->failed('赠送的礼物订单不存在');
-            if ($order->total_num == $order->gift_count) $this->failed('礼物已被领取完');
+            if (!$order) $this->failed('赠送的礼物订单不存在', Url::build('my/my_gift'));
+            if ($order->total_num == $order->gift_count) $this->failed('礼物已被领取完',Url::build('special/grade_list'));
         }
-        $special = SpecialModel::getOneSpecial($this->uid, $id, $pinkId);
-        if ($special === false) $this->failed(SpecialModel::getErrorInfo('无法访问'));
+        $special = SpecialModel::getOneSpecial($this->uid, $id);
+        if ($special === false) $this->failed(SpecialModel::getErrorInfo('无法访问'), Url::build('index/index'));
         $special_money = SpecialModel::where('id', $id)->field('money, pay_type')->find();
         if (in_array($special_money['money'], [0, 0.00]) || in_array($special_money['pay_type'], [PAY_NO_MONEY, PAY_PASSWORD])) {
             $isPay = 1;
@@ -93,15 +130,6 @@ class Special extends AuthController
         $seo_title = SystemConfigService::get('seo_title');
         $site_logo = SystemConfigService::get('home_logo');
         $isPink = false;
-        if (!$isPay && $this->uid && !$pinkId) {
-            $pinkId = StorePink::where(['cid' => $id, 'status' => '1', 'uid' => $this->uid])->order('add_time desc')->value('id');
-            if ($pinkId) {
-                $isPink = true;
-            } else {
-                $pinkId = 0;
-            }
-        }
-
         $liveInfo = [];
         if (isset($special['special'])) {
             $specialinfo = $special['special'];
@@ -111,39 +139,18 @@ class Special extends AuthController
             }
             if ($specialinfo['type'] == SPECIAL_LIVE) {
                 $liveInfo = LiveStudio::where('special_id', $specialinfo['id'])->find();
-                if (!$liveInfo) return $this->failed('直播间尚未查到！');
-                if ($liveInfo->is_del) return $this->failed('直播间已经删除！');
-            }
-        }
-
-        if ($this->uid) SpecialRecord::record($id, $this->uid);
-        $user_level = !$this->uid ? 0 : User::getUserInfo($this->uid);
-        $type=json_decode($special['special'])->type;
-        if($type!=5 && $type!=4){
-            $specialSourceId = SpecialSource::getSpecialSource($id);
-            if($specialSourceId) $count=count($specialSourceId);
-            else $count=0;
-        }else{
-            $count=0;
-            $specialSourceId = SpecialSource::getSpecialSource($id);
-            if(count($specialSourceId)){
-                $specialSource=$specialSourceId->toArray();
-                foreach ($specialSource as $key=>$value){
-                    $specialSourcetaskId = SpecialSource::getSpecialSource($value['source_id']);
-                    $count=bcadd($count,count($specialSourcetaskId),0);
-                }
+                if (!$liveInfo) return $this->failed('直播间尚未查到！', Url::build('index/index'));
+                if ($liveInfo->is_del) return $this->failed('直播间已经删除！', Url::build('index/index'));
             }
         }
         $this->assign($special);
         $this->assign('pinkId', $pinkId);
-        $this->assign('is_member', isset($user_level['level']) ? $user_level['level'] : 0);
-        $this->assign('count', $count);
+        $this->assign('is_member', 0);
         $this->assign('isPink', $isPink);
         $this->assign('isPay', $isPay);
         $this->assign('liveInfo', json_encode($liveInfo));
         $this->assign('confing', compact('site_name', 'seo_title', 'site_logo'));
         $this->assign('orderId', $gift_order_id);
-        $this->assign('partake', (int)$partake);
         $this->assign('link_pay', (int)$link_pay);
         $this->assign('gift', (int)$gift);
         $this->assign('link_pay_uid', $link_pay_uid);
@@ -152,6 +159,80 @@ class Special extends AuthController
         return $this->fetch();
     }
 
+    /**专题下课程数量
+     * @param $id
+     */
+    public function numberCourses($id)
+    {
+        $special = SpecialModel::PreWhere()->find($id);
+        $count=SpecialModel::numberChapters($special->type,$id);
+        return JsonService::successful($count);
+    }
+    /**获取浏览人
+     * @param $id
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function learningRecords($id){
+        $uids=Db::name('learning_records')->where(['special_id'=>$id])->column('uid');
+        $record=[];
+        $data['recordCoujnt']=count($uids);
+        $uids=array_unique($uids);
+        $len=bcsub($data['recordCoujnt'],count($uids),0);
+        if($data['recordCoujnt']>5){
+            $ic=bcsub(5,count($uids),0);
+        }else{
+            $ic=bcsub($data['recordCoujnt'],count($uids),0);
+        }
+        if($len && $ic){
+            $maxid=User::order('uid desc')->value('uid');
+            $minid=User::order('uid asc')->value('uid');
+            for($i=0;$i<$ic;$i++){
+                $uid=rand($minid,$maxid);
+                array_push($uids,$uid);
+            }
+        }
+        foreach ($uids as $key=>$value){
+            $user=$this->userdata($value);
+            array_push($record,$user);
+        }
+        $data['record']=$record;
+        return JsonService::successful($data);
+    }
+    public function userdata($uid)
+    {
+        $user=User::where('uid',$uid)->field('avatar')->find();
+        if($user){
+            $user=$user->toArray();
+        }else{
+            $user['avatar']='/system/images/user_log.jpg';
+        }
+        return $user;
+    }
+    /**记录专题浏览人
+     * @param $id
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function addLearningRecords($id)
+    {
+        $special = SpecialModel::PreWhere()->find($id);
+        SpecialModel::where('id',$id)->setInc('browse_count');
+        $uid=$this->uid ? $this->uid : 0;
+        if ($this->uid) SpecialRecord::record($id, $this->uid);
+        if($this->uid){
+            $time=strtotime('today');
+            $res=Db::name('learning_records')->where(['uid'=>$uid,'special_id'=>$id,'add_time'=>$time])->find();
+            if(!$res){
+                Db::name('learning_records')->insert(['uid'=>$uid,'special_id'=>$id,'add_time'=>$time]);
+            }
+        }
+        return JsonService::successful('ok');
+    }
     /**
      * 礼物领取
      *
@@ -164,45 +245,19 @@ class Special extends AuthController
         else
             return JsonService::successful('领取成功');
     }
-
     /**
-     * 获取单个拼团详情
-     * $pinkId 拼团id
+     * 查看单个拼团状态
+     * @param $pink_id int 拼团id
+     * @return html
      * */
-    public function get_pink_info($pinkId = 0)
+    public function order_pink($pink_id = '', $is_help = 0)
     {
-        $is_ok = 0;//判断拼团是否完成
-        $userBool = 0;//判断当前用户是否在团内  0未在 1在
-        $pinkBool = 0;//判断当前用户是否在团内  0未在 1在
-        $pink = StorePink::getPinkUserOne($pinkId);
-        if (isset($pink['is_refund']) && $pink['is_refund']) {
-            return JsonService::fail('订单已退款', ['special_id' => $pink['cid']]);
-        }
-        if (!$pink) return JsonService::fail('参数错误', ['url' => Url::build('my/index')]);
-        list($pinkAll, $pinkT, $count, $idAll, $uidAll) = StorePink::getPinkMemberAndPinkK($pink);
-        if ($pinkT['status'] == 2)
-            $pinkBool = 1;
-        else {
-            if (!$count || $count < 0) {//组团完成
-                $pinkBool = StorePink::PinkComplete($uidAll, $idAll, $this->uid, $pinkT);
-            } else {//拼团失败 退款
-                $pinkBool = StorePink::PinkFail($this->uid, $idAll, $pinkAll, $pinkT, (int)$count, $pinkBool, $uidAll);
-            }
-        }
-        if ($pinkBool === false) return JsonService::fail(StorePink::getErrorInfo());
-        foreach ($pinkAll as $v) {
-            if ($v['uid'] == $this->uid) $userBool = 1;
-        }
-        if ($pinkT['uid'] == $this->uid) $userBool = 1;
-        $data['pinkBool'] = $pinkBool;
-        $data['is_ok'] = $is_ok;
-        $data['userBool'] = $userBool;
-        $data['pinkT'] = $pinkT;
-        $data['pinkAll'] = $pinkAll;
-        $data['count'] = $count;
-        $data['current_pink_order'] = StorePink::getCurrentPink($pinkId);
-        $data['special'] = SpecialModel::getPinkSpecialInfo($pinkT['order_id'], $pinkId, $this->uid);
-        return JsonService::successful($data);
+        if (!$pink_id) $this->failed('缺少订单号',Url::build('my/order_list'));
+        $this->assign([
+            'pink_id' => $pink_id,
+            'is_help' => $is_help,
+        ]);
+        return $this->fetch();
     }
 
     /**
@@ -231,6 +286,7 @@ class Special extends AuthController
             ['special_id', 0],
         ], null, true);
         $uid=$this->uid ? $this->uid : 0;
+        //不登录也能查看
         $task_list = SpecialCourse::getSpecialSourceList($special_id, $limit, $page,$uid);
         if(!$task_list['list'])  return JsonService::successful([]);
         foreach ($task_list['list'] as $k => $v) {
@@ -266,9 +322,8 @@ class Special extends AuthController
      * @param int $task_id 任务id
      * @return json
      * */
-    public function play_num($task_id = 0)
+    public function play_num($task_id = 0,$special_id=0)
     {
-        $special_id = $this->request->param('special_id',0);
         if ($task_id == 0 || $special_id == 0) return JsonService::fail('缺少参数');
         try{
             $add_task_play_count = SpecialTask::bcInc($task_id, 'play_count', 1);
@@ -293,11 +348,11 @@ class Special extends AuthController
      * */
     public function play($task_id = 0)
     {
-        if (!$task_id) $this->failed('无法访问');
+        if (!$task_id) $this->failed('无法访问', Url::build('index/index'));
         Session::set('video_token_' . $task_id, md5(time() . $task_id));
         $tash = SpecialTask::get($task_id);
-        if (!$tash) $this->failed('您查看的资源不存在');
-        if ($tash->is_show == 0) $this->failed('您查看的资源已下架');
+        if (!$tash) $this->failed('您查看的资源不存在', Url::build('index/index'));
+        if ($tash->is_show == 0) $this->failed('您查看的资源已下架', Url::build('index/index'));
         $this->assign('link', Trust($tash->link));
         $this->assign('task_id', $task_id);
         return $this->fetch();
@@ -321,23 +376,29 @@ class Special extends AuthController
         }
     }
 
+    /**支付接口
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
     public function create_order(){
-        list($special_id, $pay_type_num, $payType, $pinkId, $total_num, $link_pay_uid,$signUp) = UtilService::PostMore([
+        list($special_id, $pay_type_num, $payType, $pinkId, $total_num, $link_pay_uid,$key,$mark,$name,$phone,$sex,$age,$company,$remarks) = UtilService::PostMore([
             ['special_id', 0],
             ['pay_type_num', -1],
             ['payType', 'weixin'],
             ['pinkId', 0],
             ['total_num', 1],
             ['link_pay_uid', 0],
-            ['sign',''],
+            ['key',''],
+            ['mark',''],
+            ['name',''],
+            ['phone',''],
+            ['sex',''],
+            ['age',''],
+            ['company',''],
+            ['remarks',''],
         ], $this->request, true);
         switch ($pay_type_num){
-            case 10://会员支付
-                $this->create_member_order($special_id,$payType);
-                break;
-            case 20://报名支付
-                $this->create_activity_order($special_id,$payType,$signUp);
-                break;
             case 30://虚拟币充值
                 $auth_api = new AuthApi();
                 $auth_api->user_wechat_recharge($special_id, $payType);
@@ -346,7 +407,7 @@ class Special extends AuthController
         }
     }
     /**
-     * 创建支付订单
+     * 创建专题支付订单
      * @param int $special_id 专题id
      * @param int $pay_type 购买类型 1=礼物,2=普通购买,3=开团或者拼团
      * @throws \think\db\exception\DataNotFoundException
@@ -358,33 +419,6 @@ class Special extends AuthController
 
         if (!$special_id) return JsonService::fail('缺少购买参数');
         if ($pay_type_num == -1) return JsonService::fail('选择购买方式');
-        if ($pinkId) {
-            $orderId = StoreOrder::getStoreIdPink($pinkId);
-            if (StorePink::getIsPinkUid($pinkId)) return JsonService::status('ORDER_EXIST', '订单生成失败，你已经在该团内不能再参加了', ['orderId' => $orderId]);
-            if (StoreOrder::getIsOrderPink($pinkId)) return JsonService::status('ORDER_EXIST', '订单生成失败，你已经参加该团了，请先支付订单', ['orderId' => $orderId]);
-            if (StorePink::getPinkStatusIng($pinkId)) return JsonService::status('ORDER_EXIST', '拼团已完成或者已过期无法参团', ['orderId' => $orderId]);
-            if (StorePink::be(['uid' => $this->uid, 'type' => 1, 'cid' => $special_id, 'status' => 1])) return JsonService::status('ORDER_EXIST', '您已参见本专题的拼团,请结束后再进行参团');
-            if (SpecialBuy::be(['uid' => $this->uid, 'special_id' => $special_id, 'is_del' => 0])) return JsonService::status('ORDER_EXIST', '您已购买此专题,不能在进行参团!');
-            //处理拼团完成
-            try {
-                if ($pink = StorePink::get($pinkId)) {
-                    list($pinkAll, $pinkT, $count, $idAll, $uidAll) = StorePink::getPinkMemberAndPinkK($pink);
-                    if ($pinkT['status'] == 1) {
-                        if (!$count || $count < 0) {
-                            StorePink::PinkComplete($uidAll, $idAll, $pinkT['uid'], $pinkT);
-                            return JsonService::status('ORDER_EXIST', '当前拼团已完成，无法参团');
-                        } else
-                            StorePink::PinkFail($pinkT['uid'], $idAll, $pinkAll, $pinkT, $count, 0, $uidAll);
-                    } else if ($pinkT['status'] == 2) {
-                        return JsonService::status('ORDER_EXIST', '当前拼团已完成，无法参团');
-                    } else if ($pinkT['status'] == 3) {
-                        return JsonService::status('ORDER_EXIST', '拼团失败，无法参团');
-                    }
-                }
-            } catch (\Exception $e) {
-
-            }
-        }
         $special = SpecialModel::PreWhere()->find($special_id);
         if (!$special) return JsonService::status('ORDER_ERROR', '购买的专题不存在');
         $order = StoreOrder::createSpecialOrder($special, $pinkId, $pay_type_num, $this->uid, $payType, $link_pay_uid, $total_num);
@@ -434,13 +468,17 @@ class Special extends AuthController
      * */
     public function gift_special($orderId = null)
     {
-        if (is_null($orderId)) $this->failed('缺少订单号,无法进行赠送');
-        $special = StoreOrder::getOrderIdToSpecial($orderId);
-        if ($special === false) $this->failed(StoreOrder::getErrorInfo());
-        $this->assign('special', $special);
-        $this->assign('special_gift_banner', SystemConfigService::get('special_gift_banner'));
-        $this->assign('site_url', SystemConfigService::get('site_url') . Url::build('special/details') . '?id=' . $special['id'] . '&gift_uid=' . $this->uid . '&gift_order_id=' . $orderId . '&gift=1&spread_uid=' . $this->uid);
-        $this->assign('orderId', $orderId);
+        if (is_null($orderId)) $this->failed('缺少订单号,无法进行赠送',Url::build('my/my_gift'));
+        $uid=$this->uid;
+        if(!$uid)$this->failed('未获取到用户信息！',Url::build('index/index'));
+        $special = StoreOrder::getOrderIdToSpecial($orderId,$uid);
+        if ($special === false) $this->failed(StoreOrder::getErrorInfo(),Url::build('my/my_gift'));
+        $this->assign([
+            'orderId'=>$orderId,
+            'title'=>'赠送礼物',
+            'site_url'=>SystemConfigService::get('site_url') . Url::build('special/details') . '?id=' . $special['id'] . '&gift_uid=' . $this->uid . '&gift_order_id=' . $orderId . '&gift=1&spread_uid=' . $this->uid,
+            'special'=>$special
+        ]);
         return $this->fetch();
     }
 
@@ -451,11 +489,10 @@ class Special extends AuthController
      * */
     public function gift_receive($orderId = null)
     {
-        if (is_null($orderId)) $this->failed('缺少订单号,无法查看领取记录');
+        if (is_null($orderId)) $this->failed('缺少订单号,无法查看领取记录',Url::build('my/my_gift'));
         $special = StoreOrder::getOrderIdGiftReceive($orderId);
-        if ($special === false) $this->failed(StoreOrder::getErrorInfo());
+        if ($special === false) $this->failed(StoreOrder::getErrorInfo(),Url::build('my/my_gift'));
         $this->assign($special);
-        $this->assign('special_gift_banner', SystemConfigService::get('special_gift_banner'));
         return $this->fetch();
     }
 
@@ -497,15 +534,15 @@ class Special extends AuthController
      * */
     public function poster_show($special_id = 0, $pinkId = 0, $is_help = 0)
     {
-        if (!$special_id || !$pinkId) $this->failed('您查看的朋友去圈海报不存在');
+        if (!$special_id || !$pinkId) $this->failed('您查看的朋友去圈海报不存在',Url::build('spread/special'));
         $special = SpecialModel::getSpecialInfo($special_id);
-        if ($special === false) $this->failed(SpecialModel::getErrorInfo());
-        if (!$special['poster_image']) $this->failed('您查看的海报不存在');
-        $site_url = SystemConfigService::get('site_url') . Url::build('special/details') . '?id=' . $special['id'] . '&pinkId=' . $pinkId . '&partake=1' . ($is_help ? '&spread_uid=' . $this->uid : '');
+        if ($special === false) $this->failed(SpecialModel::getErrorInfo(),Url::build('spread/special'));
+        if (!$special['poster_image']) $this->failed('您查看的海报不存在',Url::build('spread/special'));
+        $site_url = SystemConfigService::get('site_url') . Url::build('special/pink').'?pink_id='.$pinkId.'&special_id='.$special['id'].'&is_help=1&spread_uid=' . $this->uid;
         try {
-            $filename = CanvasService::startPosterSpeclialIng($special_id, $special['poster_image'], $site_url);
+            $filename = CanvasService::startPosterSpeclialIng($special, $site_url,$this->uid);
         } catch (\Exception $e) {
-            return $this->failed($e->getMessage());
+            return $this->failed($e->getMessage(),Url::build('spread/special'));
         }
         $this->assign('filename', $filename);
         $this->assign('special', $special);
@@ -513,50 +550,6 @@ class Special extends AuthController
         $this->assign('site_url', $site_url);
         return $this->fetch();
     }
-
-
-    /**
-     * 获取专题弹幕
-     * @param int $special_id 专题id
-     * @return json
-     * */
-    public function get_barrage_list($special_id = 0)
-    {
-        if (SystemConfigService::get('open_barrage')) {
-            $barrage = SpecialBarrage::where('is_show', 1)->order('sort desc,id desc')->field(['nickname', 'avatar', 'action'])->select();
-            $barrage = count($barrage) ? $barrage->toArray() : [];
-            foreach ($barrage as &$item) {
-                $item['status_name'] = $item['action'] == 1 ? '1秒前发起了拼团' : '1秒前成功参团';
-                unset($item['action']);
-            }
-            $pinkList = StoreOrder::where(['o.cart_id' => $special_id, 'p.is_refund' => 0, 'o.refund_status' => 0, 'o.paid' => 1, 'p.is_false' => 0])
-                ->join("__STORE_PINK__ p", 'p.order_id=o.order_id')
-                ->join('__USER__ u', 'u.uid=o.uid')
-                ->field(['u.nickname', 'u.avatar', 'p.status', 'p.k_id'])
-                ->group('o.order_id')
-                ->order('o.add_time desc')
-                ->alias('o')
-                ->select();
-            $pinkList = count($pinkList) ? $pinkList->toArray() : [];
-            foreach ($pinkList as &$item) {
-                if ($item['status'] == 2 && $item['k_id'] == 0) {
-                    $item['status_name'] = '1秒前拼团成功';
-                } else if ($item['status'] == 1 && $item['k_id'] == 0)
-                    $item['status_name'] = '1秒前发起了拼团';
-                else if ($item['status'] == 2 && $item['k_id'] != 0)
-                    $item['status_name'] = '1秒前拼团成功';
-                else if ($item['status'] == 1 && $item['k_id'] != 0)
-                    $item['status_name'] = '1秒前发起了拼团';
-                else if ($item['status'] == 3)
-                    $item['status_name'] = '1秒前参团成功';
-                unset($item['status'], $item['k_id']);
-            }
-            $barrageList = array_merge($pinkList, $barrage);
-            shuffle($barrageList);
-        } else $barrageList = [];
-        return JsonService::successful($barrageList);
-    }
-
     /**
      * 获取滚动index
      * @param int $index
@@ -570,39 +563,26 @@ class Special extends AuthController
      * 专题分类
      * @return mixed
      */
-    public function special_cate($cate_id = 0)
+    public function special_cate($cate_id = 0,$subject_id=0)
     {
         $this->assign([
             'homeLogo' => SystemConfigService::get('home_logo'),
-            'cate_id' => (int)$cate_id
+            'cate_id' => (int)$cate_id,
+            'subject_id' => (int)$subject_id
         ]);
         return $this->fetch();
     }
 
     /**
-     * 获取一级分类
+     * 获取课程分类
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
     public function get_grade_cate()
     {
-        return JsonService::successful(Grade::order('sort desc,id desc')->select());
-    }
-
-    /**
-     * 获取二级分类
-     * @param int $grade_id
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
-     */
-    public function get_subject_cate($grade_id = 0)
-    {
-        if (!$grade_id) {
-            return JsonService::fail('缺少一级分类id');
-        }
-        return JsonService::successful(SpecialSubject::where(['is_show' => 1, 'grade_id' => $grade_id])->order('sort desc,id desc')->select());
+        $cateogry = SpecialSubject::with('children')->where(['is_show'=>1,'is_del'=>0])->order('sort desc,id desc')->where('grade_id',0)->select();
+        return JsonService::successful($cateogry->toArray());
     }
 
     /**
@@ -620,7 +600,6 @@ class Special extends AuthController
         $uid = $this->uid;
         return JsonService::successful(SpecialModel::getSpecialList(compact('subject_id', 'search', 'page', 'limit', 'type', 'uid')));
     }
-
     /**
      * 学习记录
      * @return mixed
@@ -648,7 +627,7 @@ class Special extends AuthController
         if (!$tash) {
             return JsonService::fail('您查看的视频已经下架');
         }else{
-            return JsonService::successful();
+            return JsonService::successful($tash);
         }
     }
 
@@ -663,39 +642,25 @@ class Special extends AuthController
      */
     public function task_info($id = 0, $specialId = 0)
     {
-        $play_content = $this->request->param('content',1);//1:显示详情，2显示内容
         if (!$id) {
-            return $this->failed('缺少课程id,无法查看');
+            return $this->failed('缺少课程id,无法查看',Url::build('index/index'));
         }
-        //$taskInfo = SpecialTask::defaultWhere()->where('special_id', $specialId)->where('id', $id)->find();
         $taskInfo = SpecialTask::defaultWhere()->where('id', $id)->find();
         $special = SpecialModel::PreWhere()->where('id', $specialId)->find();
 
         if (!$special) {
-            return $this->failed('您查看得专题不存在');
+            return $this->failed('您查看得专题不存在',Url::build('index/index'));
         }
         if (!$taskInfo) {
-            return $this->failed('课程信息不存在无法观看');
+            return $this->failed('课程信息不存在无法观看',Url::build('index/index'));
         }
         if ($taskInfo['is_show'] == 0) {
-            return $this->failed('该课程已经下架');
+            return $this->failed('该课程已经下架',Url::build('index/index'));
         }
         $isPay = SpecialBuy::PaySpecial($specialId, $this->uid);
 
         $special_content = SpecialContent::where('special_id',$specialId)->value("content");
-        if ($play_content == 2) {
-            switch($special['type']){
-                case SPECIAL_IMAGE_TEXT:
-                    $content = htmlspecialchars_decode($taskInfo->content ? $taskInfo->content : "");
-                    break;
-                case SPECIAL_VIDEO:
-                case SPECIAL_AUDIO:
-                    $content = htmlspecialchars_decode($taskInfo->detail ? $taskInfo->detail : $special_content);
-                    break;
-            }
-        }else{
-            $content = htmlspecialchars_decode($taskInfo->detail ? $taskInfo->detail : $special_content);
-        }
+        $content = htmlspecialchars_decode($taskInfo->detail ? $taskInfo->detail : $special_content);
         $user_level = !$this->uid ? 0 : User::getUserInfo($this->uid);
         $taskInfo->content =  $content;
 
@@ -707,7 +672,7 @@ class Special extends AuthController
                 return $this->failed('您选择的素材不存在',Url::build('special/details',array('id'=>$specialId)));
             }else{
                 $special_source = $special_source->toArray();
-                $taskInfo = SpecialTask::defaultWhere()->order('sort DESC')->where('id', $special_source['source_id'])->find();
+                $taskInfo = SpecialTask::defaultWhere()->where('id', $special_source['source_id'])->find();
                 if(!$taskInfo){
                     return $this->failed('您选择的素材不存在',Url::build('special/details',array('id'=>$specialId)));
                 }
@@ -722,32 +687,144 @@ class Special extends AuthController
         return $this->fetch();
     }
 
+    /**检测用户身份
+     * @throws \Exception
+     */
+    public function isMember()
+    {
+        $user_level = !$this->uid ? 0 : User::getUserInfo($this->uid);
+        $data['now_money']=isset($user_level['now_money']) ? $user_level['now_money'] : 0;
+        return JsonService::successful($data);
+    }
+    /**
+     * 图文素材详情
+     */
+    public function task_text_info($id = 0, $specialId = 0)
+    {
+        if (!$id) {
+            return $this->failed('缺少课程id,无法查看',Url::build('index/index'));
+        }
+        $taskInfo = SpecialTask::defaultWhere()->where('id', $id)->find();
+        $special = SpecialModel::PreWhere()->where('id', $specialId)->find();
+
+        if (!$special) {
+            return $this->failed('您查看得专题不存在',Url::build('index/index'));
+        }
+        if (!$taskInfo) {
+            return $this->failed('课程信息不存在无法观看',Url::build('index/index'));
+        }
+        if ($taskInfo['is_show'] == 0) {
+            return $this->failed('该课程已经下架',Url::build('index/index'));
+        }
+        $isPay = SpecialBuy::PaySpecial($specialId, $this->uid);
+
+        $content = htmlspecialchars_decode($taskInfo->content ? $taskInfo->content : "");
+        $user_level = !$this->uid ? 0 : User::getUserInfo($this->uid);
+        $taskInfo->content =  $content;
+
+        if ($isPay || $special->pay_type == 0 || ($user_level['level'] > 0 && $special->member_pay_type == 0)) {
+            $isPay = true;
+        }else{
+            $special_source = SpecialSource::where(['special_id' => $specialId,'source_id' => $id,'pay_status' => 0])->find();
+            if (!$special_source) {
+                 return $this->failed('您选择的素材不存在',Url::build('special/details',array('id'=>$specialId)));
+            }else{
+                $special_source = $special_source->toArray();
+                $taskInfo = SpecialTask::defaultWhere()->where('id', $special_source['source_id'])->find();
+                if(!$taskInfo){
+                    return $this->failed('您选择的素材不存在',Url::build('special/details',array('id'=>$specialId)));
+                }
+                $taskInfo->content =  $content;
+            }
+        }
+        $this->assign('taskInfo', json_encode($taskInfo ? $taskInfo->toArray() : []));
+        $this->assign('is_member', isset($user_level['level']) ? $user_level['level'] : 0);
+        $this->assign('specialId', (int)$specialId);
+        $this->assign('specialInfo', json_encode($special->toArray()));
+        $this->assign('isPay', (int)$isPay);
+        return $this->fetch('text_detail');
+    }
+    /**
+     * 充值页面
+     */
+    public function recharge_index($from='my',$stream_name = "")
+    {
+        $user_info = $this->userInfo;
+        $gold_info = SystemConfigService::more("gold_name,gold_rate,gold_image");
+        $recharge_price_list = [60,100,300,500,980,1980,2980,5180,15980];
+        $gold_name=SystemConfigService::get('gold_name');//虚拟币名称
+        $this->assign(compact('gold_name'));
+        $this->assign('from',$from);
+        $this->assign('stream_name',$stream_name);
+        $this->assign('gold_info',json_encode($gold_info));
+        $this->assign('recharge_price_list',json_encode($recharge_price_list));
+        $this->assign('user_gold_num',$user_info['gold_num']);
+        return $this->fetch('my/gold_coin');
+    }
     /**
      * 储存素材观看时间
      */
     public function viewing($special_id=0,$task_id=0,$time=0){
         return JsonService::successful(SpecialWatch::materialViewing($this->userInfo['uid'],$special_id,$task_id,$time));
     }
-    public function activity_details($id = '')
+
+   /**
+    * 讲师详情
+     * @return mixed
+     */
+    public function teacher_detail($id=0)
     {
-        $activity = EventRegistration::oneActivitys($id);
-        if (!$activity) $this->failed('您查看的活动不存在');
-        $is_pay=0;//是否购买报名过
-        $is_restrictions=0; //是否超过限购
-        $signCount=EventSignUp::where('activity_id',$id)->where('uid',$this->userInfo['uid'])->where('paid',1)->count();
-        if($signCount){
-            $is_pay=1;
-            if(bcsub($signCount,$activity['restrictions'],0)>=0) $is_restrictions=1;
+        $this->assign('id',$id);
+        return $this->fetch();
+    }
+    /**
+     * 讲师列表
+     * @return mixed
+     */
+    public function teacher_list()
+    {
+        return $this->fetch();
+    }
+
+    /**
+     * 素材详情
+     */
+    public function source_detail($id=0)
+    {
+        if (!$id) return JsonService::fail('缺少参数');
+        $this->assign('id',$id);
+        return $this->fetch();
+    }
+    /**获取素材详情
+     * @param int $source_id
+     */
+    public function getSourceDetail($source_id=0)
+    {
+        if (!$source_id) return JsonService::fail('缺少参数');
+        $taskInfo = SpecialTask::defaultWhere()->where('id', $source_id)->find();
+        SpecialTask::bcInc($source_id, 'play_count', 1);
+        return JsonService::successful($taskInfo);
+    }
+
+    /**相关课程
+     * @param int $source_id
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function relatedCourses($source_id=0)
+    {
+        if (!$source_id) return JsonService::fail('缺少参数');
+        $specialList=SpecialSource::where('source_id',$source_id)->column('special_id');
+        $array=[];
+        foreach ($specialList as $key=>$value){
+            $special = SpecialModel::PreWhere()->where('id', $value)->find();
+            $special['count']=0;
+            $specialSourceId = SpecialSource::getSpecialSource($value);
+            if($specialSourceId) $special['count']=count($specialSourceId);
+            $special['record']=Db::name('learning_records')->where(['special_id'=>$value])->count();
+            array_push($array,$special);
         }
-        $this->assign([
-            'is_pay' => $is_pay,
-            'is_restrictions' => $is_restrictions,
-            'is_member' => isset($this->userInfo['level']) ? $this->userInfo['level'] : 0,
-            'is_fill'=>$activity['is_fill'],
-            'activity' => json_encode($activity),
-            'activity_rules' => htmlspecialchars_decode($activity['activity_rules']),
-            'content' => htmlspecialchars_decode($activity['content'])
-        ]);
-        return $this->fetch('activity/index');
+        return JsonService::successful($array);
     }
 }

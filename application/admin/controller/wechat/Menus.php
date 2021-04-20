@@ -1,5 +1,4 @@
 <?php
-
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
@@ -25,6 +24,8 @@ use think\Request;
  */
 class Menus extends AuthController
 {
+
+    const YYYYYY='';
 
     public function index()
     {

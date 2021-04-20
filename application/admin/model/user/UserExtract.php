@@ -9,7 +9,6 @@
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
 
-
 namespace app\admin\model\user;
 
 use app\admin\model\user\User;
@@ -19,6 +18,8 @@ use think\Url;
 use traits\ModelTrait;
 use basic\ModelBasic;
 use service\WechatTemplateService;
+use app\wap\model\routine\RoutineTemplate;
+use service\SystemConfigService;
 
 /**
  * 用户提现管理 model
@@ -55,16 +56,27 @@ class UserExtract extends ModelBasic
         $uid = $data['uid'];
         $status = -1;
         $User = User::find(['uid' => $uid])->toArray();
-        UserBill::income('提现失败', $uid, 'now_money', 'extract', $extract_number, $id, $User['now_money'], $mark);
+        UserBill::income('提现失败', $uid, 'now_money', 'extract_fail', $extract_number, $id, $User['now_money'], $mark);
         User::bcInc($uid, 'brokerage_price', $extract_number, 'uid');
         try {
-            WechatTemplateService::sendTemplate(WechatUser::uidToOpenid($uid), WechatTemplateService::USER_BALANCE_CHANGE, [
-                'first' => $mark,
-                'keyword1' => '佣金提现',
-                'keyword2' => date('Y-m-d H:i:s', time()),
-                'keyword3' => $extract_number,
-                'remark' => '错误原因:' . $fail_msg
-            ], Url::build('wap/my/user_pro', [], true, true));
+            $wechat_notification_message = SystemConfigService::get('wechat_notification_message');
+            if($wechat_notification_message==1){
+                WechatTemplateService::sendTemplate(WechatUser::uidToOpenid($uid), WechatTemplateService::USER_BALANCE_CHANGE, [
+                    'first' => $mark,
+                    'keyword1' => '佣金提现',
+                    'keyword2' => $extract_number,
+                    'keyword3' => date('Y-m-d H:i:s', time()),
+                    'keyword4' => $User['brokerage_price'],
+                    'remark' => '错误原因:' . $fail_msg
+                ], Url::build('wap/spread/spread', [], true, true));
+            }else{
+                $dat['thing8']['value'] =  '佣金提现';
+                $dat['date4']['value'] =  date('Y-m-d H:i:s',time());
+                $dat['amount1']['value'] =  $extract_number;
+                $dat['amount2']['value'] =  $User['brokerage_price'];
+                $dat['thing5']['value'] =  $mark;
+                RoutineTemplate::sendAccountChanges($dat,$uid,Url::build('wap/spread/spread', [],true, true));
+            }
         } catch (\Exception $e) {
 
         }
@@ -78,16 +90,28 @@ class UserExtract extends ModelBasic
         $extract_number = $data['extract_price'];
         $mark = '成功提现佣金' . $extract_number . '元';
         $uid = $data['uid'];
+        $User = User::find(['uid' => $uid])->toArray();
         $now_money = User::where(['uid' => $uid])->value('brokerage_price');
-        UserBill::income('佣金提现', $uid, 'now_money', 'extract', $extract_number, $id, $now_money, $mark);
+        UserBill::expend('提现成功', $uid, 'now_money', 'extract_success', $extract_number, $id, $now_money, $mark);
         try {
-            WechatTemplateService::sendTemplate(WechatUser::uidToOpenid($uid), WechatTemplateService::USER_BALANCE_CHANGE, [
-                'first' => $mark,
-                'keyword1' => '佣金提现',
-                'keyword2' => date('Y-m-d H:i:s', time()),
-                'keyword3' => $extract_number,
-                'remark' => '点击查看我的佣金明细'
-            ], Url::build('wap/my/user_pro', [], true, true));
+            $wechat_notification_message = SystemConfigService::get('wechat_notification_message');
+            if($wechat_notification_message==1){
+                WechatTemplateService::sendTemplate(WechatUser::uidToOpenid($uid), WechatTemplateService::USER_BALANCE_CHANGE, [
+                    'first' => $mark,
+                    'keyword1' => '佣金提现',
+                    'keyword2' => $extract_number,
+                    'keyword3' => date('Y-m-d H:i:s', time()),
+                    'keyword4' => $User['brokerage_price'],
+                    'remark' => '点击查看我的佣金明细！'
+                ], Url::build('wap/spread/spread', [], true, true));
+            }else{
+                $dat['thing8']['value'] =  '佣金提现';
+                $dat['date4']['value'] =  date('Y-m-d H:i:s',time());
+                $dat['amount1']['value'] =  $extract_number;
+                $dat['amount2']['value'] =  $User['brokerage_price'];
+                $dat['thing5']['value'] =  $mark;
+                RoutineTemplate::sendAccountChanges($dat,$uid,Url::build('wap/spread/spread', [],true, true));
+            }
         } catch (\Exception $e) {
 
         }

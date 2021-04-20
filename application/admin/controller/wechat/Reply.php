@@ -1,5 +1,4 @@
 <?php
-
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
@@ -14,7 +13,6 @@ namespace app\admin\controller\wechat;
 
 use app\admin\controller\AuthController;
 use app\admin\model\wechat\WechatReply;
-use service\UtilService as Util;
 use service\JsonService as Json;
 use service\UploadService as Upload;
 use think\Request;
@@ -54,7 +52,7 @@ class Reply extends AuthController
 
     public function one_reply()
     {
-        $where = Util::postMore([
+        $where = parent::postMore([
             ['key'],
             ['add', 0],
         ], $this->request);
@@ -73,7 +71,7 @@ class Reply extends AuthController
 
     public function save(Request $request)
     {
-        $data = Util::postMore([
+        $data = parent::postMore([
             'type',
             'key',
             ['status', 0],
@@ -114,7 +112,7 @@ class Reply extends AuthController
      * */
     public function keyword()
     {
-        $where = Util::getMore([
+        $where = parent::getMore([
             ['key', ''],
             ['type', ''],
         ], $this->request);
@@ -162,7 +160,7 @@ class Reply extends AuthController
      * */
     public function save_keyword(Request $request)
     {
-        $data = Util::postMore([
+        $data = parent::postMore([
             'key',
             'type',
             ['status', 0],

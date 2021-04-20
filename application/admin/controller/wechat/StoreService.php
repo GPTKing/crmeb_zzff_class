@@ -1,5 +1,4 @@
 <?php
-
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
@@ -14,7 +13,6 @@ namespace app\admin\controller\wechat;
 
 use app\admin\controller\AuthController;
 use service\FormBuilder as Form;
-use service\UtilService as Util;
 use service\JsonService as Json;
 use service\UploadService as Upload;
 use think\Request;
@@ -48,7 +46,7 @@ class StoreService extends AuthController
      */
     public function create()
     {
-        $where = Util::getMore([
+        $where = parent::getMore([
             ['nickname', ''],
             ['data', ''],
             ['tagid_list', ''],
@@ -105,7 +103,8 @@ class StoreService extends AuthController
         $f = array();
         $f[] = Form::frameImageOne('avatar', '客服头像', Url::build('admin/widget.images/index', array('fodder' => 'avatar')), $service['avatar'])->icon('image');
         $f[] = Form::input('nickname', '客服名称', $service["nickname"]);
-        $f[] = Form::switches('notify', '订单通知', $service["notify"])->trueValue(1)->falseValue(0)->openStr('开启')->closeStr('关闭');
+//        $f[] = Form::switches('notify', '订单通知', 1)->trueValue(1)->falseValue(0)->openStr('开启')->closeStr('关闭');
+        $f[] = Form::radio('notify', '订单通知', $service['notify'])->options([['value' => 1, 'label' => '开启'], ['value' => 0, 'label' => '关闭']]);
         $f[] = Form::radio('status', '客服状态', $service['status'])->options([['value' => 1, 'label' => '显示'], ['value' => 0, 'label' => '隐藏']]);
         $form = Form::make_post_form('修改数据', $f, Url::build('update', compact('id')));
         $this->assign(compact('form'));

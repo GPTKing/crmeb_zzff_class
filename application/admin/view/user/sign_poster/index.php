@@ -1,21 +1,21 @@
 {extend name="public/container"}
-{block name="head_top"}
-
-{/block}
 {block name="content"}
 <div class="layui-fluid">
     <div class="layui-row layui-col-space15"  id="app">
         <div class="layui-col-md12">
             <div class="layui-card">
-                <div class="layui-card-header">签到海报列表</div>
+                <div class="layui-card-header">
+                    <div style="font-weight: bold;">签到海报</div>
+                </div>
                 <div class="layui-card-body">
-                        <div class="layui-btn-container">
-                            <button type="button" class="layui-btn layui-btn-sm" onclick="$eb.createModalFrame('新增海报','{:Url('create')}',{w:800,h:600})" ><i class="layui-icon layui-icon-add-1"></i>新增海报</button>
+                        <div class="layui-btn-group">
+                            <button type="button" class="layui-btn layui-btn-normal layui-btn-sm" onclick="$eb.createModalFrame('添加海报','{:Url('create')}',{w:800,h:600})" ><i class="layui-icon">&#xe608;</i>添加海报</button>
+                            <button class="layui-btn layui-btn-normal layui-btn-sm" onclick="window.location.reload()"><i class="layui-icon">&#xe669;</i>刷新</button>
                         </div>
                     <table class="layui-hide" id="List" lay-filter="List"></table>
                     <script type="text/html" id="act">
-                        <button type="button" class="layui-btn layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</button>
-                        <button type="button" class="layui-btn layui-btn-xs" lay-event="delete"><i class="fa fa-trash"></i>删除</button>
+                        <button type="button" class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit"><i class="layui-icon">&#xe642;</i>编辑</button>
+                        <button type="button" class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delete"><i class="layui-icon">&#xe640;</i>删除</button>
                     </script>
                 </div>
             </div>
@@ -26,15 +26,15 @@
 {/block}
 {block name="script"}
 <script>
-
     layList.form.render();
 
     layList.tableList({o:'List'},layList.U({a:'getSignPosterList'}),function (){
         return [
-            {field: 'id', title: '编号', sort: true,event:'id',width:'10%',align:'center'},
+            {field: 'id', title: '编号', width:60,align:'center'},
             {field: 'sign_time', title: '签到时间',align:'center'},
-            {field: 'poster', title: '海报', event:'open_image', width: '30%',align: 'center', templet: '<p><img class="avatar" style="cursor: pointer;width: 100px;height: 120px;" class="open_image" data-image="{{d.poster}}" src="{{d.poster}}" ></p>'},
-            {field: 'right', title: '操作',align:'center',toolbar:'#act',width:'20%'},
+            {field: 'poster', title: '海报', event:'open_image', align: 'center', templet: '<div><img class="avatar" style="cursor: pointer;" height="50" class="open_image" data-image="{{d.poster}}" src="{{d.poster}}" ></div>'},
+            {field: 'sign_talk', title: '语录',align: 'center'},
+            {field: 'right', title: '操作',align:'center',toolbar:'#act'},
         ];
     });
     layList.tool(function (layEvent,data,obj) {

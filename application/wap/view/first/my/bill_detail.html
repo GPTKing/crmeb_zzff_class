@@ -29,7 +29,6 @@
         left: 50%;
         width: 4rem;
         height: 4rem;
-        background: url("{__WAP_PATH}zsff/images/nothing.png") center/contain no-repeat;
         -webkit-transform: translateX(-50%);
         transform: translateX(-50%);
     }
@@ -46,8 +45,7 @@
         </div>
         <div class="main">
             <div class="nav-bar">
-                <div v-for="(item, index) in navs" :key="index" :class="{ active: navActive === index }" class="item"
-                    @click="navActives(index)">{{ item }}</div>
+                <div v-for="(item, index) in navs" :key="index" :class="{ active: navActive === index }" class="item" @click="navActives(index)">{{ item }}</div>
             </div>
             <div class="nav-cont">
                 <div class="section">
@@ -64,15 +62,18 @@
                     <div v-show="loading" class="loading">
                         <span class="fa fa-spinner"></span>
                     </div>
-                    <div v-if="loadend" class="loaded">{{loadTitle}}</div>
-                    <div v-if="!billList.length && !loading" class="nothing"></div>
+                    <div v-if="loadend && billList.length" class="loaded">{{loadTitle}}</div>
+                    <div v-if="!billList.length && !loading">
+                        <img class="nothing"  src="/wap/first/zsff/images/no_data_available.png">
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+    <quick-menu></quick-menu>
 </div>
 <script>
-    require(['vue', 'store', 'helper'], function (Vue, app, helper) {
+    require(['vue', 'store', 'helper', 'quick'], function (Vue, app, helper) {
             new Vue({
             el: '#app',
             data: {

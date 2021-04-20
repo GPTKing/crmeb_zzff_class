@@ -1,127 +1,142 @@
 {extend name="public/container"}
+{block name="head_top"}
+<style>
+</style>
+{/block}
 {block name="content"}
 <div class="layui-fluid">
-    <div class="layui-row layui-col-space15">
-        <div class="layui-col-md12">
-            <div class="layui-card">
-                <div class="layui-card-body">
-                    <div class="layui-tab layui-tab-brief" lay-filter="tab">
-                        <ul class="layui-tab-title">
-                            <li lay-id="list" {eq name='type' value='1'}class="layui-this" {/eq} >
+<div class="layui-row layui-col-space15" id="app">
+    <div class="layui-col-md12">
+        <div class="layui-card">
+            <div class="layui-card-body">
+                <div class="layui-row layui-col-space15">
+                    <div class="layui-col-md12">
+                        <div class="layui-tab layui-tab-brief" lay-filter="tab">
+                            <ul class="layui-tab-title">
+                                <li lay-id="list" {eq name='type' value='1'}class="layui-this" {/eq} >
                                 <a href="{eq name='type' value='1'}javascript:;{else}{:Url('special_live',['special_type'=>4,'type'=>1])}{/eq}">直播列表</a>
-                            </li>
-                            <li lay-id="list" {eq name='type' value='2'}class="layui-this" {/eq}>
+                                </li>
+                                <li lay-id="list" {eq name='type' value='2'}class="layui-this" {/eq}>
                                 <a href="{eq name='type' value='2'}javascript:;{else}{:Url('index',['special_type'=>4,'type'=>2])}{/eq}">直播间管理</a>
-                            </li>
-                        </ul>
-                        <div class="layui-tab-content">
-                            <div class="layui-tab-item layui-show">
-                                <div class="layui-row layui-col-space15">
-                                    <div class="layui-col-md12">
-                                        <form class="layui-form layui-form-pane" action="">
-                                            <div class="layui-form-item">
-                                                <div class="layui-inline">
-                                                    <label class="layui-form-label">直播间号</label>
-                                                    <div class="layui-input-inline">
-                                                        <input type="text" name="stream_name" class="layui-input" placeholder="请输入直播名称,关键字,编号">
-                                                    </div>
-                                                </div>
-                                                <div class="layui-inline">
-                                                    <label class="layui-form-label">所属专题</label>
-                                                    <div class="layui-input-inline">
-                                                        <select name="special_id">
-                                                            <option value="">全部</option>
-                                                            {volist name='special_list' id='item'}
-                                                            <option value="{$item.id}">{$item.title}</option>
-                                                            {/volist}
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="layui-inline">
-                                                    <label class="layui-form-label">时间范围</label>
-                                                    <div class="layui-input-inline" style="width: 200px;">
-                                                        <input type="text" name="start_time" placeholder="开始时间" id="start_time" class="layui-input">
-                                                    </div>
-                                                    <div class="layui-form-mid">-</div>
-                                                    <div class="layui-input-inline" style="width: 200px;">
-                                                        <input type="text" name="end_time" placeholder="结束时间" id="end_time" class="layui-input">
-                                                    </div>
-                                                </div>
-                                                <div class="layui-inline">
-                                                    <button class="layui-btn layui-btn-sm layui-btn-normal" lay-submit="search" lay-filter="search">
-                                                        <i class="layui-icon layui-icon-search"></i>搜索
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="layui-col-md12">
+                        <form class="layui-form layui-form-pane" action="">
+                            <div class="layui-form-item">
+                                <div class="layui-inline">
+                                    <label class="layui-form-label">直播间号</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="stream_name" class="layui-input" placeholder="直播标题、关键字、编号">
                                     </div>
-                                    <div class="layui-col-md12">
-                                        <table id="List" lay-filter="List"></table>
-                                        <script type="text/html" id="play_time">
-                                            <p>开播：{{d.start_play_time}}</p>
-                                            <p>停播：{{d.stop_play_time}}</p>
-                                        </script>
-                                        <script type="text/html" id="is_pink">
-                                            {{# if(d.is_pink){ }}
-                                            <span class="layui-badge layui-bg-green">拼团开启</span>
-                                            {{# }else{ }}
-                                            <span class="layui-badge">拼团关闭</span>
-                                            {{# } }}
-                                        </script>
-                                        <script type="text/html" id="is_play">
-                                            {{# if(d.is_play){ }}
-                                            <span class="layui-badge layui-bg-green">开播中</span>
-                                            {{# }else{ }}
-                                            <span class="layui-badge">未直播</span>
-                                            {{# } }}
-                                        </script>
-                                        <script type="text/html" id="is_recording">
-                                            <input type='checkbox' name='id' lay-skin='switch' value="{{d.id}}" lay-filter='is_recording' lay-text='是|否'  {{ d.is_recording == 1 ? 'checked' : '' }}>
-                                        </script>
-                                        <script type="text/html" id="image">
-                                            <img style="cursor: pointer;" lay-event='open_image' src="{{d.live_image}}" height="50">
-                                        </script>
-                                        <script type="text/html" id="act">
-                                            <button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="dropdown(this)">
-                                                <i class="layui-icon layui-icon-down"></i>操作
-                                            </button>
-                                            <ul class="layui-nav-child layui-anim layui-anim-upbit">
-                                                <li>
-                                                    <a href="javascript:;" lay-event='update'>
-                                                        <i class="fa fa-paste"></i> 编辑直播间
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a href="javascript:;" lay-event='live_user'>
-                                                        <i class="fa fa-user-circle"></i> 直播间用户管理
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a href="javascript:;" lay-event='live_goods' >
-                                                        <i class="fa fa-bullhorn"></i> 直播推荐
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a href="javascript:;" lay-event='live_remind' >
-                                                        <i class="fa fa-bell"></i> 直播提醒
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a href="javascript:;" lay-event='guest_list'>
-                                                        <i class="fa fa-list-alt"></i> 嘉宾设置
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a href="javascript:;" lay-event='comment_list'>
-                                                        <i class="fa fa-commenting-o"></i> 评论查看
-                                                    </a>
-                                                </li>
-                                            </ul>
-                                        </script>
+                                </div>
+                                <div class="layui-inline">
+                                    <label class="layui-form-label">所属专题</label>
+                                    <div class="layui-input-inline">
+                                        <select name="special_id">
+                                            <option value="">全部</option>
+                                            {volist name='special_list' id='item'}
+                                            <option value="{$item.id}">{$item.title}</option>
+                                            {/volist}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="layui-inline">
+                                    <label class="layui-form-label">时间范围</label>
+                                    <div class="layui-input-inline" style="width: 260px;">
+                                        <input type="text" name="datetime" class="layui-input" id="datetime" placeholder="时间范围">
+                                    </div>
+                                </div>
+                                <div class="layui-inline">
+                                    <div class="layui-input-inline">
+                                        <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" lay-submit="search" lay-filter="search">
+                                            <i class="layui-icon">&#xe615;</i>搜索
+                                        </button>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </form>
+                    </div>
+                    <div class="layui-col-md12">
+                        <table class="layui-hide" id="List" lay-filter="List"></table>
+                        <script type="text/html" id="play_start_time">
+                            <div>{{d.start_play_time}}</div>
+                        </script>
+                        <script type="text/html" id="play_stop_time">
+                            <div>{{d.stop_play_time}}</div>
+                        </script>
+                        <script type="text/html" id="is_pink">
+                            {{# if(d.is_pink){ }}
+                            <span class="layui-badge layui-bg-blue">开启</span>
+                            {{# }else{ }}
+                            <span class="layui-badge">关闭</span>
+                            {{# } }}
+                        </script>
+                        <script type="text/html" id="is_play">
+                            {{# if(d.is_play){ }}
+                            <span class="layui-badge layui-bg-blue">开播中</span>
+                            {{# }else{ }}
+                            <span class="layui-badge">未直播</span>
+                            {{# } }}
+                        </script>
+                        <script type="text/html" id="is_recording">
+                            <input type='checkbox' name='id' lay-skin='switch' value="{{d.id}}" lay-filter='is_recording' lay-text='是|否'  {{ d.is_recording == 1 ? 'checked' : '' }}>
+                        </script>
+                        <script type="text/html" id="image">
+                            <img style="cursor: pointer;" height="50" lay-event='open_image' src="{{d.live_image}}">
+                        </script>
+                        <script type="text/html" id="act">
+                            <button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="dropdown(this)">
+                                <i class="layui-icon">&#xe625;</i>操作
+                            </button>
+                            <ul class="layui-nav-child layui-anim layui-anim-upbit">
+                                <li>
+                                    <a href="javascript:;" lay-event='update'>
+                                        <i class="fa fa-paste"></i> 编辑直播间
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="javascript:;" lay-event='live_user'>
+                                        <i class="fa fa-user"></i> 直播间用户管理
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="javascript:;" lay-event='live_goods'>
+                                        <i class="fa fa-bullhorn"></i> 课程推荐
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="javascript:;" lay-event='live_remind'>
+                                        <i class="fa fa-bell"></i> 直播提醒
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="javascript:;" lay-event='guest_list'>
+                                        <i class="fa fa-list-alt"></i> 嘉宾设置
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="javascript:;" lay-event='comment_list'>
+                                        <i class="fa fa-commenting-o"></i> 评论查看
+                                    </a>
+                                </li>
+                            </ul>
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<div class="live_remind" >
+    <div style="padding: 20px; background-color: #F2F2F2;">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        内容
                     </div>
                 </div>
             </div>
@@ -134,34 +149,34 @@
 <script>
     //实例化form
     layList.form.render();
-    layList.date({elem:'#start_time',theme:'#393D49',type:'datetime'});
-    layList.date({elem:'#end_time',theme:'#393D49',type:'datetime'});
+    layList.date({
+        elem: '#datetime',
+        theme: '#0092DC',
+        type: 'datetime',
+        range: '~'
+    });
     //加载列表
-    layList.tableList({
-        o:'List',
-        done:function () {
-
-        }
-    },"{:Url('get_live_list')}",function (){
+    layList.tableList({o:'List', done:function () {}},"{:Url('get_live_list')}",function (){
         return [
-            {field: 'stream_name', title: '直播间号'},
-            {field: 'live_title', title: '直播标题',edit:'live_title'},
-            {field: 'live_image', title: '封面图',templet:'#image'},
-            {field: 'play_time', title: '每日开停时间',templet:'#play_time',width:210},
-            {field: 'studio_pwd', title: '直播间密码',edit:'studio_pwd'},
-            {field: 'auto_phrase', title: '开播自动回复',edit:'auto_phrase'},
-            {field: 'online_user_num', title: '在线人数'},
-            {field: 'online_num', title: '虚拟在线人数',edit:'online_num'},
-            {field: 'is_play', title: '直播状态',templet:'#is_play'},
-            {field: 'is_recording', title: '是否自动录制',templet:'#is_recording'},
-            {field: 'sort', title: '排序',sort: true,event:'sort',edit:'sort'},
-            {field: 'right', title: '操作',align:'center',toolbar:'#act'},
+            {field: 'stream_name', title: '直播间ID',align: 'center'},
+            {field: 'live_title', title: '直播标题',edit:'live_title',align: 'center'},
+            {field: 'live_image', title: '封面',templet:'#image',align: 'center'},
+            {field: 'play_time', title: '每日开播时间',templet:'#play_start_time',align: 'center'},
+            {field: 'play_time', title: '每日停播时间',templet:'#play_stop_time',align: 'center'},
+            {field: 'studio_pwd', title: '直播间密码',align: 'center',width:70},
+            {field: 'online_user_num', title: '在线人数',align: 'center',width:70},
+            {field: 'online_num', title: '虚拟在线人数',edit:'online_num',align: 'center',width:70},
+            {field: 'is_recording', title: '自动录制',templet:'#is_recording',align: 'center',width:70},
+            {field: 'sort', title: '排序',sort: true,event:'sort',edit:'sort',align: 'center',width:60},
+            {field: 'is_play', title: '状态',templet:'#is_play',align: 'center',width:80},
+            {field: 'right', title: '操作',align:'center',toolbar:'#act',width:70},
         ];
     });
     //下拉框
     $(document).click(function (e) {
         $('.layui-nav-child').hide();
     })
+    $('.live_remind').hide();
     function dropdown(that){
         var oEvent = arguments.callee.caller.arguments[0] || event;
         oEvent.stopPropagation();
@@ -202,11 +217,10 @@
         //直播提醒
         live_remind: function (data) {
             if (data.buy_user_num == 0) {
-                var content = "暂无直播购买用户";
+                var content = "暂无适合提醒的用户";
             } else {
-                var content = "【" + data.live_title + "】" + "于" + "【" + data.start_play_time + "】" + "开始直播，" + "共有" + "【" +data.buy_user_num + "位用户】购买直播课程，快去通知吧！"
+                var content = "【" + data.live_title + "】" + "于" + "【" + data.start_play_time + "】" + "开始直播，" + "共有" + "【" +data.buy_user_num + "位用户】适合提醒，快去通知吧！"
             }
-
             layList.layer.open({
                 type: 1
                 ,scrollbar: true
@@ -236,24 +250,42 @@
                             time: 2000
                         });
                     })
-                    //
                 }
                 ,cancel:function () {
                     $('.live_remind').hide();
                 }
             });
         }
-    }
+    };
     //查询
     layList.search('search',function(where){
-        layList.reload(where,true);
+        var arr_time = [];
+        var start_time = '';
+        var end_time = '';
+        if (where.datetime) {
+            arr_time = where.datetime.split('~');
+            start_time = arr_time[0].trim();
+            end_time = arr_time[1].trim();
+        }
+        layList.reload({
+            stream_name: where.stream_name,
+            special_id: where.special_id,
+            start_time: start_time,
+            end_time: end_time
+        },true);
     });
     layList.switch('is_recording',function (odj,value) {
         action.set_value('is_recording',value,odj.elem.checked ? 1 :0);
     });
     //快速编辑
     layList.edit(function (obj) {
-        action.set_value(obj.field,obj.data.id,obj.value);
+        var id=obj.data.id,value=obj.value;
+        switch (obj.field) {
+            case 'sort':
+                if(value < 0) return layList.msg('排序不能小于0');
+                action.set_value('sort',id,value,'special');
+                break;
+        }
     });
     //监听并执行排序
     layList.sort(['id','sort'],true);
@@ -272,7 +304,7 @@
                     }).catch(function(err){
                         $eb.$swal('error',err);
                     });
-                })
+                });
                 break;
             case 'open_image':
                 $eb.openImage(data.live_image);
@@ -295,7 +327,9 @@
             case 'live_goods' :
                 $eb.createModalFrame(data.live_title+'--推荐课程',layList.U({a:'live_goods',q:{live_id:data.id}}),{w:1200});
                 break;
-
+            case 'live_store' :
+                $eb.createModalFrame(data.live_title+'--推荐商品',layList.U({a:'live_store',q:{live_id:data.id}}),{w:1200});
+                break;
         }
     })
 </script>

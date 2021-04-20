@@ -1,9 +1,23 @@
 {include file="public/frame_head"}
-<div class="row" style="width: 100%;margin-top: 50px; text-align: center;">
-<button type="button" class="btn btn-w-m layui-btn" data-url="{:Url('system.clear/refresh_cache')}">刷新数据缓存</button>
-<button type="button" class="btn btn-w-m layui-btn" data-url="{:Url('system.clear/delete_cache')}">清除缓存</button>
-<button type="button" class="btn btn-w-m layui-btn" data-url="{:Url('system.clear/delete_log')}">清除日志</button>
-<!--<button type="button" class="btn btn-w-m layui-btn-normal" onclick="action.data_compatible()">数据兼容</button>-->
+<body style="background: #f3f3f4;">
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    <div style="font-weight: bold;">刷新缓存</div>
+                </div>
+                <div class="layui-card-body">
+                    <div class="layui-btn-container">
+                        <button type="button" class="layui-btn layui-btn-normal" data-url="{:Url('system.clear/refresh_cache')}">刷新数据缓存</button>
+                        <button type="button" class="layui-btn layui-btn-danger" data-url="{:Url('system.clear/delete_cache')}">清除缓存</button>
+                        <button type="button" class="layui-btn layui-btn-danger" data-url="{:Url('system.clear/delete_log')}">清除日志</button>
+                        <!--<button type="button" class="btn btn-w-m layui-btn-normal" onclick="action.data_compatible()">数据兼容</button>-->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 <!--<script src="/publick/sytem/js/index.js"></script>-->
 <script src="{__ADMIN_PATH}js/layuiList.js"></script>
@@ -45,3 +59,4 @@
 
 </script>
 {include file="public/inner_footer"}
+</body>

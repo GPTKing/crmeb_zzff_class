@@ -1,87 +1,24 @@
 {extend name="public/container"}
 {block name="content"}
 <div class="layui-fluid">
-    <div class="layui-row layui-col-space15" id="app">
+    <div class="layui-row layui-col-space15" id="app" v-cloak>
         <div class="layui-col-md12">
             <div class="layui-card">
+                <div class="layui-card-header">
+                    <div style="font-weight: bold;">直播贡献</div>
+                </div>
                 <div class="layui-card-body">
                     <div class="layui-carousel layadmin-carousel layadmin-shortcut" lay-anim="" lay-indicator="inside" lay-arrow="none" style="background:none">
                         <div class="layui-card-body">
-                            <div class="layui-row layui-col-space15">
-                                <div class="layui-col-md12">
-                                    <form class="layui-form" action="">
-                                        <div class="layui-form-item">
-                                            <label class="layui-form-label">搜索内容</label>
-                                            <div class="layui-input-block">
-                                                <input type="text" name="" class="layui-input">
-                                            </div>
-                                        </div>
-                                        <div class="layui-form-item">
-                                            <label class="layui-form-label">直播间</label>
-                                            <div class="layui-input-block">
-                                                <select v-model="where.live_id" name="live_id" class="layui-input">
-                                                    <option value="">全部</option>
-                                                    <option v-for="item in live_studio" :value="item.id">{{ item.live_title }}</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="layui-form-item">
-                                            <label class="layui-form-label">创建时间</label>
-                                            <div class="layui-input-block">
-                                                <div class="layui-btn-container">
-                                                    <button v-for="item in dateList" :class="[ where.date != item.value ? 'layui-btn-primary' : 'layui-btn-normal' ]" type="button" class="layui-btn layui-btn-sm">{{ item.name }}</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="layui-form-item">
-                                            <div class="layui-input-block">
-                                                <button type="button" @click="search" class="layui-btn layui-btn-normal layui-btn-sm">
-                                                    <i class="layui-icon layui-icon-search"></i>搜索
-                                                </button>
-                                                <button type="reset" @click="refresh" class="layui-btn layui-btn-primary layui-btn-sm">
-                                                    <i class="layui-icon layui-icon-refresh"></i>刷新
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                                <div class="layui-col-md12">
-                                    <table id="List" lay-filter="List"></table>
-                                    <script type="text/html" id="is_pink">
-                                        {{# if(d.is_pink){ }}
-                                        <span class="layui-badge layui-bg-blue">拼团开启</span>
-                                        {{# }else{ }}
-                                        <span class="layui-badge">拼团关闭</span>
-                                        {{# } }}
-                                    </script>
-                                    <script type="text/html" id="image">
-                                        <img style="cursor: pointer;" lay-event='open_image' src="{{d.gift_image}}" height="50">
-                                    </script>
-                                    <script type="text/html" id="act">
-                                        <button type="button" class="layui-btn layui-btn-xs" onclick="dropdown(this)">操作 <span class="caret"></span></button>
-                                        <ul class="layui-nav-child layui-anim layui-anim-upbit">
-                                            <li>
-                                                <a lay-event='delect' href="javascript:void(0)">
-                                                    <i class="fa fa-trash"></i> 删除推荐课程
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </script>
-                                </div>
-                            </div>
-
-
-
-
-                            <!-- <div class="layui-row layui-col-space10 layui-form-item">
+                            <div class="layui-row layui-col-space10 layui-form-item">
                                 <div class="layui-col-lg12">
-                                    <label class="layui-form-label">搜索内容:</label>
+                                    <label class="layui-form-label">搜索内容：</label>
                                     <div class="layui-input-block">
-                                        <input type="text" name="user_info" style="width: 50%" v-model="where.user_info" placeholder="请输入搜索内容" class="layui-input">
+                                        <input type="text" name="user_info" style="width: 50%" v-model="where.user_info" placeholder="请输入用户昵称或手机号" class="layui-input">
                                     </div>
                                 </div>
                                 <div class="layui-col-lg12">
-                                    <label class="layui-form-label" >直播间</label>
+                                    <label class="layui-form-label" >直播间：</label>
                                     <div class="layui-input-block">
                                         <select name="live_id"  v-model="where.live_id" style="width: 50%" class="layui-input">
                                             <option value="">全部</option>
@@ -90,42 +27,53 @@
                                     </div>
                                 </div>
                                 <div class="layui-col-lg12">
-                                    <label class="layui-form-label">创建时间:</label>
+                                    <label class="layui-form-label" >礼物搜索：</label>
+                                    <div class="layui-input-block">
+                                        <select name="gift_id"  v-model="where.gift_id" style="width: 50%" class="layui-input">
+                                            <option value="">全部</option>
+                                            <option v-for="item in giftList" :value="item.id">{{ item.live_gift_name }}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="layui-col-lg12">
+                                    <label class="layui-form-label">创建时间：</label>
                                     <div class="layui-input-block" data-type="date" v-cloak="">
-                                        <button class="layui-btn layui-btn-sm" type="button" v-for="item in dateList" @click="setData(item)" :class="{'layui-btn-primary':where.date!=item.value}">{{item.name}}</button>
-                                        <button class="layui-btn layui-btn-sm" type="button" ref="time" @click="setData({value:'zd',is_zd:true})" :class="{'layui-btn-primary':where.date!='zd'}">自定义</button>
+                                        <button class="layui-btn layui-btn-normal layui-btn-sm" type="button" v-for="item in dateList" @click="setData(item)" :class="{'layui-btn-primary':where.date!=item.value}">{{item.name}}</button>
+                                        <button class="layui-btn layui-btn-normal layui-btn-sm" type="button" ref="time" @click="setData({value:'zd',is_zd:true})" :class="{'layui-btn-primary':where.date!='zd'}">自定义</button>
                                         <button type="button" class="layui-btn layui-btn-sm layui-btn-primary" v-show="showtime==true" ref="date_time">{$year.0} - {$year.1}</button>
                                     </div>
                                 </div>
                                 <div class="layui-col-lg12">
                                     <div class="layui-input-block">
                                         <button @click="search" type="button" class="layui-btn layui-btn-sm layui-btn-normal">
-                                            <i class="layui-icon layui-icon-search"></i>搜索</button>
-                                        <button @click="refresh" type="reset" class="layui-btn layui-btn-primary layui-btn-sm">
-                                            <i class="layui-icon layui-icon-refresh" ></i>刷新</button>
+                                            <i class="layui-icon">&#xe615;</i> 搜索</button>
+                                        <button @click="refresh" type="reset" class="layui-btn layui-btn-normal layui-btn-sm">
+                                            <i class="layui-icon">&#xe669;</i> 刷新</button>
                                     </div>
                                 </div>
-                            </div> -->
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
             <!-- 中间详细信息-->
-            <div :class="item.col!=undefined ? 'layui-col-sm'+item.col+' '+'layui-col-md'+item.col:'layui-col-sm6 layui-col-md3'" v-for="item in badge" v-cloak="" v-if="item.count > 0">
-                <div class="layui-card">
-                    <div class="layui-card-header">
-                        {{item.name}}
-                        <span class="layui-badge layuiadmin-badge" :class="item.background_color">{{item.field}}</span>
-                    </div>
-                    <div class="layui-card-body">
-                        <p class="layuiadmin-big-font">{{item.count}}</p>
-                        <p v-show="item.content!=undefined">
-                            {{item.content}}
-                            <span class="layuiadmin-span-color">{{item.sum}}<i :class="item.class"></i></span>
-                        </p>
+            <templet v-for="(item, index) in badge">
+                <div v-if="item.count > 0" :key="index" :class="item.col!=undefined ? 'layui-col-sm'+item.col+' '+'layui-col-md'+item.col:'layui-col-sm6 layui-col-md3'">
+                    <div class="layui-card">
+                        <div class="layui-card-header">
+                            {{item.name}}
+                            <span class="layui-badge layuiadmin-badge" :class="item.background_color">{{item.field}}</span>
+                        </div>
+                        <div class="layui-card-body">
+                            <p class="layuiadmin-big-font">{{item.count}}</p>
+                            <p v-if="item.content!=undefined">
+                                {{item.content}}
+                                <span class="layuiadmin-span-color">{{item.sum}}<i :class="item.class"></i></span>
+                            </p>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </templet>
             <!--enb-->
         </div>
 
@@ -134,13 +82,10 @@
     <div class="layui-col-md12">
         <div class="layui-card">
             <div class="layui-card-body">
-                <div class="alert alert-info" role="alert">
+                <!-- <div class="alert alert-info" role="alert"> -->
                     <!--列表[排序]可进行快速修改,双击或者单击进入编辑模式,失去焦点可进行自动保存
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>-->
-                </div>
-               <!-- <div class="layui-btn-container">
-                    <button class="layui-btn layui-btn-normal layui-btn-sm" onclick="window.location.reload()"><i class="layui-icon layui-icon-refresh"></i>  刷新</button>
-                </div>-->
+                <!-- </div> -->
                 <table class="layui-hide" id="List" lay-filter="List"></table>
                 <script type="text/html" id="is_pink">
                     {{# if(d.is_pink){ }}
@@ -149,9 +94,6 @@
                     <span class="layui-badge">拼团关闭</span>
                     {{# } }}
                 </script>
-                <!-- <script type="text/html" id="gis_show">
-                     <input type='checkbox' name='live_goods_id' lay-skin='switch' value="{{d.live_goods_id}}" lay-filter='gis_show' lay-text='显示|隐藏'  {{ d.gis_show == 1 ? 'checked' : '' }}>
-                 </script>-->
                 <script type="text/html" id="image">
                     <img style="cursor: pointer;width: 80px;height: 40px;" lay-event='open_image' src="{{d.gift_image}}">
                 </script>
@@ -173,12 +115,21 @@
 {/block}
 {block name="script"}
 <script>
-    //实例化form
-    // layui.form.render();
-    // layList.date({elem:'#start_time',theme:'#393D49',type:'datetime'});
-    // layList.date({elem:'#end_time',theme:'#393D49',type:'datetime'});
     //加载列表
-    
+    layList.tableList({o:'List', done:function () {}},"{:Url('live_reward_list',[])}",function (){
+        return [
+            {field: 'id', title: '编号', width:60,align: 'center'},
+            {field: 'live_title', title: '直播间',align: 'center'},
+            {field: 'nickname', title: '用户名',align: 'center'},
+            {field: 'avatar', title: '头像',align: 'center',templet: '<p><img class="avatar" style="cursor: pointer" class="open_image" data-image="{{d.avatar}}" src="{{d.avatar}}" alt="{{d.nickname}}"></p>'},
+            {field: 'gift_name', title: '礼物',align: 'center'},
+            {field: 'gift_image', title: '礼物图片',templet:'#image',align: 'center'},
+            {field: 'gift_price', title: '礼物价格（{$gold_info["gold_name"]}）',align: 'center'},
+            {field: 'gift_num', title: '礼物数量',align: 'center'},
+            {field: 'total_price', title: '总额（{$gold_info["gold_name"]}）', align: 'center'},
+            {field: 'add_time', title: '贡献时间',align: 'center'},
+        ];
+    });
     //下拉框
     $(document).click(function (e) {
         $('.layui-nav-child').hide();
@@ -188,7 +139,7 @@
         oEvent.stopPropagation();
         var offset = $(that).offset();
         var top=offset.top-$(window).scrollTop();
-        // var index = $(that).parents('tr').data('index');
+        var index = $(that).parents('tr').data('index');
         $('.layui-nav-child').each(function (key) {
             if (key != index) {
                 $(this).hide();
@@ -253,6 +204,7 @@
         var id=obj.data.live_goods_id,value=obj.value;
         switch (obj.field) {
             case 'gsort':
+                if(value < 0) return layList.msg('排序不能小于0');
                 action.set_value('sort',id,value,'live_goods');
                 break;
             case 'gfake_sales':
@@ -290,6 +242,7 @@
             el: "#app",
             data: {
                 badge: [],
+                giftList:[],
                 live_studio: JSON.parse(live_studio),
                 dateList: [
                     {name: '全部', value: ''},
@@ -304,6 +257,7 @@
                     date:'',
                     user_info:'',
                     live_id:'',
+                    gift_id:'',
                 },
                 showtime: false,
             },
@@ -327,39 +281,24 @@
                         that.badge=rem.data;
                     });
                 },
+                liveGiftList:function() {
+                    var that=this;
+                    layList.baseGet(layList.Url({c:'live.aliyun_live',a:'liveGiftList'}),function (rem) {
+                        that.giftList=rem.data;
+                    });
+                },
                 search:function () {
                      this.getBadge();
                     layList.reload(this.where,true);
                 },
                 refresh:function () {
-                    layList.reload();
-                     this.getBadge();
+                    window.location.reload();
                 }
             },
             mounted:function () {
                 var that=this;
                  that.getBadge();
-                 layList.form.render();
-
-                 layList.tableList({
-                        o:'List',
-                        done:function () {
-
-                        }
-                    },"{:Url('live_reward_list',[])}",function (){
-                        return [
-                            {field: 'id', title: '编号', sort: true,/*event:'live_goods_id',*/width:'5%',align: 'center'},
-                            {field: 'live_title', title: '直播间',align: 'center'},
-                            {field: 'nickname', title: '用户名',align: 'center'},
-                            {field: 'avatar', title: '用户头像',align: 'center',templet: '<p><img class="avatar" style="cursor: pointer" class="open_image" data-image="{{d.avatar}}" src="{{d.avatar}}" alt="{{d.nickname}}"></p>'},
-                            {field: 'gift_name', title: '礼物名称'},
-                            {field: 'gift_image', title: '礼物图标',templet:'#image',align: 'center'},
-                            {field: 'gift_price', title: '礼物单价（{$gold_info["gold_name"]}）'},
-                            {field: 'gift_num', title: '礼物数量'},
-                            {field: 'total_price', title: '总额（{$gold_info["gold_name"]}）',sort: true, align: 'center'},
-                            {field: 'add_time', title: '贡献时间',align: 'center'},
-                        ];
-                    });
+                 that.liveGiftList();
                 layList.laydate.render({
                     elem:this.$refs.date_time,
                     trigger:'click',

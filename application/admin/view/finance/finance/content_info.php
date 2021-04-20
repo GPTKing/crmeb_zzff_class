@@ -50,19 +50,15 @@
                     <form class="layui-form layui-form-pane" action="">
                         <div class="layui-form-item">
                             <div class="layui-inline">
-                                <label class="layui-form-label">订单号/昵称</label>
+                                <label class="layui-form-label">订单ID/昵称</label>
                                 <div class="layui-input-block">
                                     <input type="text" name="nickname" class="layui-input">
                                 </div>
                             </div>
                             <div class="layui-inline">
                                 <label class="layui-form-label">时间范围</label>
-                                <div class="layui-input-inline" style="width: 200px;">
-                                    <input type="text" name="start_time" id="start_time" placeholder="开始时间" autocomplete="off" class="layui-input">
-                                </div>
-                                <div class="layui-form-mid">-</div>
-                                <div class="layui-input-inline" style="width: 200px;">
-                                    <input type="text" name="end_time" id="end_time" placeholder="结束时间" autocomplete="off" class="layui-input">
+                                <div class="layui-input-inline" style="width: 260px;">
+                                    <input type="text" name="datetime" class="layui-input" id="datetime" placeholder="时间范围">
                                 </div>
                             </div>
                             <div class="layui-inline">
@@ -142,8 +138,12 @@
             {field: 'mark', title: '备注',unresize:true},
         ];
     });
-    layList.date({elem:'#start_time',theme:'#393D49',type:'datetime'});
-    layList.date({elem:'#end_time',theme:'#393D49',type:'datetime'});
+    layList.date({
+        elem: '#datetime',
+        theme: '#0092DC',
+        type: 'datetime',
+        range: '~'
+    });
     $('.right-icon').click(function(){
         if($(this).parent().next('.layui-card-body').css('display')=='none'){
             $(this).parent().next('.layui-card-body').show();
@@ -154,19 +154,19 @@
         }
     });
     layList.search('search',function(where){
-        if(where.start_time!=''){
-            if(where.end_time==''){
-                layList.msg('请选择结束时间');
-                return;
-            }
+        var arr_time = [];
+        var start_time = '';
+        var end_time = '';
+        if (where.datetime) {
+            arr_time = where.datetime.split('~');
+            start_time = arr_time[0].trim();
+            end_time = arr_time[1].trim();
         }
-        if(where.end_time!=''){
-            if(where.start_time==''){
-                layList.msg('请选择开始时间');
-                return;
-            }
-        }
-        layList.reload(where);
+        layList.reload({
+            start_time: start_time,
+            end_time: end_time,
+            nickname: where.nickname
+        });
     });
 </script>
 {/block}

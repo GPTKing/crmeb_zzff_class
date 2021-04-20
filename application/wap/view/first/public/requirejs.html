@@ -1,10 +1,10 @@
-<script type="text/javascript" src="{__PLUG_PATH}requirejs/require.js"></script>
+<script src="{__PLUG_PATH}requirejs/require.js"></script>
 <script>
     requirejs.config({
-        urlArgs: "v=15615616515616556",
+        urlArgs: "v=1618204873582",
         map: {
             '*': {
-                'css': '{__PUBLIC_PATH}static/plug/requirejs/require-css.js'
+                'css': '{__PLUG_PATH}requirejs/css.min.js'
             }
         },
         shim: {
@@ -37,16 +37,20 @@
             'jquery': 'static/plug/jquery-1.10.2.min',
             'moment': 'static/plug/moment',
             'sweetalert': 'static/plug/sweetalert2/sweetalert2.all.min',
-            'helper':'static/plug/helper',
-            'store':'{__WAP_PATH}crmeb/module/store',
-            'better-scroll':"static/plug/better-scroll",
-            'ydui':"static/plug/ydui/ydui",
-            'yduicss':"static/plug/ydui/ydui-px",
-            'vant':"static/plug/vant/vant.min",
-            'vantcss':"static/plug/vant/vant",
-            'cityselect':"static/plug/ydui/cityselect",
-            'reg-verify':"static/plug/reg-verify",
-            'special-type': '{__WAP_PATH}zsff/js/special-type'
+            'helper': 'static/plug/helper',
+            'store': '{__WAP_PATH}crmeb/module/store',
+            'better-scroll': "static/plug/better-scroll",
+            'ydui': "static/plug/ydui/ydui",
+            'yduicss': "static/plug/ydui/ydui-px",
+            'vant': "static/plug/vant/vant.min",
+            'vantcss': "static/plug/vant/vant",
+            'cityselect': "static/plug/ydui/cityselect",
+            'reg-verify': "static/plug/reg-verify",
+            'special-type': '{__WAP_PATH}zsff/js/special-type',
+            'clipboard': '{__WAP_PATH}zsff/js/clipboard',
+            'quick': '{__WAP_PATH}zsff/js/quick',
+            'text': 'static/plug/requirejs/text',
+            'payment': '{__WAP_PATH}zsff/components/payment/index'
         }
     });
 </script>

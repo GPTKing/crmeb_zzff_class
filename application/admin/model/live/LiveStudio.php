@@ -1,5 +1,4 @@
 <?php
-
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
@@ -15,8 +14,8 @@ namespace app\admin\model\live;
 /**
  * 直播信息表
  */
-
 use app\admin\model\order\StoreOrder;
+use app\admin\model\user\User;
 use basic\ModelBasic;
 use traits\ModelTrait;
 use \GatewayWorker\Lib\Gateway;
@@ -26,6 +25,8 @@ class LiveStudio extends ModelBasic
 {
 
     use ModelTrait;
+
+    const preg='/[\x7f-\xff]/';
 
     protected $insert = ['add_time'];
 
@@ -45,7 +46,7 @@ class LiveStudio extends ModelBasic
     public static function getliveStreamName($StreamName = '')
     {
         if ($StreamName) {
-            if (preg_match('/[\x7f-\xff]/', $StreamName)) return self::setErrorInfo('直播间号码不能为中文');
+            if (preg_match(self::preg, $StreamName)) return self::setErrorInfo('直播间号码不能为中文');
             if (strlen($StreamName) < 6) return self::setErrorInfo('直播间号码不能少于6位');
             if (self::be(['stream_name' => $StreamName])) return self::setErrorInfo('直播间号码已存在');
             return $StreamName;
@@ -168,12 +169,21 @@ class LiveStudio extends ModelBasic
     public static function getLiveList($where)
     {
         $data = self::setLiveWhere($where,null,'L')
-            ->field('L.*, S.admin_id as admin_id')->join('__SPECIAL__ S', 'L.special_id=S.id', 'LEFT')->order('L.sort desc,L.add_time desc')->page((int)$where['page'], (int)$where['limit'])->select();
+            ->field('L.*, S.admin_id as admin_id,S.pay_type,S.member_pay_type')->join('__SPECIAL__ S', 'L.special_id=S.id', 'LEFT')->order('L.sort desc,L.add_time desc')->page((int)$where['page'], (int)$where['limit'])->select();
         $data = count($data) ? $data->toArray() : [];
         foreach ($data as &$item) {
             $item['add_time'] = date('Y-m-d H:i:s', $item['add_time']);
             $item['studio_pwd'] = $item['studio_pwd'] ?: '';
-            $item['buy_user_num'] = StoreOrder::where(['paid' => 1, 'cart_id' => $item['special_id']])->count('id');
+            $buy_user_num=StoreOrder::where(['paid' => 1, 'cart_id' => $item['special_id']])->count('id');
+            if($item['pay_type']==1 && $item['member_pay_type']==1){
+                $item['buy_user_num'] = $buy_user_num;
+            }elseif($item['pay_type']==1 && $item['member_pay_type']==0){
+                $userCount =User::where('is_h5user',0)->where('level',1)->count("uid");
+                $item['buy_user_num'] =bcadd($buy_user_num,$userCount,0);
+            }else{
+                $item['buy_user_num'] =User::where('is_h5user',0)->count("uid");
+            }
+            $item['online_user_num'] =LiveUser::where(['is_online'=>1,'live_id'=>$item['id']])->count();
         }
         $count = self::setLiveWhere($where, null, 'L')->join('__SPECIAL__ S', 'L.special_id=S.id', 'LEFT')->count();
         return compact('data', 'count');

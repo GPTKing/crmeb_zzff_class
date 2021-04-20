@@ -7,6 +7,15 @@
     .empty img{width:46%;display:block;margin:0 auto}
     .empty p{font-size:.22rem;line-height:1.2rem;text-align:center;color:#aaa}
     .empty p a{color:#f84d30}
+    .empty .nothing {
+        position: fixed;
+        top: 30%;
+        left: 50%;
+        width: 4rem;
+        height: 4rem;
+        -webkit-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+    }
 </style>
 {/block}
 {block name="content"}
@@ -21,8 +30,7 @@
 <div class="cus_server" {if condition="$merchant.id > 0"}style="padding-top: 50px;"{/if}>
     {empty name="list"}
     <div class="empty">
-        <img src="{__WAP_PATH}crmeb/images/empty_kefu.png">
-        <p>当前没有在线客服</p>
+        <img class="nothing" src="/wap/first/zsff/images/no_data_available.png">
     </div>
     {else/}
     <ul>

@@ -4,33 +4,35 @@
     <div class="layui-row layui-col-space15">
         <div class="layui-col-md12">
             <div class="layui-card">
-                <div class="layui-card-header">专题列表</div>
+                <div class="layui-card-header">
+                    <div style="font-weight: bold;">{$special_title}</div>
+                </div>
                 <div class="layui-card-body">
                     <div class="layui-row layui-col-space15">
                         <div class="layui-col-md12">
                             <form class="layui-form layui-form-pane" action="">
                                 <div class="layui-form-item">
                                     <div class="layui-inline">
-                                        <label class="layui-form-label">专题名称</label>
+                                        <label class="layui-form-label">专题搜索</label>
                                         <div class="layui-input-inline">
-                                            <input type="text" name="store_name" class="layui-input" placeholder="请输入专题名称、关键字、编号">
+                                            <input type="text" name="store_name" class="layui-input" placeholder="专题名称、简介、短语、编号">
                                             <input type="hidden" name="activity_type" value="{$activity_type}">
                                             <input type="hidden" name="subject_id" value="{$subject_id}">
                                         </div>
                                     </div>
                                     <div class="layui-inline">
-                                        <label class="layui-form-label">所属二级分类</label>
+                                        <label class="layui-form-label">专题分类</label>
                                         <div class="layui-input-inline">
                                             <select name="subject_id" lay-search="">
                                                 <option value="0">全部</option>
-                                                {volist name='subject_list' id='vo'}
-                                                <option value="{$vo.id}">{$vo.name}</option>
+                                                {volist name='subject_list' id='vc'}
+                                                    <option {if $vc.grade_id==0}disabled{/if} value="{$vc.id}">{$vc.html}{$vc.name}</option>
                                                 {/volist}
                                             </select>
                                         </div>
                                     </div>
                                     <div class="layui-inline">
-                                        <label class="layui-form-label">是否显示</label>
+                                        <label class="layui-form-label">显示状态</label>
                                         <div class="layui-input-inline">
                                             <select name="is_show">
                                                 <option value="">全部</option>
@@ -41,36 +43,39 @@
                                     </div>
                                     <div class="layui-inline">
                                         <label class="layui-form-label">时间范围</label>
-                                        <div class="layui-input-inline" style="width: 150px;">
-                                            <input type="text" name="start_time" placeholder="开始时间" id="start_time" class="layui-input">
-                                        </div>
-                                        <div class="layui-form-mid">-</div>
-                                        <div class="layui-input-inline" style="width: 150px;">
-                                            <input type="text" name="end_time" placeholder="结束时间" id="end_time" class="layui-input">
+                                        <div class="layui-input-inline" style="width: 260px;">
+                                            <input type="text" name="datetime" class="layui-input" id="datetime" placeholder="时间范围">
                                         </div>
                                     </div>
                                     <div class="layui-inline">
-                                        <button class="layui-btn layui-btn-sm layui-btn-normal" lay-submit="search" lay-filter="search">
-                                            <i class="layui-icon">&#xe615;</i>搜索
-                                        </button>
+                                        <div class="layui-input-inline">
+                                            <div class="layui-btn-group">
+                                                <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" lay-submit="search" lay-filter="search">
+                                                    <i class="layui-icon">&#xe615;</i>搜索
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </form>
                         </div>
                         <div class="layui-col-md12">
                             <div class="layui-btn-group">
-                                <button type="button" class="layui-btn layui-btn-normal layui-btn-sm" onclick="action.open_add('{:Url('add',['special_type' =>$special_type])}','添加{$special_title}')">
+                                <button type="button" class="layui-btn layui-btn-normal layui-btn-sm" data-type="add" onclick="action.open_add('{:Url('add',['special_type' =>$special_type])}','添加{$special_title}')">
                                     <i class="layui-icon">&#xe608;</i>添加{$special_title}
                                 </button>
-                                <button type="button" class="layui-btn layui-btn-normal layui-btn-sm" onclick="window.location.reload()">
+                                <button type="button" class="layui-btn layui-btn-normal layui-btn-sm" data-type="refresh" onclick="window.location.reload()">
                                     <i class="layui-icon">&#xe669;</i>刷新
                                 </button>
                             </div>
                             <table class="layui-hide" id="List" lay-filter="List"></table>
                             <script type="text/html" id="recommend">
+                                <div class="layui-btn-container">
                                 {{#  layui.each(d.recommend, function(index, item){ }}
-                                <span class="layui-badge layui-bg-blue">{{item}}</span>
+                                <button type="button" class="layui-btn  layui-btn-normal layui-btn-xs" data-type="recommend" data-id="{{index}}" data-pid="{{d.id}}">{{item}}</button>
+                                <!-- <span class="layui-badge layui-bg-blue recom-item" data-id="{{index}}" data-pid="{{d.id}}" style="margin-bottom: 5px;">{{item}}</span> -->
                                 {{#  }); }}
+                                </div>
                             </script>
                             <script type="text/html" id="is_pink">
                                 {{# if(d.is_pink){ }}
@@ -83,14 +88,14 @@
                                 <input type='checkbox' name='is_live_goods' lay-skin='switch' value="{{d.id}}" lay-filter='is_live_goods' lay-text='是|否'  {{ d.is_live_goods == 1 ? 'checked' : '' }}>
                             </script>
                             <script type="text/html" id="is_show">
-                                <input type='checkbox' name='id' lay-skin='switch' value="{{d.id}}" lay-filter='is_show' lay-text='显示|隐藏'  {{ d.is_show == 1 ? 'checked' : '' }}>
+                                <input type='checkbox' name='id' lay-skin='switch' value="{{d.id}}" lay-filter='is_show' lay-text='上架|下架'  {{ d.is_show == 1 ? 'checked' : '' }}>
                             </script>
                             <script type="text/html" id="image">
-                                <img style="cursor: pointer;width: 80px;height: 40px;" lay-event='open_image' src="{{d.image}}">
+                                <img style="cursor: pointer;" height="50" lay-event='open_image' src="{{d.image}}">
                             </script>
                             <script type="text/html" id="act">
                                 <button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="dropdown(this)">
-                                    <i class="layui-icon">&#xe625;</i>操作
+                                  <i class="layui-icon">&#xe625;</i>操作
                                 </button>
                                 <ul class="layui-nav-child layui-anim layui-anim-upbit">
                                     <li>
@@ -99,18 +104,8 @@
                                         </a>
                                     </li>
                                     <li>
-                                        <a href="{:Url('ump.store_combination/combina_list')}?cid={{d.id}}&special_type={$special_type}" >
-                                            <i class="fa fa-street-view"></i> 查看拼团
-                                        </a>
-                                    </li>
-                                    <li>
                                         <a href="javascript:void(0)" onclick="$eb.createModalFrame('{{d.title}}-推荐管理','{:Url('recommend')}?special_id={{d.id}}',{h:300,w:400})">
                                             <i class="fa fa-check-circle"></i> 推荐至首页
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="javascript:void(0)" onclick="$eb.createModalFrame('{{d.title}}-拼团管理','{:Url('pink')}?special_id={{d.id}}',{h:500})">
-                                            <i class="fa fa-users"></i> 拼团设置
                                         </a>
                                     </li>
                                     <li>
@@ -131,36 +126,88 @@
 {/block}
 {block name="script"}
 <script>
+    var $ = layui.jquery;
+    var layer = layui.layer;
     var special_type = {$special_type} ? {$special_type} : 6;
     //实例化form
     layList.form.render();
-    layList.date({elem:'#start_time',theme:'#393D49',type:'datetime'});
-    layList.date({elem:'#end_time',theme:'#393D49',type:'datetime'});
+    layList.date({
+        elem: '#datetime',
+        theme: '#0092DC',
+        type: 'datetime',
+        range: '~'
+    });
     //加载列表
-    layList.tableList({
-        o:'List',
-        done:function () {
+    layList.tableList({o:'List', done:function () {
+        $('.layui-btn').on('mouseover', function (event) {
+            var target = event.target;
+            var type = target.dataset.type;
+            if ('recommend' === type) {
+                layer.tips('点击即可取消此推荐', target, {
+                    tips: [1, '#0093dd']
+                });
+            }
+        });
 
-        }
-    },"{:Url('list',['subject_id'=>$subject_id, 'special_type'=>$special_type])}",function (){
+        $('.layui-btn').on('mouseout', function (event) {
+            var target = event.target;
+            var type = target.dataset.type;
+            if ('recommend' === type) {
+                layer.closeAll();
+            }
+        });
+
+        $('.layui-btn').on('click', function (event) {
+            var target = event.target;
+            var type = target.dataset.type;
+            if ('recommend' === type) {
+                var id = target.dataset.id;
+                var pid = target.dataset.pid;
+                var url = layList.U({ a: 'cancel_recommendation', q: { id: id, special_id: pid } });
+                $eb.$swal(
+                    'delete',
+                    function () {
+                        $eb.axios
+                            .get(url)
+                            .then(function (res) {
+                                if (res.data.code == 200) {
+                                    $eb.$swal('success', res.data.msg);
+                                    layList.reload();
+                                } else {
+                                    return Promise.reject(res.data.msg || '取消失败');
+                                }
+                            })
+                            .catch(function (err) {
+                                $eb.$swal('error', err);
+                            });
+                    },
+                    {
+                        title: '确定取消此推荐？',
+                        text: '取消后无法撤销，请谨慎操作！',
+                        confirm: '确定取消'
+                    }
+                );
+            }
+        });
+    }},"{:Url('list',['subject_id'=>$subject_id, 'special_type'=>$special_type])}",function (){
         return [
-            {field: 'id', title: '编号', width:'5%',align: 'center'},
-            {field: 'title', title: '专题名称',edit:'title',align: 'center'},
-            {field: 'subject_name', title: '所属分类',align: 'center'},
-            {field: 'image', title: '封面图',templet:'#image',align: 'center'},
-            {field: 'recommend', title: '首页推荐版块',templet:'#recommend',align: 'center'},
-            {field: 'task_count', title: '课程数量',align: 'center'},
-            {field: 'sales', title: '销量', align: 'center'},
-            {field: 'is_pink', title: '拼团状态',templet:'#is_pink',align: 'center'},
-            {field: 'sort', title: '排序',sort: true,event:'sort',edit:'sort',align: 'center'},
-            {field: 'is_show', title: '状态',templet:'#is_show',align: 'center'},
-            {field: 'right', title: '操作',align:'center',toolbar:'#act',width:'10%'},
+            {field: 'id', title: '编号', width:60,align: 'center'},
+            {field: 'title', title: '名称'},
+            {field: 'subject_name', title: '分类',align: 'center',width:75},
+            {field: 'image', title: '封面',templet:'#image',align: 'center'},
+            {field: 'recommend', title: '推荐',templet:'#recommend',align: 'center'},
+            {field: 'money', title: '价格',align: 'center',width:70},
+            {field: 'task_count', title: '课程数量',align: 'center',width:70},
+            {field: 'sales', title: '销量',align: 'center',width:70},
+            {field: 'sort', title: '排序',sort: true,event:'sort',edit:'sort',align: 'center',width:60},
+            {field: 'is_show', title: '状态',templet:'#is_show',align: 'center',width:80},
+            {field: 'right', title: '操作',align:'center',toolbar:'#act',width:70},
         ];
     });
     //下拉框
     $(document).click(function (e) {
         $('.layui-nav-child').hide();
-    })
+    });
     function dropdown(that){
         var oEvent = arguments.callee.caller.arguments[0] || event;
         oEvent.stopPropagation();
@@ -213,10 +260,25 @@
                 }
             });
         }
-    }
+    };
     //查询
     layList.search('search',function(where){
-        layList.reload(where,true);
+        var arr_time = [];
+        var start_time = '';
+        var end_time = '';
+        if (where.datetime) {
+            arr_time = where.datetime.split('~');
+            start_time = arr_time[0].trim();
+            end_time = arr_time[1].trim();
+        }
+        layList.reload({
+            activity_type: where.activity_type,
+            subject_id: where.subject_id,
+            is_show: where.is_show,
+            start_time: start_time,
+            end_time: end_time,
+            store_name: where.store_name
+        },true);
     });
     layList.switch('is_show',function (odj,value) {
         var is_show_value = 0
@@ -225,18 +287,6 @@
         }
         action.set_value('is_show',value,is_show_value,'special');
     });
-/*    layList.switch('is_live_goods',function (odj,value) {
-        var is_live_goods = 0
-        if(odj.elem.checked==true){
-            var is_live_goods = 1
-        }
-        layList.baseGet(layList.Url({
-            a: 'set_live_goods',
-            q: {special_id: value, is_live_goods: is_live_goods}
-        }), function (res) {
-            layList.msg(res.msg);
-        });
-    });*/
     //快速编辑
     layList.edit(function (obj) {
         var id=obj.data.id,value=obj.value;
@@ -245,6 +295,7 @@
                 action.set_value('title',id,value,'special');
                 break;
             case 'sort':
+                if(value < 0) return layList.msg('排序不能小于0');
                 action.set_value('sort',id,value,'special');
                 break;
             case 'fake_sales':

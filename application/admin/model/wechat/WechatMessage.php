@@ -38,7 +38,6 @@ class WechatMessage extends ModelBasic
         'event_subscribe'=>'关注微信号',
         'event_unsubscribe'=>'取消关注微信号',
         'event_scan'=>'扫码',
-//        'event_templatesendjobfinish'=>'进入小程序',
         'event_location'=>'获取位置',
         'event_click'=>'点击微信菜单关键字',
         'event_view'=>'点击微信菜单链接',
@@ -203,8 +202,8 @@ class WechatMessage extends ModelBasic
         },$where);
     }
 
-    /*
-    * 获取应为记录数据
+    /**
+     * 获取应为记录数据
      *
      */
     public static function getViweList($date,$class=[]){

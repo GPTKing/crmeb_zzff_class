@@ -1,89 +1,96 @@
 {extend name="public/container"}
 {block name="content"}
-<div class="layui-fluid" style="background: #fff">
-    <div class="layui-tab layui-tab-brief" lay-filter="tab">
-        <ul class="layui-tab-title">
-            <li lay-id="list" {eq name='type' value='1'}class="layui-this" {/eq} >
-            <a href="{eq name='type' value='1'}javascript:;{else}{:Url('index',['type'=>1])}{/eq}">新闻列表</a>
-            </li>
-            <li lay-id="list" {eq name='type' value='2'}class="layui-this" {/eq}>
-            <a href="{eq name='type' value='2'}javascript:;{else}{:Url('add_article',['type'=>2])}{/eq}">新闻添加</a>
-            </li>
-        </ul>
-    </div>
+<div class="layui-fluid">
     <div class="layui-row layui-col-space15"  id="app">
         <div class="layui-col-md12">
             <div class="layui-card">
-                <div class="layui-card-body">
-                    <form class="layui-form layui-form-pane" action="">
-                        <div class="layui-form-item">
-                            <div class="layui-inline">
-                                <label class="layui-form-label">新闻名称</label>
-                                <div class="layui-input-block">
-                                    <input type="text" name="store_name" class="layui-input" placeholder="请输入新闻名称,关键字,编号">
-                                    <input type="hidden" name="type" value="{$type}">
-                                </div>
-                            </div>
-                            <div class="layui-inline">
-                                <label class="layui-form-label">分类</label>
-                                <div class="layui-input-block">
-                                <select name="cid" aria-controls="editable" class="form-control input-sm">
-                                    <option value="">所有分类</option>
-                                    {volist name="cate" id="vo"}
-                                    <option value="{$vo.id}" {eq name="cid" value="$vo.id"}selected="selected"{/eq}>{$vo.html}{$vo.title}</option>
-                                    {/volist}
-                                </select>
-                                </div>
-                            </div>
-                            <div class="layui-inline">
-                                <label class="layui-form-label">是否显示</label>
-                                <div class="layui-input-block">
-                                    <select name="is_show">
-                                        <option value="">全部</option>
-                                        <option value="1">显示</option>
-                                        <option value="0">隐藏</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="layui-inline">
-                                <div class="layui-input-inline">
-                                    <button class="layui-btn layui-btn-sm layui-btn-normal" lay-submit="search" lay-filter="search">
-                                        <i class="layui-icon layui-icon-search"></i>搜索</button>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
+                <div class="layui-card-header">
+                    <div style="font-weight: bold;">新闻列表</div>
                 </div>
-            </div>
-        </div>
-        <!--产品列表-->
-        <div class="layui-col-md12">
-            <div class="layui-card">
                 <div class="layui-card-body">
-                    <div class="alert alert-info" role="alert">
-                        列表[新闻名称],[排序]可进行快速修改,双击或者单击进入编辑模式,失去焦点可进行自动保存
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <div class="layui-row layui-col-space15">
+                        <div class="layui-col-md12">
+                            <form class="layui-form layui-form-pane" action="">
+                                <div class="layui-form-item">
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label">新闻名称</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="store_name" class="layui-input" placeholder="请输入新闻名称">
+                                            <input type="hidden" name="type" value="{$type}">
+                                        </div>
+                                    </div>
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label">分类</label>
+                                        <div class="layui-input-inline">
+                                        <select name="cid" aria-controls="editable" class="form-control input-sm">
+                                            <option value="">所有分类</option>
+                                            {volist name="cate" id="vo"}
+                                            <option value="{$vo.id}" {eq name="cid" value="$vo.id"}selected="selected"{/eq}>{$vo.html}{$vo.title}</option>
+                                            {/volist}
+                                        </select>
+                                        </div>
+                                    </div>
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label">是否显示</label>
+                                        <div class="layui-input-inline">
+                                            <select name="is_show">
+                                                <option value="">全部</option>
+                                                <option value="1">显示</option>
+                                                <option value="0">隐藏</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="layui-inline">
+                                        <div class="layui-input-inline">
+                                            <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" lay-submit="search" lay-filter="search">
+                                                <i class="layui-icon">&#xe615;</i>搜索
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="layui-col-md12">
+                            <div class="layui-btn-group">
+                                <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" onclick="action.open_add('{:Url('add_article',['type'=>2])}','添加新闻')">
+                                    <i class="layui-icon">&#xe608;</i>添加新闻
+                                </button>
+                                <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" onclick="window.location.reload();">
+                                    <i class="layui-icon">&#xe669;</i>刷新
+                                </button>
+                            </div>
+                            <table class="layui-hide" id="List" lay-filter="List"></table>
+                            <script type="text/html" id="recommend">
+                            <div class="layui-btn-container">
+                                {{#  layui.each(d.recommend, function(index, item){ }}
+                                <button type="button" class="layui-btn  layui-btn-normal layui-btn-xs" data-type="recommend" data-id="{{index}}" data-pid="{{d.id}}">{{item}}</button>
+                                {{#  }); }}
+                                </div>
+                            </script>
+                            <script type="text/html" id="is_show">
+                                <input type='checkbox' name='id' lay-skin='switch' value="{{d.id}}" lay-filter='is_show' lay-text='显示|隐藏'  {{ d.is_show == 1 ? 'checked' : '' }}>
+                            </script>
+                            <script type="text/html" id="image_input">
+                                <img style="cursor: pointer;" height="50" lay-event='open_image' src="{{d.image_input}}">
+                            </script>
+                            <script type="text/html" id="recommend">
+                                {{#  layui.each(d.recommend, function(index, item){ }}
+                                <span class="layui-badge layui-bg-blue recom-item" data-id="{{index}}" data-pid="{{d.id}}" style="margin-bottom: 5px;">{{item}}</span>
+                                {{#  }); }}
+                            </script>
+                            <script type="text/html" id="act">
+                                <button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="$eb.createModalFrame('{{d.title}}-推荐管理','{:Url('recommend')}?article_id={{d.id}}',{h:300,w:400})">
+                                    <i class="layui-icon">&#xe604;</i>推荐
+                                </button>
+                                <button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="action.open_add('{:Url('add_article',['type'=>2])}?id={{d.id}}','新闻编辑')">
+                                    <i class="layui-icon">&#xe642;</i>编辑
+                                </button>
+                                <button type="button" class="layui-btn layui-btn-danger layui-btn-xs" lay-event='delete'>
+                                    <i class="layui-icon">&#xe640;</i>删除
+                                </button>
+                            </script>
+                        </div>
                     </div>
-                    <table class="layui-hide" id="List" lay-filter="List"></table>
-                    <script type="text/html" id="recommend">
-                        {{#  layui.each(d.recommend, function(index, item){ }}
-                        <span class="layui-badge layui-bg-blue">{{item}}</span>
-                        {{#  }); }}
-                    </script>
-                    <script type="text/html" id="is_show">
-                        <input type='checkbox' name='id' lay-skin='switch' value="{{d.id}}" lay-filter='is_show' lay-text='显示|隐藏'  {{ d.is_show == 1 ? 'checked' : '' }}>
-                    </script>
-                    <script type="text/html" id="image_input">
-                        <img style="cursor: pointer;width: 80px;height: 40px;" lay-event='open_image' src="{{d.image_input}}">
-                    </script>
-                    <script type="text/html" id="act">
-                        <a class="layui-btn layui-btn-xs" href="{:Url('add_article',['type'=>2])}?id={{d.id}}">
-                            <i class="fa fa-paste"></i> 编辑
-                        </a>
-                        <button class="layui-btn layui-btn-xs layui-btn-danger" lay-event='delete'>
-                            <i class="fa fa-warning"></i> 删除
-                        </button>
-                    </script>
                 </div>
             </div>
         </div>
@@ -96,21 +103,76 @@
     //实例化form
     layList.form.render();
     //加载列表
-    layList.tableList('List',"{:Url('article_list',['cid'=>$cid])}",function (){
+    layList.tableList({
+        o: 'List',
+        done: function () {
+            $('.layui-btn').on('mouseover', function (event) {
+                var target = event.target;
+                var type = target.dataset.type;
+                if ('recommend' === type) {
+                    layer.tips('点击即可取消此推荐', target, {
+                        tips: [1, '#0093dd']
+                    });
+                }
+            });
+
+            $('.layui-btn').on('mouseout', function (event) {
+                var target = event.target;
+                var type = target.dataset.type;
+                if ('recommend' === type) {
+                    layer.closeAll();
+                }
+            });
+
+            $('.layui-btn').on('click', function (event) {
+                var target = event.target;
+                var type = target.dataset.type;
+                if ('recommend' === type) {
+                    var id = target.dataset.id;
+                    var pid = target.dataset.pid;
+                    var url = layList.U({ a: 'cancel_recommendation', q: { id: id, article_id: pid } });
+                    $eb.$swal(
+                        'delete',
+                        function () {
+                            $eb.axios
+                                .get(url)
+                                .then(function (res) {
+                                    if (res.data.code == 200) {
+                                        $eb.$swal('success', res.data.msg);
+                                        layList.reload();
+                                    } else {
+                                        return Promise.reject(res.data.msg || '取消失败');
+                                    }
+                                })
+                                .catch(function (err) {
+                                    $eb.$swal('error', err);
+                                });
+                        },
+                        {
+                            title: '确定取消此推荐？',
+                            text: '取消后无法撤销，请谨慎操作！',
+                            confirm: '确定取消'
+                        }
+                    );
+                }
+            });
+        }
+    },"{:Url('article_list',['cid'=>$cid])}",function (){
         return [
-            {field: 'id', title: '编号', sort: true,event:'id',width:'5%',align: 'center'},
-            {field: 'title', title: '新闻名称',edit:'title',align: 'center'},
-            {field: 'cate_name', title: '分类名称',align: 'center'},
-            {field: 'image_input', title: '封面图',templet:'#image_input',align: 'center'},
-            {field: 'sort', title: '排序',sort: true,event:'sort',edit:'sort',align: 'center'},
-            {field: 'is_show', title: '是否显示',templet:'#is_show',align: 'center'},
-            {field: 'right', title: '操作',align:'center',toolbar:'#act',width:'25%'},
+            {field: 'id', title: '编号', width:60,align: 'center'},
+            {field: 'title', title: '标题'},
+            {field: 'cate_name', title: '分类',align: 'center'},
+            {field: 'image_input', title: '封面',templet:'#image_input',align: 'center'},
+            {field: 'recommend', title: '推荐',templet:'#recommend',align: 'center'},
+            {field: 'sort', title: '排序',align: 'center'},
+            {field: 'is_show', title: '状态',templet:'#is_show',align: 'center'},
+            {field: 'right', title: '操作',align:'center',toolbar:'#act'},
         ];
     });
     //下拉框
     $(document).click(function (e) {
         $('.layui-nav-child').hide();
-    })
+    });
     function dropdown(that){
         var oEvent = arguments.callee.caller.arguments[0] || event;
         oEvent.stopPropagation();
@@ -148,6 +210,21 @@
                 layList.msg(res.msg);
             });
         },
+        //打开新添加页面
+        open_add: function (url,title) {
+            layer.open({
+                type: 2 //Page层类型
+                ,area: ['100%', '100%']
+                ,title: title
+                ,shade: 0.6 //遮罩透明度
+                ,maxmin: true //允许全屏最小化
+                ,anim: 1 //0-6的动画形式，-1不开启
+                ,content: url
+                ,end:function() {
+                    location.reload();
+                }
+            });
+        }
     }
     //查询
     layList.search('search',function(where){
@@ -190,7 +267,7 @@
                     $eb.axios.get(url).then(function(res){
                         if(res.status == 200 && res.data.code == 200) {
                             $eb.$swal('success',res.data.msg);
-                            obj.del();
+                            location.reload();
                         }else
                             return Promise.reject(res.data.msg || '删除失败')
                     }).catch(function(err){

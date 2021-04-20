@@ -9,6 +9,7 @@
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
 
+
 namespace app\admin\controller\system;
 
 
@@ -104,7 +105,6 @@ class SystemCleardata extends AuthController
     //修改用户默认密码
     public function userdate()
     {
-//       SystemCleardata::ClearData('user',1);
         $headimgurl = WechatUser::Where('uid', 1)->value('headimgurl');
         $data['account'] = 'crmeb';
         $data['pwd'] = md5(123456);

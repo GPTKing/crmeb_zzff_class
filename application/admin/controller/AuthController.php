@@ -1,5 +1,4 @@
 <?php
-
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
@@ -20,7 +19,6 @@ use behavior\system\SystemBehavior;
 use service\HookService;
 use think\Session;
 use think\Url;
-
 /**
  * 基类 所有控制器继承的类
  * Class AuthController

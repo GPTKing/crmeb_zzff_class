@@ -9,7 +9,6 @@
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
 
-
 namespace app\admin\model\system;
 
 use traits\ModelTrait;
@@ -63,8 +62,7 @@ class SystemAttachmentCategory extends ModelBasic
      */
     public static function getCateList($id = 10000){
         $model = new self();
-        if($id == 0)
-            $model->where('pid',$id);
+        if($id == 0) $model->where('pid',$id);
         return UtilService::sortListTier($model->select()->toArray());
     }
     /**

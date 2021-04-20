@@ -10,90 +10,99 @@
     .form-add{position: fixed;left: 0;bottom: 0;width:100%;}
     .form-add .sub-btn{border-radius: 0;width: 100%;padding: 6px 0;font-size: 14px;outline: none;border: none;color: #fff;background-color: #2d8cf0;}
 </style>
-<div class="row">
-    <div class="col-sm-12">
-        <div class="ibox">
-            <div class="ibox-content">
-                <div class="row">
-                    <div class="m-b m-l">
-                        <form class="form-inline search" id="form" method="get">
-                            <div class="input-group datepicker">
-                                <input style="width: 200px;" type="text" id="data" class="input-sm form-control" name="data" value="{$where.data}" placeholder="请选择日期" >
-                            </div>
-                            <div class="input-group">
-                                <input style="width: 200px;" type="text" name="nickname" value="{$where.nickname}" placeholder="请输入微信用户名称" class="input-sm form-control"> <span class="input-group-btn">
-                                <button type="submit" class="btn btn-sm btn-primary"> <i class="fa fa-search"></i>搜索</button> </span>
+<div class="layui-row">
+    <div class="layui-col-md12">
+        <div class="layui-card">
+            <div class="layui-card-body">
+                <div class="layui-row layui-col-space10">
+                    <div class="layui-col-md12">
+                        <form class="layui-form layui-form-pane" id="form" method="get">
+                            <div class="layui-form-item">
+                                <div class="layui-inline">
+                                    <div class="layui-input-inline datepicker">
+                                        <input type="text" id="data" class="input-sm form-control" name="data" value="{$where.data}" placeholder="请选择日期" >
+                                    </div>
+                                </div>
+                                <div class="layui-inline">
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="nickname" value="{$where.nickname}" placeholder="请输入微信用户名称" class="input-sm form-control">
+                                    </div>
+                                </div>
+                                <div class="layui-inline">
+                                    <div class="layui-input-inline">
+                                        <button type="submit" class="layui-btn layui-btn-normal layui-btn-sm"><i class="layui-icon">&#xe615;</i> 搜索</button>
+                                    </div>
+                                </div>
                             </div>
                         </form>
                     </div>
-                </div>
-                <div class="table-responsive">
-                    <table class="table table-striped  table-bordered">
-                        <thead>
-                            <tr>
-                                <th class="text-center"></th>
-                                <th class="text-center">编号</th>
-                                <th class="text-center">微信用户名称</th>
-                                <th class="text-center">头像</th>
-                                <th class="text-center">性别</th>
-                                <th class="text-center">地区</th>
-                                <th class="text-center">是否关注公众号</th>
-                                <th class="text-center">首次关注时间</th>
-                            </tr>
-                        </thead>
-                        <tbody class="">
-                            <form method="post" class="sub-save">
-                                {volist name="list" id="vo"}
+                    <div class="layui-col-md12">
+                        <table class="layui-table">
+                            <thead>
                                 <tr>
-                                    <td class="text-center">
-                                        <label class="checkbox-inline i-checks">
-                                            <input type="checkbox" name="ids[]" value="{$vo.uid}">
-                                        </label>
-                                    </td>
-                                    <td class="text-center">
-                                        {$vo.uid}
-                                    </td>
-                                    <td class="text-center">
-                                        {$vo.nickname}
-                                    </td>
-                                    <td class="text-center">
-                                        <img src="{$vo.headimgurl}" alt="{$vo.nickname}" title="{$vo.nickname}" style="width:50px;height: 50px;cursor: pointer;" class="head_image" data-image="{$vo.headimgurl}">
-                                    </td>
-                                    <td class="text-center">
-                                        {if condition="$vo['sex'] eq 1"}
-                                        男
-                                        {elseif condition="$vo['sex'] eq 2"/}
-                                        女
-                                        {else/}
-                                        保密
-                                        {/if}
-                                    </td>
-                                    <td class="text-center">
-                                        {$vo.country}{$vo.province}{$vo.city}
-                                    </td>
-                                    <td class="text-center">
-                                        {if condition="$vo['subscribe']"}
-                                        关注
-                                        {else/}
-                                        取消
-                                        {/if}
-                                    </td>
-                                    <td class="text-center">
-                                        {$vo.add_time|date="Y-m-d H:i:s",###}
-                                    </td>
+                                    <th>编号</th>
+                                    <th>微信用户名称</th>
+                                    <th>头像</th>
+                                    <th>性别</th>
+                                    <th>地区</th>
+                                    <th>是否关注公众号</th>
+                                    <th>首次关注时间</th>
                                 </tr>
-                                {/volist}
-                            </form>
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                <form method="post" class="sub-save">
+                                    {volist name="list" id="vo"}
+                                    <tr>
+                                        <td class="text-center">
+                                            <label class="checkbox-inline i-checks">
+                                                <input type="checkbox" name="ids[]" value="{$vo.uid}">
+                                            </label>
+                                        </td>
+                                        <td class="text-center">
+                                            {$vo.uid}
+                                        </td>
+                                        <td class="text-center">
+                                            {$vo.nickname}
+                                        </td>
+                                        <td class="text-center">
+                                            <img src="{$vo.headimgurl}" alt="{$vo.nickname}" title="{$vo.nickname}" style="width:50px;height: 50px;cursor: pointer;" class="head_image" data-image="{$vo.headimgurl}">
+                                        </td>
+                                        <td class="text-center">
+                                            {if condition="$vo['sex'] eq 1"}
+                                            男
+                                            {elseif condition="$vo['sex'] eq 2"/}
+                                            女
+                                            {else/}
+                                            保密
+                                            {/if}
+                                        </td>
+                                        <td class="text-center">
+                                            {$vo.country}{$vo.province}{$vo.city}
+                                        </td>
+                                        <td class="text-center">
+                                            {if condition="$vo['subscribe']"}
+                                            关注
+                                            {else/}
+                                            取消
+                                            {/if}
+                                        </td>
+                                        <td class="text-center">
+                                            {$vo.add_time|date="Y-m-d H:i:s",###}
+                                        </td>
+                                    </tr>
+                                    {/volist}
+                                </form>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="layui-col-md12">
+                        <button type="submit" class="layui-btn layui-btn-fluid layui-btn-normal">提交</button>
+                    </div>
                 </div>
                 {include file="public/inner_page"}
             </div>
         </div>
     </div>
-</div>
-<div class="form-add">
-    <button type="submit" class="sub-btn">提交</button>
 </div>
 <script>
     $('.i-checks').iCheck({
@@ -135,7 +144,7 @@
     dateInput.on('apply.daterangepicker', function(ev, picker) {
         $("#data").val(picker.startDate.format('YYYY/MM/DD') + ' - ' + picker.endDate.format('YYYY/MM/DD'));
     });
-    $(".sub-btn").on("click",function(){
+    $(".layui-btn-fluid").on("click",function(){
         var formData = {checked_menus:[]};
         $("input[name='ids[]']:checked").each(function(){
             formData.checked_menus.push($(this).val());

@@ -1,5 +1,4 @@
 <?php
-
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
@@ -14,7 +13,6 @@ namespace app\admin\controller\user;
 
 use app\admin\controller\AuthController;
 use service\FormBuilder as Form;
-use service\UtilService as Util;
 use service\JsonService as Json;
 use think\Request;
 use think\Url;
@@ -37,7 +35,7 @@ class UserNotice extends AuthController
     public function index()
     {
         if ($this->request->isAjax()) {
-            $where = Util::getMore([
+            $where = parent::getMore([
                 ['page', 1],
                 ['limit', 20]
             ]);
@@ -189,7 +187,7 @@ class UserNotice extends AuthController
      */
     public function user_create($id)
     {
-        $where = Util::getMore([
+        $where = parent::getMore([
             ['nickname', ''],
             ['data', ''],
         ], $this->request);
@@ -296,7 +294,7 @@ class UserNotice extends AuthController
      */
     public function notice($id)
     {
-        $where = Util::getMore([
+        $where = parent::getMore([
             ['title', ''],
         ], $this->request);
         $nickname = UserModel::where('uid', 'IN', $id)->column('uid,nickname');

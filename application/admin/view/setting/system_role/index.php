@@ -1,15 +1,13 @@
 {extend name="public/container"}
 {block name="content"}
-<div class="row">
-    <div class="col-sm-12">
-        <div class="ibox">
-            <div class="ibox-title">
-                <button type="button" class="btn btn-w-m btn-primary" onclick="$eb.createModalFrame(this.innerText,'{:Url('create')}')">添加身份</button>
-                <div class="ibox-tools">
-
-                </div>
+<div class="layui-fluid">
+<div class="layui-row">
+    <div class="layui-col-md12">
+        <div class="layui-card">
+            <div class="layui-card-header">
+                <button type="button" class="layui-btn layui-btn-normal layui-btn-sm" onclick="$eb.createModalFrame('添加身份','{:Url('create')}')"><i class="layui-icon">&#xe608;</i> 添加身份</button>
             </div>
-            <div class="ibox-content">
+            <div class="layui-card-body">
                 <div class="row">
                     <div class="m-b m-l">
                         <?php /*  <form action="" class="form-inline">
@@ -38,7 +36,7 @@
                             </select>
                             <div class="input-group">
                                 <input type="text" name="role_name" value="{$where.role_name}" placeholder="请输入身份昵称" class="input-sm form-control"> <span class="input-group-btn">
-                                      <button type="submit" class="btn btn-sm btn-primary"> <i class="fa fa-search" ></i>搜索</button> </span>
+                                      <button type="submit" class="layui-btn layui-btn-normal layui-btn-sm"><i class="layui-icon">&#xe615;</i> 搜索</button> </span>
                             </div>
                         </form>
                     </div>
@@ -49,7 +47,7 @@
                         <thead>
                         <tr>
 
-                            <th class="text-center">编号</th>
+                            <th class="text-center" style="width:60px;">编号</th>
                             <th class="text-center">身份昵称</th>
                             <th class="text-center">身份标识</th>
                             <th class="text-center">权限</th>
@@ -69,15 +67,15 @@
                             <td class="text-center">
                                 {$vo.sign}
                             </td>
-                            <td class="text-center" style="width: 70%;">
+                            <td class="text-center">
                                 {$vo.rules}
                             </td>
                             <td class="text-center">
                                 <i class="fa {eq name='vo.status' value='1'}fa-check text-navy{else/}fa-close text-danger{/eq}"></i>
                             </td>
                             <td class="text-center">
-                                <button class="btn btn-info btn-xs" type="button"  onclick="$eb.createModalFrame('编辑','{:Url('edit',array('id'=>$vo['id']))}')"><i class="fa fa-paste"></i> 编辑</button>
-                                <button class="btn btn-warning btn-xs" data-url="{:Url('delete',array('id'=>$vo['id']))}" type="button"><i class="fa fa-warning"></i> 删除
+                                <button class="layui-btn layui-btn-normal layui-btn-xs" type="button"  onclick="$eb.createModalFrame('编辑','{:Url('edit',array('id'=>$vo['id']))}')"><i class="layui-icon">&#xe642;</i> 编辑</button>
+                                <button class="layui-btn layui-btn-danger layui-btn-xs" data-url="{:Url('delete',array('id'=>$vo['id']))}" type="button"><i class="layui-icon">&#xe640;</i> 删除
                                 </button>
                             </td>
                         </tr>
@@ -89,11 +87,12 @@
             </div>
         </div>
     </div>
+    </div>
 </div>
 {/block}
 {block name="script"}
 <script>
-    $('.btn-warning').on('click',function(){
+    $('.layui-btn-danger').on('click',function(){
         window.t = $(this);
         var _this = $(this),url =_this.data('url');
         $eb.$swal('delete',function(){

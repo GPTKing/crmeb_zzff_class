@@ -1,5 +1,4 @@
 <?php
-
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
@@ -12,9 +11,9 @@
 
 namespace app\admin\controller\special;
 
+use app\admin\model\special\SpecialSubject;
 use think\Url;
 use service\FormBuilder as Form;
-use service\UtilService as Util;
 use service\JsonService as Json;
 use app\admin\controller\AuthController;
 use app\admin\model\special\Grade as GradeModel;
@@ -34,31 +33,50 @@ class Grade extends AuthController
 
     public function get_grade_list()
     {
-        $where = Util::getMore([
+        $where = parent::getMore([
             ['page', 1],
             ['limit', 20],
-            ['cid', ''],
-            ['name', ''],
+            ['cate_id', 0],
+            ['cate_name', ''],
         ]);
         return Json::successlayui(GradeModel::getAllList($where));
     }
 
     /**
-     * 创建年纪
+     * 创建分类
      * @param int $id
      * @return mixed
      * @throws \think\exception\DbException
      */
-    public function create($id = 0)
+    public function create($id = 0,$sid=0,$level=1,$pid=0)
     {
-        if ($id) $grade = GradeModel::get($id);
-        $form = Form::create(Url::build('save', ['id' => $id]), [
-            Form::input('name', '分类名称', isset($grade) ? $grade->name : ''),
-            Form::number('sort', '排序', isset($grade) ? $grade->sort : 0),
-        ]);
-        $form->setMethod('post')->setTitle($id ? '修改分类' : '添加分类')->setSuccessScript('parent.$(".J_iframe:visible")[0].contentWindow.location.reload();');
-        $this->assign(compact('form'));
-        return $this->fetch('public/form-builder');
+        $cate=[];
+        if ($id && $sid==0){
+            $cate = GradeModel::get($id);
+        }else if($id==0 && $sid){
+            $cate = SpecialSubject::get($sid);
+        }
+        $this->assign(['cate'=>json_encode($cate),'id'=>$id,'sid'=>$sid,'level'=>$level,'pid'=>$pid]);
+        return $this->fetch();
+    }
+    /**获取一级分类
+     * @param int $sid
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function get_cate_list($level = 0)
+    {
+        $cate= GradeModel::where('is_del',0)->where('is_show',1)->field('id,name')->order('sort desc,id desc')->select();
+        $cate=count($cate) >0 ? $cate->toArray() : [];
+        $array=[];
+        $oneCate['id']=0;
+        $oneCate['name']='顶级分类';
+        array_push($array,$oneCate);
+        foreach ($cate as $key=>$value){
+            array_push($array,$value);
+        }
+        return Json::successful($array);
     }
 
     /**
@@ -75,24 +93,65 @@ class Grade extends AuthController
             return Json::fail('保存失败');
     }
 
+    /**是否显示快捷操作
+     * @param string $is_show
+     * @param string $id
+     * @return mixed
+     */
+    public function set_show($is_show = '', $id = '')
+    {
+        ($is_show == '' || $id == '') && Json::fail('缺少参数');
+        $res = GradeModel::where(['id' => $id])->update(['is_show' => (int)$is_show]);
+        if ($res) {
+            return Json::successful($is_show == 1 ? '显示成功' : '隐藏成功');
+        } else {
+            return Json::fail($is_show == 1 ? '显示失败' : '隐藏失败');
+        }
+    }
     /**
      * 新增或者修改
      *
      * @return json
      */
-    public function save($id = 0)
+    public function save($id = 0,$sid=0)
     {
-        $post = Util::postMore([
+        $post = parent::postMore([
             ['name', ''],
+            ['pic', ''],
+            ['grade_id', 0],
             ['sort', 0],
+            ['is_show', 0],
         ]);
-        if (!$post['name']) return Json::fail('请输入年级名称');
-        if ($id) {
-            GradeModel::update($post, ['id' => $id]);
-            return Json::successful('修改成功');
+        if (!$post['name']) return Json::fail('请输入分类名称');
+        if($post['grade_id']){
+            if (!$post['pic']) return Json::fail('请选择分类图标');
+        }
+        if ($id || $sid>0) {
+            if($id && $sid==0){
+                unset($post['pic'],$post['grade_id']);
+                $res=GradeModel::edit($post,$id);
+            }else if($sid && $id==0){
+                $res=SpecialSubject::edit($post,$sid);
+            }
+            if ($res)
+                return Json::successful('修改成功');
+            else
+                return Json::fail('修改失败');
         } else {
             $post['add_time'] = time();
-            if (GradeModel::set($post))
+            if($post['grade_id']){
+                if(SpecialSubject::be(['name'=>$post['name'],'is_del'=>0])){
+                    return Json::fail('分类名称已存在！');
+                }
+                $res=SpecialSubject::set($post);
+            }else{
+                unset($post['pic'],$post['grade_id']);
+                if(GradeModel::be(['name'=>$post['name'],'is_del'=>0])){
+                    return Json::fail('分类名称已存在！');
+                }
+                $res=GradeModel::set($post);
+            }
+            if ($res)
                 return Json::successful('添加成功');
             else
                 return Json::fail('添加失败');
@@ -107,7 +166,10 @@ class Grade extends AuthController
     public function delete($id = 0)
     {
         if (!$id) return Json::fail('缺少参数');
-        if (GradeModel::del($id))
+        $count=SpecialSubject::where('grade_id',$id)->where('is_del',0)->count();
+        if ($count) return Json::fail('请先删除下级分类');
+        $data['is_del']=1;
+        if (GradeModel::update($data,['id'=>$id]))
             return Json::successful('删除成功');
         else
             return Json::fail('删除失败');

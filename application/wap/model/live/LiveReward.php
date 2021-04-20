@@ -7,7 +7,8 @@
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
-//
+// +----------------------------------------------------------------------
+
 namespace app\wap\model\live;
 
 /**
@@ -80,7 +81,4 @@ class LiveReward extends ModelBasic
         }
         return $data;
     }
-
-
-
 }

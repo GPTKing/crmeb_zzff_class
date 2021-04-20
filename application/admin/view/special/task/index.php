@@ -97,13 +97,13 @@
     //加载列表
     layList.tableList('List',"{:Url('task_list')}?coures_id={$coures_id}",function (){
         return [
-            {field: 'id', title: '编号', sort: true,event:'id'},
+            {field: 'id', title: '编号', width:60,align:'center'},
             {field: 'course_name', title: '专题名称',templet:'#course_name'},
             {field: 'title', title: '任务标题',edit:'title'},
             {field: 'play_count', title: '浏览量',edit:'play_count'},
             {field: 'image', title: '任务封面',templet:'#image'},
             {field: 'sort', title: '排序',sort: true,event:'sort',edit:'sort',width:'7%'},
-            {field: 'is_show', title: '是否显示',templet:'#is_show',width:'10%'},
+            {field: 'is_show', title: '状态',templet:'#is_show',width:'10%'},
             {field: 'right', title: '操作',align:'center',toolbar:'#act',width:'30%'},
         ];
     });
@@ -141,6 +141,7 @@
                 action.set_value('title',id,value);
                 break;
             case 'sort':
+                if(value < 0) return layList.msg('排序不能小于0');
                 action.set_value('sort',id,value);
                 break;
             case 'play_count':
@@ -159,7 +160,7 @@
                     $eb.axios.get(url).then(function(res){
                         if(res.status == 200 && res.data.code == 200) {
                             $eb.$swal('success',res.data.msg);
-                            obj.del();
+                           location.reload();
                         }else
                             return Promise.reject(res.data.msg || '删除失败')
                     }).catch(function(err){

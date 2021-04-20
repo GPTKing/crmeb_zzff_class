@@ -1,5 +1,4 @@
 <?php
-
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
@@ -18,11 +17,11 @@ use app\admin\model\system\SystemMenus;
 use app\admin\model\system\SystemRole;
 use app\admin\model\order\StoreOrder as StoreOrderModel;//订单
 use app\admin\model\user\UserExtract as UserExtractModel;//分销
+use app\admin\model\user\MemberRecord as MemberRecordModel;//会员购买记录
 use app\admin\model\user\User as UserModel;//用户
-use app\admin\model\store\StoreProductReply as StoreProductReplyModel;//评论
-use app\admin\model\store\StoreProduct as ProductModel;//产品
 use FormBuilder\Json;
 use service\JsonService;
+use think\Cache;
 use think\DB;
 
 /**
@@ -51,55 +50,10 @@ class Index extends AuthController
     public function main()
     {
         /*首页第一行统计*/
-        $now_month = strtotime(date('Y-m'));//本月
-        $pre_month = strtotime(date('Y-m', strtotime('-1 month')));//上月
         $now_day = strtotime(date('Y-m-d'));//今日
         $pre_day = strtotime(date('Y-m-d', strtotime('-1 day')));//昨天时间戳
-        $beforyester_day = strtotime(date('Y-m-d', strtotime('-2 day')));//前天时间戳
-        //待发货数量
-        $topData['orderDeliveryNum'] = StoreOrderModel::where('status', 0)
-            ->where('paid', 1)
-            ->where('refund_status', 0)
-            ->count();
-        //退换货订单数
-        $topData['orderRefundNum'] = StoreOrderModel::where('paid', 1)
-            ->where('refund_status', 'IN', '1')
-            ->count();
-        //库存预警
-        $replenishment_num = SystemConfig::getValue('store_stock') > 0 ? SystemConfig::getValue('store_stock') : 20;//库存预警界限
-        $topData['stockProduct'] = StoreProduct::where('stock', '<=', $replenishment_num)->where('is_del', 0)->count();
-        //待处理提现
-        $topData['treatedExtract'] = UserExtractModel::where('status', 0)->count();
 
-
-        //订单数->日
-        $now_day_order_p = StoreOrderModel::where('paid', 1)->where('pay_time', 'gt', $now_day)->count();
-        $pre_day_order_p = StoreOrderModel::where('paid', 1)->where('pay_time', 'gt', $pre_day)->where('pay_time', 'lt', $now_day)->count();
-        $first_line['d_num'] = [
-            'data' => $now_day_order_p ? $now_day_order_p : 0,
-            'percent' => abs($now_day_order_p - $pre_day_order_p),
-            'is_plus' => $now_day_order_p - $pre_day_order_p > 0 ? 1 : ($now_day_order_p - $pre_day_order_p == 0 ? -1 : 0)
-        ];
-
-        //交易额->昨天
-        $now_month_order_p = StoreOrderModel::where('paid', 1)->where('pay_time', 'gt', $pre_day)->value('sum(pay_price)');
-        $pre_month_order_p = StoreOrderModel::where('paid', 1)->where('pay_time', 'gt', $beforyester_day)->where('pay_time', 'lt', $pre_day)->value('sum(pay_price)');
-        $first_line['d_price'] = [
-            'data' => $now_month_order_p > 0 ? $now_month_order_p : 0,
-            'percent' => abs($now_month_order_p - $pre_month_order_p),
-            'is_plus' => $now_month_order_p - $pre_month_order_p > 0 ? 1 : ($now_month_order_p - $pre_month_order_p == 0 ? -1 : 0)
-        ];
-
-        //交易额->月
-        $now_month_order_p = StoreOrderModel::where('paid', 1)->where('pay_time', 'gt', $now_month)->value('sum(pay_price)');
-        $pre_month_order_p = StoreOrderModel::where('paid', 1)->where('pay_time', 'gt', $pre_month)->where('pay_time', 'lt', $now_month)->value('sum(pay_price)');
-        $first_line['m_price'] = [
-            'data' => $now_month_order_p > 0 ? $now_month_order_p : 0,
-            'percent' => abs($now_month_order_p - $pre_month_order_p),
-            'is_plus' => $now_month_order_p - $pre_month_order_p > 0 ? 1 : ($now_month_order_p - $pre_month_order_p == 0 ? -1 : 0)
-        ];
-
-        //新粉丝->日
+        //新增学员->日
         $now_day_user = DB::name('User')->where('add_time', 'gt', $now_day)->count();
         $pre_day_user = DB::name('User')->where('add_time', 'gt', $pre_day)->where('add_time', 'lt', $now_day)->count();
         $pre_day_user = $pre_day_user ? $pre_day_user : 0;
@@ -108,41 +62,36 @@ class Index extends AuthController
             'percent' => abs($now_day_user - $pre_day_user),
             'is_plus' => $now_day_user - $pre_day_user > 0 ? 1 : ($now_day_user - $pre_day_user == 0 ? -1 : 0)
         ];
-
-        //新粉丝->月
-        $now_month_user = DB::name('User')->where('add_time', 'gt', $now_month)->count();
-        $pre_month_user = DB::name('User')->where('add_time', 'gt', $pre_month)->where('add_time', 'lt', $now_month)->count();
-        $first_line['month'] = [
-            'data' => $now_month_user ? $now_month_user : 0,
-            'percent' => abs($now_month_user - $pre_month_user),
-            'is_plus' => $now_month_user - $pre_month_user > 0 ? 1 : ($now_month_user - $pre_month_user == 0 ? -1 : 0)
+        //学习次数->日
+        $now_day_user = DB::name('learning_records')->where('add_time', 'gt', $now_day)->count();
+        $pre_day_user = DB::name('learning_records')->where('add_time', 'gt', $pre_day)->where('add_time', 'lt', $now_day)->count();
+        $pre_day_user = $pre_day_user ? $pre_day_user : 0;
+        $first_line['records'] = [
+            'data' => $now_day_user ? $now_day_user : 0,
+            'percent' => abs($now_day_user - $pre_day_user),
+            'is_plus' => $now_day_user - $pre_day_user > 0 ? 1 : ($now_day_user - $pre_day_user == 0 ? -1 : 0)
         ];
 
-        //本月订单总数
-        $now_order_info_c = StoreOrderModel::where('add_time', 'gt', $now_month)->count();
-        $pre_order_info_c = StoreOrderModel::where('add_time', 'gt', $pre_month)->where('add_time', 'lt', $now_month)->count();
-        $order_info['first'] = [
-            'data' => $now_order_info_c ? $now_order_info_c : 0,
-            'percent' => abs($now_order_info_c - $pre_order_info_c),
-            'is_plus' => $now_order_info_c - $pre_order_info_c > 0 ? 1 : ($now_order_info_c - $pre_order_info_c == 0 ? -1 : 0)
+        //课程订单数->今日
+        $now_day_order_p = StoreOrderModel::where('paid', 1)->where(['is_del'=>0,'type'=>0])->where('pay_time', 'gt', $now_day)->count();
+        $pre_day_order_p = StoreOrderModel::where('paid', 1)->where(['is_del'=>0,'type'=>0])->where('pay_time', 'gt', $pre_day)->where('pay_time', 'lt', $now_day)->count();
+        $first_line['d_num'] = [
+            'data' => $now_day_order_p ? $now_day_order_p : 0,
+            'percent' => abs($now_day_order_p - $pre_day_order_p),
+            'is_plus' => $now_day_order_p - $pre_day_order_p > 0 ? 1 : ($now_day_order_p - $pre_day_order_p == 0 ? -1 : 0)
         ];
 
-        //上月订单总数
-        $second_now_month = strtotime(date('Y-m', strtotime('-1 month')));
-        $second_pre_month = strtotime(date('Y-m', strtotime('-2 month')));
-        $now_order_info_c = StoreOrderModel::where('add_time', 'gt', $pre_month)->where('add_time', 'lt', $now_month)->count();
-        $pre_order_info_c = StoreOrderModel::where('add_time', 'gt', $second_pre_month)->where('add_time', 'lt', $second_now_month)->count();
-        $order_info["second"] = [
-            'data' => $now_order_info_c ? $now_order_info_c : 0,
-            'percent' => abs($now_order_info_c - $pre_order_info_c),
-            'is_plus' => $now_order_info_c - $pre_order_info_c > 0 ? 1 : ($now_order_info_c - $pre_order_info_c == 0 ? -1 : 0)
+        //课程交易额->今天
+        $now_month_order_p = StoreOrderModel::where('paid', 1)->where(['is_del'=>0,'type'=>0])->where('pay_time', 'gt', $now_day)->value('sum(pay_price)');
+        $pre_month_order_p = StoreOrderModel::where('paid', 1)->where(['is_del'=>0,'type'=>0])->where('pay_time', 'gt', $pre_day)->where('pay_time', 'lt', $now_day)->value('sum(pay_price)');
+        $first_line['d_price'] = [
+            'data' => $now_month_order_p > 0 ? $now_month_order_p : 0,
+            'percent' => abs($now_month_order_p - $pre_month_order_p),
+            'is_plus' => $now_month_order_p - $pre_month_order_p > 0 ? 1 : ($now_month_order_p - $pre_month_order_p == 0 ? -1 : 0)
         ];
-        $second_line['order_info'] = $order_info;
         $this->assign([
             'ip'=>get_server_ip(),
             'first_line' => $first_line,
-            'second_line' => $second_line,
-            'topData' => $topData,
         ]);
         return $this->fetch();
     }
@@ -165,7 +114,7 @@ class Index extends AuthController
                     $datalist[date('m-d', strtotime($i . ' day'))] = date('m-d', strtotime($i . ' day'));
                 }
                 $order_list = StoreOrderModel::where('add_time', 'between time', [$datebefor, $dateafter])
-                    ->field("FROM_UNIXTIME(add_time,'%m-%d') as day,count(*) as count,sum(pay_price) as price")
+                    ->where('is_del',0)->where('paid',1)->field("FROM_UNIXTIME(add_time,'%m-%d') as day,count(*) as count,sum(pay_price) as price")
                     ->group("FROM_UNIXTIME(add_time, '%Y%m%e')")->order('add_time asc')->select()->toArray();
                 if (empty($order_list)) {
                     return JsonService::successful([]);
@@ -196,13 +145,12 @@ class Index extends AuthController
                 }
                 $chartdata['legend'] = ['订单金额', '订单数'];//分类
                 $chartdata['xAxis'] = $data['day'];//X轴值
-                //,'itemStyle'=>$series
                 $series = ['normal' => ['label' => ['show' => true, 'position' => 'top']]];
                 $chartdata['series'][] = ['name' => $chartdata['legend'][0], 'type' => 'bar', 'itemStyle' => $series, 'data' => $data['price']];//分类1值
                 $chartdata['series'][] = ['name' => $chartdata['legend'][1], 'type' => 'bar', 'itemStyle' => $series, 'data' => $data['count']];//分类2值
                 //统计总数上期
                 $pre_total = StoreOrderModel::where('add_time', 'between time', [$pre_datebefor, $pre_dateafter])
-                    ->field("count(*) as count,sum(pay_price) as price")
+                    ->field("count(*) as count,sum(pay_price) as price")->where('is_del',0)->where('paid',1)
                     ->find();
                 if ($pre_total) {
                     $chartdata['pre_cycle']['count'] = [
@@ -214,7 +162,7 @@ class Index extends AuthController
                 }
                 //统计总数
                 $total = StoreOrderModel::where('add_time', 'between time', [$datebefor, $dateafter])
-                    ->field("count(*) as count,sum(pay_price) as price")
+                    ->field("count(*) as count,sum(pay_price) as price")->where('is_del',0)->where('paid',1)
                     ->find();
                 if ($total) {
                     $cha_count = intval($pre_total['count']) - intval($total['count']);
@@ -236,10 +184,10 @@ class Index extends AuthController
                 break;
             case 'week':
                 $weekarray = array(['周日'], ['周一'], ['周二'], ['周三'], ['周四'], ['周五'], ['周六']);
-                $datebefor = date('Y-m-d', strtotime('-1 week Monday'));
-                $dateafter = date('Y-m-d', strtotime('-1 week Sunday'));
+                $datebefor = date('Y-m-d', strtotime('-2 monday', time()));
+                $dateafter = date('Y-m-d', strtotime('-1 sunday', time()));
                 $order_list = StoreOrderModel::where('add_time', 'between time', [$datebefor, $dateafter])
-                    ->field("FROM_UNIXTIME(add_time,'%w') as day,count(*) as count,sum(pay_price) as price")
+                    ->where('is_del',0)->where('paid',1)->field("FROM_UNIXTIME(add_time,'%w') as day,count(*) as count,sum(pay_price) as price")
                     ->group("FROM_UNIXTIME(add_time, '%Y%m%e')")
                     ->order('add_time asc')
                     ->select()->toArray();
@@ -251,7 +199,7 @@ class Index extends AuthController
                 $now_datebefor = date('Y-m-d', (time() - ((date('w') == 0 ? 7 : date('w')) - 1) * 24 * 3600));
                 $now_dateafter = date('Y-m-d', strtotime("+1 day"));
                 $now_order_list = StoreOrderModel::where('add_time', 'between time', [$now_datebefor, $now_dateafter])
-                    ->field("FROM_UNIXTIME(add_time,'%w') as day,count(*) as count,sum(pay_price) as price")
+                    ->where('is_del',0)->where('paid',1)->field("FROM_UNIXTIME(add_time,'%w') as day,count(*) as count,sum(pay_price) as price")
                     ->group("FROM_UNIXTIME(add_time, '%Y%m%e')")
                     ->order('add_time asc')
                     ->select()->toArray();
@@ -291,7 +239,6 @@ class Index extends AuthController
                 }
                 $chartdata['legend'] = ['上周金额', '本周金额', '上周订单数', '本周订单数'];//分类
                 $chartdata['xAxis'] = $data['day'];//X轴值
-                //,'itemStyle'=>$series
                 $series = ['normal' => ['label' => ['show' => true, 'position' => 'top']]];
                 $chartdata['series'][] = ['name' => $chartdata['legend'][0], 'type' => 'bar', 'itemStyle' => $series, 'data' => $data['pre']['price']];//分类1值
                 $chartdata['series'][] = ['name' => $chartdata['legend'][1], 'type' => 'bar', 'itemStyle' => $series, 'data' => $data['now']['price']];//分类1值
@@ -300,7 +247,7 @@ class Index extends AuthController
 
                 //统计总数上期
                 $pre_total = StoreOrderModel::where('add_time', 'between time', [$datebefor, $dateafter])
-                    ->field("count(*) as count,sum(pay_price) as price")
+                    ->where('is_del',0)->where('paid',1)->field("count(*) as count,sum(pay_price) as price")
                     ->find();
                 if ($pre_total) {
                     $chartdata['pre_cycle']['count'] = [
@@ -312,7 +259,7 @@ class Index extends AuthController
                 }
                 //统计总数
                 $total = StoreOrderModel::where('add_time', 'between time', [$now_datebefor, $now_dateafter])
-                    ->field("count(*) as count,sum(pay_price) as price")
+                    ->where('is_del',0)->where('paid',1)->field("count(*) as count,sum(pay_price) as price")
                     ->find();
                 if ($total) {
                     $cha_count = intval($pre_total['count']) - intval($total['count']);
@@ -337,8 +284,9 @@ class Index extends AuthController
 
                 $datebefor = date('Y-m-01', strtotime('-1 month'));
                 $dateafter = date('Y-m-d', strtotime(date('Y-m-01')));
+
                 $order_list = StoreOrderModel::where('add_time', 'between time', [$datebefor, $dateafter])
-                    ->field("FROM_UNIXTIME(add_time,'%d') as day,count(*) as count,sum(pay_price) as price")
+                    ->where('is_del',0)->where('paid',1)->field("FROM_UNIXTIME(add_time,'%d') as day,count(*) as count,sum(pay_price) as price")
                     ->group("FROM_UNIXTIME(add_time, '%Y%m%e')")
                     ->order('add_time asc')
                     ->select()->toArray();
@@ -350,7 +298,7 @@ class Index extends AuthController
                 $now_datebefor = date('Y-m-01');
                 $now_dateafter = date('Y-m-d', strtotime("+1 day"));
                 $now_order_list = StoreOrderModel::where('add_time', 'between time', [$now_datebefor, $now_dateafter])
-                    ->field("FROM_UNIXTIME(add_time,'%d') as day,count(*) as count,sum(pay_price) as price")
+                    ->where('is_del',0)->where('paid',1)->field("FROM_UNIXTIME(add_time,'%d') as day,count(*) as count,sum(pay_price) as price")
                     ->group("FROM_UNIXTIME(add_time, '%Y%m%e')")
                     ->order('add_time asc')
                     ->select()->toArray();
@@ -400,7 +348,7 @@ class Index extends AuthController
 
                 //统计总数上期
                 $pre_total = StoreOrderModel::where('add_time', 'between time', [$datebefor, $dateafter])
-                    ->field("count(*) as count,sum(pay_price) as price")
+                    ->where('is_del',0)->where('paid',1)->field("count(*) as count,sum(pay_price) as price")
                     ->find();
                 if ($pre_total) {
                     $chartdata['pre_cycle']['count'] = [
@@ -412,7 +360,7 @@ class Index extends AuthController
                 }
                 //统计总数
                 $total = StoreOrderModel::where('add_time', 'between time', [$now_datebefor, $now_dateafter])
-                    ->field("count(*) as count,sum(pay_price) as price")
+                    ->where('is_del',0)->where('paid',1)->field("count(*) as count,sum(pay_price) as price")
                     ->find();
                 if ($total) {
                     $cha_count = intval($pre_total['count']) - intval($total['count']);
@@ -437,7 +385,7 @@ class Index extends AuthController
                 $datebefor = date('Y-01-01', strtotime('-1 year'));
                 $dateafter = date('Y-12-31', strtotime('-1 year'));
                 $order_list = StoreOrderModel::where('add_time', 'between time', [$datebefor, $dateafter])
-                    ->field("FROM_UNIXTIME(add_time,'%m') as day,count(*) as count,sum(pay_price) as price")
+                    ->where('is_del',0)->where('paid',1)->field("FROM_UNIXTIME(add_time,'%m') as day,count(*) as count,sum(pay_price) as price")
                     ->group("FROM_UNIXTIME(add_time, '%Y%m')")
                     ->order('add_time asc')
                     ->select()->toArray();
@@ -449,7 +397,7 @@ class Index extends AuthController
                 $now_datebefor = date('Y-01-01');
                 $now_dateafter = date('Y-m-d');
                 $now_order_list = StoreOrderModel::where('add_time', 'between time', [$now_datebefor, $now_dateafter])
-                    ->field("FROM_UNIXTIME(add_time,'%m') as day,count(*) as count,sum(pay_price) as price")
+                    ->where('is_del',0)->where('paid',1)->field("FROM_UNIXTIME(add_time,'%m') as day,count(*) as count,sum(pay_price) as price")
                     ->group("FROM_UNIXTIME(add_time, '%Y%m')")
                     ->order('add_time asc')
                     ->select()->toArray();
@@ -489,7 +437,6 @@ class Index extends AuthController
                 }
                 $chartdata['legend'] = ['去年金额', '今年金额', '去年订单数', '今年订单数'];//分类
                 $chartdata['xAxis'] = $data['day'];//X轴值
-                //,'itemStyle'=>$series
                 $series = ['normal' => ['label' => ['show' => true, 'position' => 'top']]];
                 $chartdata['series'][] = ['name' => $chartdata['legend'][0], 'type' => 'bar', 'itemStyle' => $series, 'data' => $data['pre']['price']];//分类1值
                 $chartdata['series'][] = ['name' => $chartdata['legend'][1], 'type' => 'bar', 'itemStyle' => $series, 'data' => $data['now']['price']];//分类1值
@@ -498,7 +445,7 @@ class Index extends AuthController
 
                 //统计总数上期
                 $pre_total = StoreOrderModel::where('add_time', 'between time', [$datebefor, $dateafter])
-                    ->field("count(*) as count,sum(pay_price) as price")
+                    ->where('is_del',0)->where('paid',1)->field("count(*) as count,sum(pay_price) as price")
                     ->find();
                 if ($pre_total) {
                     $chartdata['pre_cycle']['count'] = [
@@ -510,7 +457,7 @@ class Index extends AuthController
                 }
                 //统计总数
                 $total = StoreOrderModel::where('add_time', 'between time', [$now_datebefor, $now_dateafter])
-                    ->field("count(*) as count,sum(pay_price) as price")
+                    ->where('is_del',0)->where('paid',1)->field("count(*) as count,sum(pay_price) as price")
                     ->find();
                 if ($total) {
                     $cha_count = intval($pre_total['count']) - intval($total['count']);
@@ -534,6 +481,8 @@ class Index extends AuthController
                 return JsonService::successful([]);
                 break;
         }
+
+
     }
 
     /**
@@ -542,6 +491,7 @@ class Index extends AuthController
     public function userchart()
     {
         header('Content-type:text/json');
+
         $starday = date('Y-m-d', strtotime('-30 day'));
         $yesterday = date('Y-m-d');
 
@@ -563,6 +513,7 @@ class Index extends AuthController
         }
         $chartdata['xAxis'] = $data['day'];//X轴值
         $chartdata['series'] = $data['count'];//分类1值
+
         return Json::succ('ok', $chartdata);
     }
 

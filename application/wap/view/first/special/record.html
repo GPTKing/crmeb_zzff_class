@@ -23,7 +23,6 @@
         left: 50%;
         width: 4rem;
         height: 4rem;
-        background: url("{__WAP_PATH}zsff/images/nothing.png") center/contain no-repeat;
         -webkit-transform: translate(-50%, -50%);
         transform: translate(-50%, -50%);
     }
@@ -48,11 +47,11 @@
             </form>
         </header>
         <main>
-            <div v-if="makeSpecials.length" class="goods">
-                <a v-for="item in makeSpecials" :key="item.id" :href="item.path" class="item">
+            <div v-if="updateSpecials.length" class="goods">
+                <a v-for="item in updateSpecials" :key="item.id" :href="item.path" class="item">
                     <div class="image">
                         <img :src="item.image">
-                        <div class="label">{{ item.type }}</div>
+                        <div class="label">{{ item.types }}</div>
                     </div>
                     <div class="text">
                         <div class="name">{{ item.title }}</div>
@@ -62,12 +61,7 @@
                             </template>
                         </div>
                         <div class="price">
-                            <template v-if="item.is_pink">
-                                <div class="money">¥<span>{{ item.pink_money }}</span></div>
-                                <div class="group-price-icon">拼团特惠</div>
-                                <div v-if="item.types!=4" class="total">共{{item.count}}节</div>
-                            </template>
-                            <template v-else>
+                            <template>
                                 <div v-if="item.money === '0.00'" class="free">免费</div>
                                 <div v-else class="money">¥<span>{{ item.money }}</span></div>
                                 <div v-if="item.types!=4" class="total">共{{item.count}}节</div>
@@ -79,15 +73,18 @@
             <div v-show="loading" class="loading">
                 <span class="fa fa-spinner"></span>
             </div>
-            <div v-if="loadend && page > 2" class="loaded">已全部加载</div>
-            <div v-if="!specials.length && !loading" class="nothing"></div>
+            <div v-if="loadend && specials.length" class="loaded">已全部加载</div>
+            <div v-if="!specials.length && !loading" >
+                <img class="nothing"  src="/wap/first/zsff/images/no_data_available.png">
+            </div>
         </main>
     </div>
+    <quick-menu></quick-menu>
 </div>
 {/block}
 {block name='foot'}
 <script>
-    require(['vue', 'helper', 'store', 'special-type'], function (Vue, $h, app, specialType) {
+    require(['vue', 'helper', 'store', 'special-type', '{__WAP_PATH}zsff/js/quick.js'], function (Vue, $h, app, specialType) {
         new Vue({
             el: '#app',
             data: {
@@ -100,7 +97,7 @@
                 page: 1,
             },
             computed: {
-                makeSpecials: function () {
+                updateSpecials: function () {
                     var that = this;
                     return that.specials.map(function (value) {
                         value.path = $h.U({
@@ -108,8 +105,7 @@
                             a: 'details',
                             q: { id: value.id }
                         });
-                        value.types = value.type;
-                        value.type = specialType[value.type];
+                        value.types = specialType[value.type];
                         return value;
                     });
                 }
@@ -141,12 +137,13 @@
                             type: 1
                         }
                     }), function (res) {
-                        var specials = res.data.data;
+                        var list = res.data.data;
                         that.loading = false;
-                        $h.SplitArray(specials, that.specials);
-                        that.loadend = specials.length < that.limit;
-                        that.loadTitle = that.loadend ? '我是有底线的' : '上拉加载更多';
                         that.page++;
+                        var specials=$h.SplitArray(list, that.specials);
+                        that.loadend = list.length < that.limit;
+                        that.loadTitle = that.loadend ? '我是有底线的' : '上拉加载更多';
+                        that.$set(that, 'specials', specials);
                         that.EventUtil();
                     }, function (res) {
                         that.loading = false;

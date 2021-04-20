@@ -20,6 +20,10 @@
     .icon-umidd17{
         color: #2c8eff;
     }
+    wx-open-subscribe {
+        display: block;
+        margin-top: 32px;
+    }
 </style>
 {/block}
 {block name="content"}
@@ -34,7 +38,7 @@
             </div>
         </div>
         <div class="wrapper">
-            <div :hidden="currentTab !== 0" class="list">
+            <div v-if="currentTab === 0" class="list">
                 <div class="item acea-row row-between-wrapper">
                     <div class="name">持卡人</div>
                     <div class="input">
@@ -65,9 +69,35 @@
                     </div>
                 </div>
                 <div class="tip">当前可提现金额: {{ commissionCount }}</div>
-                <div class="bnt bg-color-red" @click="submitted">提现</div>
+                <wx-open-subscribe
+                    v-if="isWechat && templateId"
+                    :template="templateId"
+                    @success="onSuccess"
+                    @error="onError"
+                >
+                    <script type="text/wxtag-template" slot="style">
+                        <style>
+                            button {
+                                display: block;
+                                width: 100%;
+                                height: 44px;
+                                border-radius: 22px;
+                                border: none;
+                                background-color: #2c8eff;
+                                font-family: inherit;
+                                font-weight: normal;
+                                font-size: 14px;
+                                color: #fff;
+                            }
+                        </style>
+                    </script>
+                    <script type="text/wxtag-template">
+                        <button>提现</button>
+                    </script>
+                </wx-open-subscribe>
+                <div v-else class="bnt bg-color-red" @click="submitted">提现</div>
             </div>
-            <div :hidden="currentTab !== 1" class="list">
+            <div v-if="currentTab === 1" class="list">
                 <div class="item acea-row row-between-wrapper">
                     <div class="name">微信号</div>
                     <div class="input">
@@ -81,9 +111,35 @@
                     </div>
                 </div>
                 <div class="tip">当前可提现金额: {{ commissionCount }}</div>
-                <div class="bnt bg-color-red" @click="submitted">提现</div>
+                <wx-open-subscribe
+                    v-if="isWechat && templateId"
+                    :template="templateId"
+                    @success="onSuccess"
+                    @error="onError"
+                >
+                    <script type="text/wxtag-template" slot="style">
+                        <style>
+                            button {
+                                display: block;
+                                width: 100%;
+                                height: 44px;
+                                border-radius: 22px;
+                                border: none;
+                                background-color: #2c8eff;
+                                font-family: inherit;
+                                font-weight: normal;
+                                font-size: 14px;
+                                color: #fff;
+                            }
+                        </style>
+                    </script>
+                    <script type="text/wxtag-template">
+                        <button>提现</button>
+                    </script>
+                </wx-open-subscribe>
+                <div v-else class="bnt bg-color-red" @click="submitted">提现</div>
             </div>
-            <div :hidden="currentTab !== 2" class="list">
+            <div v-if="currentTab === 2" class="list">
                 <div class="item acea-row row-between-wrapper">
                     <div class="name">用户名</div>
                     <div class="input">
@@ -103,25 +159,51 @@
                     </div>
                 </div>
                 <div class="tip">当前可提现金额: {{ commissionCount }}</div>
-                <div class="bnt bg-color-red" @click="submitted">提现</div>
+                <wx-open-subscribe
+                    v-if="isWechat && templateId"
+                    :template="templateId"
+                    @success="onSuccess"
+                    @error="onError"
+                >
+                    <script type="text/wxtag-template" slot="style">
+                        <style>
+                            button {
+                                display: block;
+                                width: 100%;
+                                height: 44px;
+                                border-radius: 22px;
+                                border: none;
+                                background-color: #2c8eff;
+                                font-family: inherit;
+                                font-weight: normal;
+                                font-size: 14px;
+                                color: #fff;
+                            }
+                        </style>
+                    </script>
+                    <script type="text/wxtag-template">
+                        <button>提现</button>
+                    </script>
+                </wx-open-subscribe>
+                <div v-else class="bnt bg-color-red" @click="submitted">提现</div>
             </div>
         </div>
     </div>
+    <quick-menu></quick-menu>
 </div>
 {/block}
 {block name="foot"}
 <script>
-    var now_money = {$number}, extract_min_money = {$extract_min_money}, token = "{$token}",
-        extract_bank = {$extract_bank}, brokerage_price = '{$brokerage_price}',
+    var now_money = {$number},token = "{$token}", extract_bank = {$extract_bank}, brokerage_price = '{$brokerage_price}',
         extract_min_money = {$extract_min_money};
-    require(['vue', 'helper', 'store'], function (Vue, $h, app) {
+    require(['vue', 'helper', 'store','quick'], function (Vue, $h, app) {
         new Vue({
             el: '#app',
             data: {
                 navList: [
-                    {name: "银行卡", type: "bank", icon: "icon-qiandai"},
-                    {name: "微信", type: "weixin", icon: "icon-weixinzhifu"},
-                    {name: "支付宝", type: "alipay", icon: "icon-umidd17"}
+                    {name: "银行卡", type: "bank", icon: "iconicon-test"},
+                    {name: "微信", type: "weixin", icon: "iconweixin2"},
+                    {name: "支付宝", type: "alipay", icon: "iconicon34"}
                 ],
                 post: {
                     extract_type: "bank",
@@ -135,20 +217,53 @@
                 currentTab: 0,
                 minPrice: extract_min_money,
                 banks: extract_bank,
-                commissionCount: brokerage_price
+                commissionCount: brokerage_price,
+                isWechat: false,
+                templateId: ''
             },
             watch: {
                 number: function (n) {
                     if (n > now_money) this.number = now_money;
                 }
             },
+            created: function () {
+                var ua = navigator.userAgent.toLowerCase();
+                this.isWechat = -1 != ua.indexOf('micromessenger');
+                // var versionArr = ua.match(/micromessenger\/(\d+\.\d+\.\d+)/) || ua.match(/micromessenger\/(\d+\.\d+)/);
+                // var version = versionArr ? versionArr[1] : '';
+                // this.wxOpenTag = version < '7.0.12';
+
+                if (this.isWechat) {
+                    mapleWx($jssdk());
+                    this.subscribeTemplate();
+                }
+            },
             methods: {
+                subscribeTemplate: function () {
+                    app.baseGet($h.U({
+                        c: 'special',
+                        a: 'getTemplateIds',
+                        q: {
+                            pay_type_num: 1,
+                            special_id: 0
+                        }
+                    }), function (res) {
+                        this.templateId = res.data.msg;
+                    }.bind(this));
+                },
+                onSuccess: function (event) {
+                    if (event.detail.errMsg === 'subscribe:ok') {
+                        this.submitted();
+                    }
+                },
+                onError: function (event) {
+                    $h.pushMsgOnce('订阅通知模板ID错误', function () {
+                        this.submitted();
+                    }.bind(this));
+                },
                 swichNav: function (index, item) {
                     this.currentTab = index;
                     this.post.extract_type = item.type;
-                },
-                submitted: function () {
-
                 },
                 all_withdraw: function () {
                     this.number = now_money;
@@ -239,9 +354,6 @@
                             break;
                     }
                 }
-            },
-            mounted: function () {
-
             }
         })
     })

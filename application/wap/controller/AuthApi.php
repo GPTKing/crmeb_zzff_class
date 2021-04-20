@@ -14,17 +14,9 @@ namespace app\wap\controller;
 
 
 use app\wap\model\user\SmsCode;
-use app\wap\model\store\StoreOrderCartInfo;
-use app\wap\model\store\StorePink;
-use app\wap\model\store\StoreProductReply;
 use app\wap\model\store\StoreService;
 use app\wap\model\store\StoreServiceLog;
-use app\wap\model\store\StoreCart;
-use app\wap\model\store\StoreCategory;
 use app\wap\model\store\StoreOrder;
-use app\wap\model\store\StoreProduct;
-use app\wap\model\store\StoreProductAttr;
-use app\wap\model\store\StoreProductRelation;
 use app\wap\model\user\User;
 use app\wap\model\user\UserAddress;
 use app\wap\model\user\UserBill;
@@ -48,9 +40,7 @@ use think\Cache;
 use think\Request;
 use think\Session;
 use think\Url;
-use app\wap\model\user\MemberShip;
-use app\wap\model\user\MemberCard;//会员卡
-use app\wap\model\user\MemberCardBatch;//会员卡批次
+use service\sms\storage\Sms;
 
 class AuthApi extends AuthController
 {
@@ -58,7 +48,8 @@ class AuthApi extends AuthController
     public static function WhiteList()
     {
         return [
-            'code'
+            'code',
+            'suspensionButton'
         ];
     }
 
@@ -87,13 +78,22 @@ class AuthApi extends AuthController
     {
         $name = "is_phone_code" . $phone;
         if ($phone == '') return JsonService::fail('请输入手机号码!');
-        $time = Session::get($name, 'routine');
-        if ($time < time() + 60) Session::delete($name, 'routine');
-        if (Session::has($name, 'routine') && $time < time()) return JsonService::fail('您发送验证码的频率过高,请稍后再试!');
+        $time = Session::get($name, 'wap');
+        if ($time < time() + 60) Session::delete($name, 'wap');
+        if (Session::has($name, 'wap') && $time < time()) return JsonService::fail('您发送验证码的频率过高,请稍后再试!');
         $code = AliMessageService::getVerificationCode();
-        SmsCode::set(['tel' => $phone, 'code' => $code, 'last_time' => time() + 300, 'uid' => $this->uid]);
-        Session::set($name, time() + 60, 'routine');
-        $res = AliMessageService::sendmsg($phone, $code);
+        SmsCode::set(['tel' => $phone, 'code' => md5('is_phone_code'.$code), 'last_time' => time() + 300, 'uid' => $this->uid]);
+        Session::set($name, time() + 60, 'wap');
+        $smsHandle = new Sms();
+        $sms_platform_selection=SystemConfigService::get('sms_platform_selection');
+        $smsSignName=SystemConfigService::get('smsSignName');//短信模板ID
+        $smsTemplateCode=SystemConfigService::get('smsTemplateCode');//短信模板ID
+        if($sms_platform_selection==1){
+            if(!$smsSignName || !$smsTemplateCode) return JsonService::fail('系统后台短信没有配置，请稍后在试!');
+            $res = AliMessageService::sendmsg($phone, $code);
+        }else{
+            $res=$smsHandle->send($phone,$smsTemplateCode,['code'=>$code]);
+        }
         if($res){
             return JsonService::successful('发送成功',$res);
         } else {
@@ -101,6 +101,14 @@ class AuthApi extends AuthController
         }
     }
 
+    /**
+     * 悬浮按钮
+     */
+    public function suspensionButton()
+    {
+        $suspension=GroupDataService::getData('suspension_button');
+        return JsonService::successful($suspension);
+    }
     /**
      * 用户签到信息
      */
@@ -142,185 +150,22 @@ class AuthApi extends AuthController
         $user=$this->userInfo;
         $surplus=0; //会员剩余天数
         $time=bcsub($user['overdue_time'],time(),0);
-        if($user['level']>0 && $time>0) $surplus=bcdiv($time,86400,0);
-        $user['surplus']=$surplus;
+        if($user['level']>0 && $time>0) $surplus=bcdiv($time,86400,2);
+        $user['surplus']=ceil($surplus);
         return JsonService::successful($user);
     }
 
     /**
-     * 会员页数据
+     * 商品退款原因
      */
-    public function merberDatas(){
-        $interests=GroupDataService::getData('membership_interests',3)?:[];
-        $description=GroupDataService::getData('member_description')?:[];
-        $interests_sort = array_column($interests,'sort');
-        array_multisort($interests_sort,SORT_ASC,$interests);
-        $description_sort = array_column($description,'sort');
-        array_multisort($description_sort,SORT_ASC,$description);
-        $data['interests']=$interests;
-        $data['description']=$description;
-        $data['member']=MemberShip::memberMinOne();
-        $data['freeData']=MemberShip::memberFree($this->userInfo['uid']);
-        return JsonService::successful($data);
+    public function refund_reason()
+    {
+        $goods_order_refund_reason=GroupDataService::getData('goods_order_refund_reason') ?:[];
+        return JsonService::successful($goods_order_refund_reason);
     }
-
-    /**
-     * 会员设置列表
+    /**设置默认地址
+     * @param string $addressId
      */
-    public function membershipLists(){
-        $meList=MemberShip::membershipList();
-        return JsonService::successful($meList);
-    }
-
-    /**
-     * 会员卡激活
-     */
-    public function confirm_activation(){
-        $request = Request::instance();
-        if (!$request->isPost()) return JsonService::fail('参数错误!');
-        $data = UtilService::postMore([
-            ['member_code', ''],
-            ['member_pwd', ''],
-        ], $request);
-        $res=MemberCard::confirmActivation($data,$this->userInfo);
-        if($res)
-            return JsonService::successful('激活成功');
-        else
-            return JsonService::fail(MemberCard::getErrorInfo('激活失败!'));
-    }
-    /**
-     * 用户购买会员
-     */
-    public function memberPurchase($id=0){
-        if(!$id) return JsonService::fail('参数错误!');
-        $order = StoreOrder::cacheMemberCreateOrder($this->userInfo['uid'],$id,'weixin');
-        $orderId = $order['order_id'];
-        $info = compact('orderId');
-        if ($orderId) {
-                $orderInfo = StoreOrder::where('order_id', $orderId)->find();
-                if (!$orderInfo || !isset($orderInfo['paid'])) exception('支付订单不存在!');
-                if ($orderInfo['paid']) exception('支付已支付!');
-                if (bcsub((float)$orderInfo['pay_price'], 0, 2) <= 0) {
-                    if (StoreOrder::jsPayMePrice($orderId, $this->userInfo['uid']))
-                        return JsonService::status('success', '领取成功', $info);
-                    else
-                        return JsonService::status('pay_error', StoreOrder::getErrorInfo());
-                } else {
-                    try {
-                        $jsConfig = StoreOrder::jsPayMember($orderId);
-                    } catch (\Exception $e) {
-                        return JsonService::status('pay_error', $e->getMessage(), $info);
-                    }
-                    $info['jsConfig'] = $jsConfig;
-                    return JsonService::status('wechat_pay', '领取成功', $info);
-                }
-        } else {
-            return JsonService::fail(StoreOrder::getErrorInfo('领取失败!'));
-        }
-    }
-
-    public function set_cart($productId = '', $cartNum = 1, $uniqueId = '')
-    {
-        if (!$productId || !is_numeric($productId)) return $this->failed('参数错误!');
-        $res = StoreCart::setCart($this->userInfo['uid'], $productId, $cartNum, $uniqueId, 'product');
-        if (!$res)
-            return $this->failed(StoreCart::getErrorInfo('加入购物车失败!'));
-        else {
-            HookService::afterListen('store_product_set_cart_after', $res, $this->userInfo, false, StoreProductBehavior::class);
-            return $this->successful('ok', ['cartId' => $res->id]);
-        }
-    }
-
-
-    public function like_product($productId = '', $category = 'product')
-    {
-        if (!$productId || !is_numeric($productId)) return $this->failed('参数错误!');
-        $res = StoreProductRelation::productRelation($productId, $this->userInfo['uid'], 'like', $category);
-        if (!$res)
-            return $this->failed(StoreProductRelation::getErrorInfo('点赞失败!'));
-        else
-            return $this->successful();
-    }
-
-    public function unlike_product($productId = '', $category = 'product')
-    {
-
-        if (!$productId || !is_numeric($productId)) return $this->failed('参数错误!');
-        $res = StoreProductRelation::unProductRelation($productId, $this->userInfo['uid'], 'like', $category);
-        if (!$res)
-            return $this->failed(StoreProductRelation::getErrorInfo('取消点赞失败!'));
-        else
-            return $this->successful();
-    }
-
-    public function collect_product($productId, $category = 'product')
-    {
-        if (!$productId || !is_numeric($productId)) return $this->failed('参数错误!');
-        $res = StoreProductRelation::productRelation($productId, $this->userInfo['uid'], 'collect', $category);
-        if (!$res)
-            return $this->failed(StoreProductRelation::getErrorInfo('收藏失败!'));
-        else
-            return $this->successful();
-    }
-
-    public function uncollect_product($productId, $category = 'product')
-    {
-        if (!$productId || !is_numeric($productId)) return $this->failed('参数错误!');
-        $res = StoreProductRelation::unProductRelation($productId, $this->userInfo['uid'], 'collect', $category);
-        if (!$res)
-            return $this->failed(StoreProductRelation::getErrorInfo('取消收藏失败!'));
-        else
-            return $this->successful();
-    }
-
-    public function get_cart_num()
-    {
-        return JsonService::successful('ok', StoreCart::getUserCartNum($this->userInfo['uid'], 'product'));
-    }
-
-    public function get_cart_list()
-    {
-        return JsonService::successful('ok', StoreCart::getUserProductCartList($this->userInfo['uid']));
-    }
-
-    public function change_cart_num($cartId = '', $cartNum = '')
-    {
-        if (!$cartId || !$cartNum || !is_numeric($cartId) || !is_numeric($cartNum)) return JsonService::fail('参数错误!');
-        StoreCart::changeUserCartNum($cartId, $cartNum, $this->userInfo['uid']);
-        return JsonService::successful();
-    }
-
-    public function remove_cart($ids = '')
-    {
-        if (!$ids) return JsonService::fail('参数错误!');
-        StoreCart::removeUserCart($this->userInfo['uid'], $ids);
-        return JsonService::successful();
-    }
-
-    public function get_user_collect_product($first = 0, $limit = 8)
-    {
-        $list = StoreProductRelation::where('A.uid', $this->userInfo['uid'])
-            ->field('B.id pid,B.store_name,B.price,B.ot_price,B.sales,B.image,B.is_del,B.is_show')->alias('A')
-            ->where('A.type', 'collect')->where('A.category', 'product')
-            ->order('A.add_time DESC')->join('__STORE_PRODUCT__ B', 'A.product_id = B.id')
-            ->limit($first, $limit)->select()->toArray();
-        foreach ($list as $k => $product) {
-            if ($product['pid']) {
-                $list[$k]['is_fail'] = $product['is_del'] && $product['is_show'];
-            } else {
-                unset($list[$k]);
-            }
-        }
-        return JsonService::successful($list);
-    }
-
-    public function remove_user_collect_product($productId = '')
-    {
-        if (!$productId || !is_numeric($productId)) return JsonService::fail('参数错误!');
-        StoreProductRelation::unProductRelation($productId, $this->userInfo['uid'], 'collect', 'product');
-        return JsonService::successful();
-    }
-
     public function set_user_default_address($addressId = '')
     {
         if (!$addressId || !is_numeric($addressId)) return JsonService::fail('参数错误!');
@@ -333,6 +178,9 @@ class AuthApi extends AuthController
             return JsonService::successful();
     }
 
+    /**
+     * 添加和修改地址
+     */
     public function edit_user_address()
     {
         $request = Request::instance();
@@ -373,7 +221,20 @@ class AuthApi extends AuthController
 
 
     }
-
+    /**
+     * 获取用户所有地址
+     */
+    public function user_address_list()
+    {
+        $list=UserAddress::getUserValidAddressList($this->userInfo['uid'], 'id,real_name,phone,province,city,district,detail,is_default');
+        if ($list)
+            return JsonService::successful('ok', $list);
+        else
+            return JsonService::successful('empty', []);
+    }
+    /**
+     * 获取默认地址
+     */
     public function user_default_address()
     {
         $defaultAddress = UserAddress::getUserDefaultAddress($this->userInfo['uid'], 'id,real_name,phone,province,city,district,detail,is_default');
@@ -383,6 +244,9 @@ class AuthApi extends AuthController
             return JsonService::successful('empty', []);
     }
 
+    /**删除地址
+     * @param string $addressId
+     */
     public function remove_user_address($addressId = '')
     {
         if (!$addressId || !is_numeric($addressId)) return JsonService::fail('参数错误!');
@@ -395,128 +259,83 @@ class AuthApi extends AuthController
     }
 
 
-    public function get_user_order_list($type = '', $first = 0, $limit = 8, $search = '')
+    /**获取用户的商品订单列表
+     * @param string $type
+     * @param int $first
+     * @param int $limit
+     */
+    public function get_user_order_list($type = 0, $first = 0, $limit = 8)
     {
-        $type == 'null' && $type = '';
-        if ($search) {
-            $order = StoreOrder::searchUserOrder($this->userInfo['uid'], $search) ?: [];
-            $list = $order == false ? [] : [$order];
-        } else {
-            if ($type == 'first') $type = '';
-            $list = StoreOrder::getUserOrderList($this->userInfo['uid'], $type, $first, $limit);
-        }
-        foreach ($list as $k => $order) {
-            $list[$k] = StoreOrder::tidyOrder($order, true);
-            if ($list[$k]['_status']['_type'] == 3) {
-                foreach ($order['cartInfo'] ?: [] as $key => $product) {
-                    $list[$k]['cartInfo'][$key]['is_reply'] = StoreProductReply::isReply($product['unique'], 'product');
-                }
-            }
-        }
+        $list = StoreOrder::getUserOrderList($this->userInfo['uid'], $type, $first, $limit);
         return JsonService::successful($list);
     }
 
-    public function user_remove_order($uni = '')
-    {
-        if (!$uni) return JsonService::fail('参数错误!');
-        $res = StoreOrder::removeOrder($uni, $this->userInfo['uid']);
-        if ($res)
-            return JsonService::successful();
-        else
-            return JsonService::fail(StoreOrder::getErrorInfo());
-    }
-
     /**
-     * 支付订单
-     * @param string $uni
-     * @return \think\response\Json
+     * 用户订单数据
      */
-    public function pay_order($uni = '')
+    public function userOrderDate()
     {
-        if (!$uni) return JsonService::fail('参数错误!');
-        $order = StoreOrder::getUserOrderDetail($this->userInfo['uid'], $uni);
-        if (!$order) return JsonService::fail('订单不存在!');
-        if ($order['paid']) return JsonService::fail('该订单已支付!');
-        if ($order['pink_id']) if (StorePink::isPinkStatus($order['pink_id'])) return JsonService::fail('该订单已失效!');
-        if ($order['pay_type'] == 'weixin') {
-            try {
-                $jsConfig = StoreOrder::jsPay($order);
-            } catch (\Exception $e) {
-                return JsonService::fail($e->getMessage());
-            }
-            return JsonService::status('wechat_pay', ['jsConfig' => $jsConfig, 'order_id' => $order['order_id']]);
-        } else if ($order['pay_type'] == 'yue') {
-            if ($res = StoreOrder::yuePay($order['order_id'], $this->userInfo['uid']))
-                return JsonService::successful('余额支付成功');
-            else
-                return JsonService::fail(StoreOrder::getErrorInfo());
-        } else if ($order['pay_type'] == 'offline') {
-            StoreOrder::createOrderTemplate($order);
-            return JsonService::successful('订单创建成功');
-        }
+        $data=StoreOrder::getOrderStatusNum($this->userInfo['uid']);
+        return JsonService::successful($data);
     }
 
-    public function apply_order_refund($uni = '', $text = '')
+
+    /**提交商品退款
+     * @param string $uni
+     * @param string $text
+     */
+    public function apply_order_refund($uni = '')
     {
-        if (!$uni || $text == '') return JsonService::fail('参数错误!');
-        $res = StoreOrder::orderApplyRefund($uni, $this->userInfo['uid'], $text);
+        if (!$uni) return JsonService::fail('参数错误!');
+        $request = Request::instance();
+        if (!$request->isPost()) return JsonService::fail('参数错误!');
+        $data = UtilService::postMore([
+            ['pics', []],
+            ['refund_reason', ''],
+            ['remarks', ''],
+        ], $request);
+        $res = StoreOrder::orderApplyRefund($uni, $this->userInfo['uid'],$data);
         if ($res)
             return JsonService::successful();
         else
             return JsonService::fail(StoreOrder::getErrorInfo());
     }
-
-    public function user_take_order($uni = '')
-    {
-        if (!$uni) return JsonService::fail('参数错误!');
-
-        $res = StoreOrder::takeOrder($uni, $this->userInfo['uid']);
-        if ($res)
-            return JsonService::successful();
-        else
-            return JsonService::fail(StoreOrder::getErrorInfo());
-    }
-
+    /**虚拟币充值
+     * @param int $price
+     * @param int $payType
+     */
     public function user_wechat_recharge($price = 0,$payType = 0)
     {
         if (!$price || $price <= 0 || !is_numeric($price)) return JsonService::fail('参数错误');
         if (!isset($this->userInfo['uid']) || !$this->userInfo['uid']) return JsonService::fail('用户不存在');
-        //$storeMinRecharge = SystemConfigService::get('store_user_min_recharge');
-        //if ($price < $storeMinRecharge) return JsonService::fail('充值金额不能低于' . $storeMinRecharge);
         try {
         //充值记录
         $rechargeOrder = UserRecharge::addRecharge($this->userInfo['uid'], $price, $payType);
         if (!$rechargeOrder) return JsonService::fail('充值订单生成失败!');
         $orderId = $rechargeOrder['order_id'];
-       /* $a = UserRecharge::rechargeSuccess($orderId);
-        print_r($a);return false;*/
-        //资金监管记录
-        //$goldNum = money_rate_num((int)$price, 'gold');
         $goldName = SystemConfigService::get("gold_name");
-       // UserBill::income('用户充值'.$goldName,$this->userInfo['uid'],'gold_num','recharge',$goldNum,0,$this->userInfo['gold_num'],'用户充值'.$price.'元人民币获得'.$goldNum.'个'.$goldName);
-       // User::bcInc($this->userInfo['uid'],'gold_num',$goldNum,'uid');
         switch ($payType) {
-                case 'weixin':
-                    try {
-                        $jsConfig = UserRecharge::jsRechargePay($orderId);
-                    } catch (\Exception $e) {
-                        return JsonService::status('pay_error', $e->getMessage(), $rechargeOrder);
-                    }
-                    $rechargeOrder['jsConfig'] = $jsConfig;
-                    return JsonService::status('wechat_pay', '订单创建成功', $rechargeOrder);
-                    break;
-                case 'yue':
-                    if (UserRecharge::yuePay($orderId, $this->userInfo))
-                        return JsonService::status('success', '余额支付成功', $rechargeOrder);
-                    else
-                        return JsonService::status('pay_error', StoreOrder::getErrorInfo());
-                    break;
-                case 'zhifubao':
-                    $rechargeOrder['orderName'] = $goldName."充值";
-                    $rechargeOrder['orderId'] = $orderId;
-                    $rechargeOrder['pay_price'] = $price;
-                    return JsonService::status('zhifubao_pay','订单创建成功', base64_encode(json_encode($rechargeOrder)));
-                    break;
+            case 'weixin':
+                try {
+                    $jsConfig = UserRecharge::jsRechargePay($orderId);
+                } catch (\Exception $e) {
+                    return JsonService::status('pay_error', $e->getMessage(), $rechargeOrder);
+                }
+                $rechargeOrder['jsConfig'] = $jsConfig;
+                return JsonService::status('wechat_pay', '订单创建成功', $rechargeOrder);
+                break;
+            case 'yue':
+                if (UserRecharge::yuePay($orderId, $this->userInfo))
+                    return JsonService::status('success', '余额支付成功', $rechargeOrder);
+                else
+                    return JsonService::status('pay_error', StoreOrder::getErrorInfo());
+                break;
+            case 'zhifubao':
+                $rechargeOrder['orderName'] = $goldName."充值";
+                $rechargeOrder['orderId'] = $orderId;
+                $rechargeOrder['pay_price'] = $price;
+                return JsonService::status('zhifubao_pay','订单创建成功', base64_encode(json_encode($rechargeOrder)));
+                break;
             }
         } catch (\Exception $e) {
             return JsonService::fail($e->getMessage());
@@ -531,6 +350,7 @@ class AuthApi extends AuthController
     public function user_balance_list($index = 0,$first = 0, $limit = 8)
     {
         $model = UserBill::where('uid', $this->userInfo['uid'])->where('category', 'now_money')
+            ->where('type','in', 'pay_goods,system_add,pay_product_refund,pay_product,recharge,system_sub,pay_sign_up')
             ->field('title,mark,pm,number,add_time')
             ->where('status', 1)->where('number','>',0);
         switch ($index){
@@ -574,67 +394,6 @@ class AuthApi extends AuthController
         return JsonService::successful($list);
     }
 
-    public function user_integral_list($first = 0, $limit = 8)
-    {
-        $list = UserBill::where('uid', $this->userInfo['uid'])->where('category', 'integral')
-            ->field('mark,pm,number,add_time')
-            ->where('status', 1)->order('add_time DESC')->limit($first, $limit)->select()->toArray();
-        foreach ($list as &$v) {
-            $v['add_time'] = date('Y/m/d H:i', $v['add_time']);
-            $v['number'] = floatval($v['number']);
-        }
-        return JsonService::successful($list);
-
-    }
-
-    public function user_comment_product($unique = '')
-    {
-        if (!$unique) return JsonService::fail('参数错误!');
-        $cartInfo = StoreOrderCartInfo::where('unique', $unique)->find();
-        $uid = $this->userInfo['uid'];
-        if (!$cartInfo || $uid != $cartInfo['cart_info']['uid']) return JsonService::fail('评价产品不存在!');
-        if (StoreProductReply::be(['oid' => $cartInfo['oid'], 'unique' => $unique]))
-            return JsonService::fail('该产品已评价!');
-        $group = UtilService::postMore([
-            ['comment', ''], ['pics', []], ['product_score', 5], ['service_score', 5]
-        ], Request::instance());
-        $group['comment'] = htmlspecialchars(trim($group['comment']));
-        if (sensitive_words_filter($group['comment'])) return JsonService::fail('请注意您的用词，谢谢！！');
-        if ($group['product_score'] < 1) return JsonService::fail('请为产品评分');
-        else if ($group['service_score'] < 1) return JsonService::fail('请为商家服务评分');
-        $group = array_merge($group, [
-            'uid' => $uid,
-            'oid' => $cartInfo['oid'],
-            'unique' => $unique,
-            'product_id' => $cartInfo['product_id'],
-            'reply_type' => 'product'
-        ]);
-        StoreProductReply::beginTrans();
-        $res = StoreProductReply::reply($group, 'product');
-        if (!$res) {
-            StoreProductReply::rollbackTrans();
-            return JsonService::fail('评价失败!');
-        }
-        try {
-            HookService::listen('store_product_order_reply', $group, $cartInfo, false, StoreProductBehavior::class);
-        } catch (\Exception $e) {
-            StoreProductReply::rollbackTrans();
-            return JsonService::fail($e->getMessage());
-        }
-        StoreProductReply::commitTrans();
-        return JsonService::successful();
-    }
-
-    public function get_product_category()
-    {
-        $parentCategory = StoreCategory::pidByCategory(0, 'id,cate_name')->toArray();
-        foreach ($parentCategory as $k => $category) {
-            $category['child'] = StoreCategory::pidByCategory($category['id'], 'id,cate_name')->toArray();
-            $parentCategory[$k] = $category;
-        }
-        return JsonService::successful($parentCategory);
-    }
-
     public function get_spread_list($first = 0, $limit = 20)
     {
         $list = User::where('spread_uid', $this->userInfo['uid'])->field('uid,nickname,avatar,add_time')->limit($first, $limit)->order('add_time DESC')->select()->toArray();
@@ -642,62 +401,6 @@ class AuthApi extends AuthController
             $list[$k]['add_time'] = date('Y/m/d', $user['add_time']);
         }
         return JsonService::successful($list);
-    }
-
-    public function get_product_list($keyword = '', $cId = 0, $sId = 0, $priceOrder = '', $salesOrder = '', $news = 0, $first = 0, $limit = 8)
-    {
-        if (!empty($keyword)) $keyword = base64_decode(htmlspecialchars($keyword));
-        $model = StoreProduct::validWhere();
-        if ($cId && $sId) {
-            $model->where('cate_id', $sId);
-        } elseif ($cId) {
-            $sids = StoreCategory::pidBySidList($cId) ?: [];
-            $sids[] = $cId;
-            $model->where('cate_id', 'IN', $sids);
-        }
-        if (!empty($keyword)) $model->where('keyword|store_name', 'LIKE', "%$keyword%");
-        if ($news) $model->where('is_new', 1);
-        $baseOrder = '';
-        if ($priceOrder) $baseOrder = $priceOrder == 'desc' ? 'price DESC' : 'price ASC';
-        if ($salesOrder) $baseOrder = $salesOrder == 'desc' ? 'sales DESC' : 'sales ASC';
-        if ($baseOrder) $baseOrder .= ', ';
-        $model->order($baseOrder . 'sort DESC, add_time DESC');
-        $list = $model->limit($first, $limit)->field('id,store_name,image,sales,price,stock,ficti,keyword')->select()->toArray();
-        if ($list) setView($this->uid, 0, $sId, 'search', 'product', $keyword);
-        return JsonService::successful($list);
-    }
-
-    public function product_reply_list($productId = '', $first = 0, $limit = 8, $filter = 'all')
-    {
-        if (!$productId || !is_numeric($productId)) return JsonService::fail('参数错误!');
-        $list = StoreProductReply::getProductReplyList($productId, $filter, $first, $limit);
-        return JsonService::successful($list);
-    }
-
-    public function product_attr_detail($productId = '')
-    {
-        if (!$productId || !is_numeric($productId)) return JsonService::fail('参数错误!');
-        list($productAttr, $productValue) = StoreProductAttr::getProductAttrDetail($productId);
-        return JsonService::successful(compact('productAttr', 'productValue'));
-
-    }
-
-    public function user_address_list()
-    {
-        $list = UserAddress::getUserValidAddressList($this->userInfo['uid'], 'id,real_name,phone,province,city,district,detail,is_default');
-        return JsonService::successful($list);
-    }
-
-    public function get_notice_list($page = 0, $limit = 8)
-    {
-        $list = UserNotice::getNoticeList($this->userInfo['uid'], $page, $limit);
-        return JsonService::successful($list);
-    }
-
-    public function see_notice($nid)
-    {
-        UserNotice::seeNotice($this->userInfo['uid'], $nid);
-        return JsonService::successful();
     }
 
     public function refresh_msn(Request $request)
@@ -789,7 +492,6 @@ class AuthApi extends AuthController
         else
             $where = "uid = " . $now_user["uid"] . " OR to_uid = " . $now_user["uid"];
 
-
         $msn_list = StoreServiceLog::where($where)->order("add_time desc")->select()->toArray();
         $info_array = $list = [];
         foreach ($msn_list as $key => $value) {
@@ -833,38 +535,6 @@ class AuthApi extends AuthController
     public function clear_cache($uni = '')
     {
         if ($uni) CacheService::clear();
-    }
-
-    /**
-     * 获取今天正在拼团的人的头像和名称
-     * @return \think\response\Json
-     */
-    public function get_pink_second_one()
-    {
-        $addTime = mt_rand(time() - 30000, time());
-        $storePink = StorePink::where('p.add_time', 'GT', $addTime)->alias('p')->where('p.status', 1)->join('User u', 'u.uid=p.uid')->field('u.nickname,u.avatar as src')->find();
-        return JsonService::successful($storePink);
-    }
-
-    public function order_details($uni = '')
-    {
-
-        if (!$uni) return JsonService::fail('参数错误!');
-        $order = StoreOrder::getUserOrderDetail($this->userInfo['uid'], $uni);
-        if (!$order) return JsonService::fail('订单不存在!');
-        $order = StoreOrder::tidyOrder($order, true);
-        $res = array();
-        foreach ($order['cartInfo'] as $v) {
-            if ($v['combination_id']) return JsonService::fail('拼团产品不能再来一单，请在拼团产品内自行下单!');
-            else  $res[] = StoreCart::setCart($this->userInfo['uid'], $v['product_id'], $v['cart_num'], isset($v['productInfo']['attrInfo']['unique']) ? $v['productInfo']['attrInfo']['unique'] : '', 'product', 0, 0);
-        }
-        $cateId = [];
-        foreach ($res as $v) {
-            if (!$v) return JsonService::fail('再来一单失败，请重新下单!');
-            $cateId[] = $v['id'];
-        }
-        return JsonService::successful('ok', implode(',', $cateId));
-
     }
 
 }

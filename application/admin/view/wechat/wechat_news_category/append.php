@@ -125,20 +125,20 @@
 <!--                        <span class="glyphicon glyphicon-chevron-down" aria-hidden="true" @click="itemDown(index)"></span>-->
                         <span class="glyphicon glyphicon-trash" aria-hidden="true" @click="itemDel(index)"></span>
                     </div>
-                    <div v-if="index==0">
+                    <div >
                         <div  class="news-item transition news-image" :class="action==index ? 'active' :''" style="margin-bottom: 20px" @click="isShow(index)">
                             <img :src="item.image_input" style="width: 100%;height: 100%;"/>
                         </div>
                         <div @click="isShow(index)"><span v-text="item.title"></span></div>
                     </div>
-                    <div v-else class="news-item-title transition news-image" :class="action==index ? 'active' :''" style="margin-bottom: 20px" @click="isShow(index)">
-                        <div class="news_articel_item other">
-                            <div class="right-text" v-text="item.title"></div>
-                            <img class="left-image" :src="item.image_input"/>
-                        </div>
-                    </div>
+<!--                    <div v-else class="news-item-title transition news-image" :class="action==index ? 'active' :''" style="margin-bottom: 20px" @click="isShow(index)">-->
+<!--                        <div class="news_articel_item other">-->
+<!--                            <div class="right-text" v-text="item.title"></div>-->
+<!--                            <img class="left-image" :src="item.image_input"/>-->
+<!--                        </div>-->
+<!--                    </div>-->
                 </div>
-                <div class="add-news-items" @click="addItem"><span>+</span></div>
+<!--                <div class="add-news-items" @click="addItem"><span>+</span></div>-->
             </div>
             <div class="col-sm-9 panel panel-default news-right">
                 <div class="panel-heading">文章内容编辑</div>
@@ -164,16 +164,16 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <div class="col-md-12" style="margin-left: 10px;">
-                                <label style="color:#aaa">正文</label>
-                                <textarea type="text/plain" id="myEditor" style="width:100%;height: 500px">{{newListIndex.content}}</textarea>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">摘要</label>
+                            <div style="margin-left: 20px;height:auto">
+                                <textarea class="layui-input" style="width:80%;height:60px;resize:none;line-height:20px;color: #ccc" v-model="newListIndex.synopsis"></textarea>
                             </div>
                         </div>
                         <div class="form-group">
-                            <div class="col-md-12" style="margin-left: 20px;">
-                                <label style="color:#aaa">摘要</label>
-                                <textarea class="layui-input" style="width:80%;height:60px;resize:none;line-height:20px;color: #ccc" v-model="newListIndex.synopsis"></textarea>
+                            <div class="col-md-12" style="margin-left: 10px;">
+                                <label style="color:#aaa">正文</label>
+                                <textarea type="text/plain" id="myEditor" style="width:100%;height: 400px">{{newListIndex.content}}</textarea>
                             </div>
                         </div>
                     </form>
@@ -234,7 +234,7 @@
                             that.setNewListIndex(that.indexItem);
                         }
                     }
-                }else return $eb.message('error','已经处于置顶，无法上移');
+                }else return parent.$eb.message('error','已经处于置顶，无法上移');
             },
             itemDown:function (indexItem) {
                 var that = this;
@@ -250,11 +250,11 @@
                             that.setNewListIndex(that.indexItem);
                         }
                     }
-                }else return $eb.message('error','已经处于置底，无法下移');
+                }else return parent.$eb.message('error','已经处于置底，无法下移');
             },
             itemDel:function (indexItem) {
                 var that = this;
-                if(that.newList.length == 1) return $eb.message('error','不能再删除了');
+                if(that.newList.length == 1) return parent.$eb.message('error','不能再删除了');
                 that.newList.splice(indexItem,1);
                 if(indexItem == that.indexItem){
                     if(that.newList.length == 1) that.setNewListIndex(0);
@@ -276,16 +276,16 @@
                 that.isShow(0);
                 for (index in that.newList){
                     if(that.newList[index].title == ''){
-                        return $eb.message('error','请输入第'+(parseInt(index)+1)+'篇文章的标题');
+                        return parent.$eb.message('error','请输入第'+(parseInt(index)+1)+'篇文章的标题');
                     }
                     if(that.newList[index].author == ''){
-                        return $eb.message('error','请输入第'+(parseInt(index)+1)+'篇文章的作者');
+                        return parent.$eb.message('error','请输入第'+(parseInt(index)+1)+'篇文章的作者');
                     }
                     if(that.newList[index].synopsis == ''){
-                        return $eb.message('error','请输入第'+(parseInt(index)+1)+'篇文章的摘要');
+                        return parent.$eb.message('error','请输入第'+(parseInt(index)+1)+'篇文章的摘要');
                     }
                     if(that.newList[index].content == ''){
-                        return $eb.message('error','请输入第'+(parseInt(index)+1)+'篇文章的内容');
+                        return parent.$eb.message('error','请输入第'+(parseInt(index)+1)+'篇文章的内容');
                     }
                 }
                 $.ajax({
@@ -297,9 +297,9 @@
                         if(res.code == 200){
                             var index = parent.layer.getFrameIndex(window.name);
                             parent.layer.close(index);
-                            return $eb.message('success',res.msg);
+                            return parent.$eb.message('success',res.msg);
                         }else{
-                            return $eb.message('error',res.msg);
+                            return parent.$eb.message('error',res.msg);
                         }
                     }
                 })

@@ -12,7 +12,6 @@
 namespace app\admin\controller\article;
 
 use app\admin\controller\AuthController;
-use service\UtilService as Util;
 use service\JsonService as Json;
 use service\UploadService as Upload;
 use think\Request;
@@ -33,13 +32,14 @@ class Article extends AuthController
      */
     public function index($cid = 0)
     {
-        $where = Util::getMore([
+        $where = parent::getMore([
             ['title','']
         ],$this->request);
-        if($cid)
+        if($cid) {
             $where['cid'] = $cid;
-        else
+        }else{
             $where['cid'] = '';
+        }
         $this->assign('where',$where);
         $where['merchant'] = 0;//区分是管理员添加的图文显示  0 还是 商户添加的图文显示  1
         $this->assign('cid',$cid);
@@ -73,9 +73,9 @@ class Article extends AuthController
         }
         $all = array();
         $select =  0;
-        if(!$cid)
+        if(!$cid){
             $cid = '';
-        else {
+        }else {
             if($id){
                 $all = ArticleCategoryModel::where('id',$cid)->where('hidden','neq',0)->column('id,title');
                 $select = 1;
@@ -120,7 +120,7 @@ class Article extends AuthController
      */
     public function add_new(Request $request){
         $post  = $request->post();
-        $data = Util::postMore([
+        $data = parent::postMore([
             ['id',0],
             ['cid',[]],
             'title',
@@ -143,32 +143,37 @@ class Article extends AuthController
             ArticleModel::beginTrans();
             $res1 = ArticleModel::edit($data,$id,'id');
             $res2 = ArticleModel::setContent($id,$content);
-            if($res1 && $res2)
+            if($res1 && $res2) {
                 $res = true;
-            else
-                $res =false;
+            }else {
+                $res = false;
+            }
             ArticleModel::checkTrans($res);
-            if($res)
+            if($res){
                 return Json::successful('修改图文成功!',$id);
-            else
+            }else{
                 return Json::fail('修改图文失败!',$id);
+            }
         }else{
             $data['add_time'] = time();
             $data['admin_id'] = $this->adminId;
             ArticleModel::beginTrans();
             $res1 = ArticleModel::set($data);
             $res2 = false;
-            if($res1)
+            if($res1){
                 $res2 = ArticleModel::setContent($res1->id,$content);
-            if($res1 && $res2)
-                $res = true;
-            else
-                $res =false;
+            }
+             if($res1 && $res2){
+                 $res = true;
+             }else{
+                 $res =false;
+             }
             ArticleModel::checkTrans($res);
-            if($res)
+            if($res){
                 return Json::successful('添加图文成功!',$res1->id);
-            else
+            }else{
                 return Json::successful('添加图文失败!',$res1->id);
+            }
         }
     }
 
@@ -180,14 +185,15 @@ class Article extends AuthController
     public function delete($id)
     {
         $res = ArticleModel::del($id);
-        if(!$res)
+        if(!$res){
             return Json::fail('删除失败,请稍候再试!');
-        else
+        }else{
             return Json::successful('删除成功!');
+        }
     }
 
     public function merchantIndex(){
-        $where = Util::getMore([
+        $where = parent::getMore([
             ['title','']
         ],$this->request);
         $this->assign('where',$where);

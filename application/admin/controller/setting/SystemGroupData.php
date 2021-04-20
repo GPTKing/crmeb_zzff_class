@@ -1,5 +1,4 @@
 <?php
-
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
@@ -12,7 +11,7 @@
 
 namespace app\admin\controller\setting;
 
-use app\admin\model\special\Grade;
+use app\admin\model\special\SpecialSubject;
 use app\admin\model\special\RecommendBanner;
 use app\admin\model\special\Special;
 use app\admin\model\system\Recommend;
@@ -21,14 +20,14 @@ use app\admin\model\user\Group;
 use service\FormBuilder as Form;
 use service\JsonService as Json;
 use service\UploadService as Upload;
-use service\UtilService as Util;
 use think\Request;
 use think\Url;
 use app\admin\model\system\SystemGroup as GroupModel;
 use app\admin\model\system\SystemGroupData as GroupDataModel;
 use app\admin\controller\AuthController;
 use app\admin\model\system\SystemAttachment;
-
+use service\SystemConfigService;
+use app\admin\model\system\SystemConfig;
 /**
  * 数据列表控制器  在组合数据中
  * Class SystemGroupData
@@ -43,7 +42,7 @@ class SystemGroupData extends AuthController
      */
     public function index($gid)
     {
-        $where = Util::getMore([
+        $where = parent::getMore([
             ['status', '']
         ], $this->request);
         $this->assign('where', $where);
@@ -130,8 +129,8 @@ class SystemGroupData extends AuthController
         foreach ($params as $key => $param) {
             foreach ($Fields['fields'] as $index => $field) {
                 if ($key == $field["title"]) {
-                    if ($param == "" || empty($param))
-                        return Json::fail($field["name"] . "不能为空！");
+                    if($param == "")
+                        return Json::fail($field["name"]."不能为空！");
                     else {
                         $value[$key]["type"] = $field["type"];
                         $value[$key]["value"] = $param;
@@ -295,7 +294,7 @@ class SystemGroupData extends AuthController
 
     public function recommend_list()
     {
-        $where = Util::getMore([
+        $where = parent::getMore([
             ['page', 1],
             ['limit', 20],
             ['order', ''],
@@ -304,11 +303,12 @@ class SystemGroupData extends AuthController
         return Json::successlayui(Recommend::getRecommendList($where));
     }
 
+
     public function create_recemmend($id = 0)
     {
         if ($id) $this->assign('recemmend', Recommend::get($id));
         $this->assign('is_fixed', 1);
-        $this->assign('grade_list', Grade::getAll());
+        $this->assign('grade_list', SpecialSubject::specialCategoryAll(1));
         $this->assign('id', $id);
         return $this->fetch();
     }
@@ -317,7 +317,7 @@ class SystemGroupData extends AuthController
     {
         if ($id) $this->assign('recemmend', Recommend::get($id));
         $this->assign('is_fixed', 0);
-        $this->assign('grade_list', Grade::getAll());
+        $this->assign('grade_list', SpecialSubject::specialCategoryAll(1));
         $this->assign('is_fixed', 0);
         $this->assign('id', $id);
         return $this->fetch();
@@ -325,7 +325,7 @@ class SystemGroupData extends AuthController
 
     public function save_recemmend($id = 0)
     {
-        $post = Util::postMore([
+        $post = parent::postMore([
             ['icon', ''],
             ['image', ''],
             ['title', ''],
@@ -341,6 +341,9 @@ class SystemGroupData extends AuthController
             $post['is_show'] = $post['is_fixed'] ? 1 : $post['is_show'];
             $rescomm = Recommend::get($id);
             if (!$rescomm) return Json::fail('修改的信息不存在');
+            if($post['typesetting']==5){
+                unset($post['type'],$post['image'],$post['is_fixed'],$post['show_count']);
+            }
             Recommend::update($post, ['id' => $id]);
             return Json::successful('修改成功');
         } else {
@@ -356,7 +359,7 @@ class SystemGroupData extends AuthController
     {
         if (!$id) return Json::fail('缺少参数');
         if ($this->request->isAjax()) {
-            $where = Util::getMore([
+            $where = parent::getMore([
                 ['page', 1],
                 ['limit', 20],
             ]);
@@ -365,6 +368,16 @@ class SystemGroupData extends AuthController
             $this->assign('id', $id);
             return $this->fetch();
         }
+    }
+
+    /**新闻\素材推荐内容
+     * @param int $id
+     * @return mixed
+     */
+    public function recemmend_article_content($id = 0)
+    {
+        $this->assign('id', $id);
+        return $this->fetch();
     }
 
     public function recemmed_delete($id = 0)
@@ -478,7 +491,7 @@ class SystemGroupData extends AuthController
 
     public function recemmend_banner_list()
     {
-        $where = Util::getMore([
+        $where = parent::getMore([
             ['id', ''],
             ['page', ''],
             ['limit', ''],
@@ -506,7 +519,7 @@ class SystemGroupData extends AuthController
 
     public function save_recemmend_banner($id = '', $banner_id = '')
     {
-        $post = Util::postMore([
+        $post = parent::postMore([
             ['url', ''],
             ['sort', ''],
             ['is_show', 0],
@@ -537,13 +550,20 @@ class SystemGroupData extends AuthController
     }
 
     /**
+     * 个人中心菜单
+     */
+    public function center_menu()
+    {
+        return $this->fetch();
+    }
+    /**
      * 自定义跳转导航添加和修改页面
      * @param int $id
      * @return mixed|void
      * @throws \FormBuilder\exception\FormBuilderException
      * @throws \think\exception\DbException
      */
-    public function create_recemmend_custom($id = 0)
+    public function create_recemmend_custom($id = 0,$is_fixed=1)
     {
         if ($id) {
             $recommend = Recommend::get($id);
@@ -551,12 +571,15 @@ class SystemGroupData extends AuthController
                 return $this->failed('您修改的导航不存在');
             }
         }
-        $f[] = Form::input('title', '导航名称', isset($recommend) ? $recommend->title : '');
-        $f[] = Form::frameImageOne('icon', '图标', get_image_Url('icon'), isset($recommend) ? $recommend->icon : '')->icon('image')->width('100%')->height('500px');
+        $f[] = Form::input('title', '名称', isset($recommend) ? $recommend->title : '');
+        $f[] = Form::frameImageOne('icon', '图标(100*100px)', get_image_Url('icon'), isset($recommend) ? $recommend->icon : '')->icon('image')->width('100%')->height('500px');
         $f[] = Form::input('link', '跳转路径', isset($recommend) ? $recommend->link : '');
         $f[] = Form::input('sort', '排序', isset($recommend) ? $recommend->sort : 0);
+        if($is_fixed==2){
+            $f[] = Form::radio('is_promoter', '推广权限', isset($recommend) ? $recommend->is_promoter : 0)->options([['value' => 1, 'label' => '需要权限'], ['value' => 0, 'label' => '不权限']]);
+        }
         $f[] = Form::radio('is_show', '状态', isset($recommend) ? $recommend->is_show : 0)->options([['value' => 1, 'label' => '显示'], ['value' => 0, 'label' => '隐藏']]);
-        $form = Form::make_post_form('编辑', $f, Url::build('save_recemmend_custom', compact('id')), 2);
+        $form = Form::make_post_form('编辑', $f, Url::build('save_recemmend_custom', compact('id','is_fixed')), 2);
         $this->assign(compact('form'));
         return $this->fetch('public/form-builder');
     }
@@ -565,15 +588,17 @@ class SystemGroupData extends AuthController
      * 保存自定义导航链接
      * @param int $id
      */
-    public function save_recemmend_custom($id = 0)
+    public function save_recemmend_custom($id = 0,$is_fixed=1)
     {
-        $data = Util::postMore([
+        $data = parent::postMore([
             ['title', ''],
             ['icon', ''],
             ['link', ''],
+            ['sort', 0],
             ['is_show', 0],
+            ['is_promoter', 0],
             ['type', 3],
-            ['is_fixed', 1],
+            ['is_fixed', $is_fixed],
         ]);
 
         if (!$data['title']) {
@@ -607,7 +632,8 @@ class SystemGroupData extends AuthController
      */
     public function index_v1($gid)
     {
-        $this->assign(compact("gid"));
+        $is_show_or_hide=SystemConfigService::get('is_show_or_hide');
+        $this->assign(compact("gid",'is_show_or_hide'));
         return $this->fetch();
     }
 
@@ -634,7 +660,7 @@ class SystemGroupData extends AuthController
                 $item[$key] = $value[$key]['value'];
             }
         }
-        $count = $model->count();
+        $count = count($data);
         return Json::successlayui(compact('data', 'count'));
     }
 
@@ -680,7 +706,7 @@ class SystemGroupData extends AuthController
     {
         $this->assign([
             'specialList' => json_encode(Special::PreWhere()->field(['id', 'title'])->order('sort desc,id desc')->select()),
-            'cateList' => json_encode(Grade::field(['id', 'name as title'])->order('sort desc,id desc')->select()),
+            'cateList' => json_encode(SpecialSubject::specialCategoryAll(1)),
         ]);
         if ($id) {
             $info = GroupDataModel::get($id);
@@ -703,7 +729,7 @@ class SystemGroupData extends AuthController
 
     public function save_group_data($name = '')
     {
-        $data = Util::postMore([
+        $data = parent::postMore([
             ['title', ''],
             ['id', ''],
             ['image', ''],
@@ -761,6 +787,19 @@ class SystemGroupData extends AuthController
                 'status' => $data['status'],
             ]);
         }
+        if ($res) {
+            return Json::successful('编辑成功');
+        } else {
+            return Json::fail('编辑失败');
+        }
+    }
+
+    /**首页活动是否显示
+     * @param $value
+     */
+    public function is_show_or_hide($value)
+    {
+        $res=SystemConfig::edit(['value' => json_encode($value)], 'is_show_or_hide', 'menu_name');
         if ($res) {
             return Json::successful('编辑成功');
         } else {

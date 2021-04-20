@@ -1,5 +1,4 @@
 <?php
-
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
@@ -14,12 +13,9 @@ namespace app\admin\controller\user;
 
 use app\admin\model\user\UserSign as UserSignModel;
 use app\admin\controller\AuthController;
-use service\UtilService as Util;
 use service\JsonService as Json;
-use service\FormBuilder as Form;
 use think\Url;
 use think\Request;
-use service\UploadService as Upload;
 
 class UserSign extends AuthController
 {
@@ -30,7 +26,7 @@ class UserSign extends AuthController
 
     public function getUserSignList()
     {
-        $where = Util::getMore([
+        $where = parent::getMore([
             ['page', 1],
             ['limit', 20],
             ['title', ''],
