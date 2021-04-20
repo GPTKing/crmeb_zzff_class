@@ -308,13 +308,6 @@
                 p:{uni:uni,text:text}
             }),successCallback,errorCallback);
         },
-        orderDetails:function(uni,successCallback,errorCallback){
-            this.baseGet($h.U({
-                c:'auth_api',
-                a:'order_details',
-                p:{uni:uni}
-            }),successCallback,errorCallback);
-        },
         userTakeOrder:function(uni,successCallback,errorCallback) {
             this.baseGet($h.U({
                 c:'auth_api',
@@ -363,24 +356,10 @@
                 p:p
             }),successCallback,errorCallback);
         },
-        getProductReply:function(p,successCallback,errorCallback){
-            this.baseGet($h.U({
-                c:'auth_api',
-                a:'product_reply_list',
-                p:p
-            }),successCallback,errorCallback);
-        },
         getUserAddress:function(successCallback,errorCallback){
             this.baseGet($h.U({
                 c:'auth_api',
                 a:'user_address_list'
-            }),successCallback,errorCallback);
-        },
-        getProductAttr:function(productId,successCallback,errorCallback){
-            this.baseGet($h.U({
-                c:'auth_api',
-                a:'product_attr_detail',
-                p:{productId:productId}
             }),successCallback,errorCallback);
         },
         userWechatRecharge:function(price,successCallback,errorCallback) {
@@ -388,20 +367,6 @@
                 c:'auth_api',
                 a:'user_wechat_recharge',
                 p:{price:price}
-            }),successCallback,errorCallback);
-        },
-        getNoticeList:function(p,successCallback,errorCallback){
-            this.baseGet($h.U({
-                c:'auth_api',
-                a:'get_notice_list',
-                p:p
-            }),successCallback,errorCallback);
-        },
-        seeNotice: function(p,successCallback,errorCallback){
-            this.baseGet($h.U({
-                c:'auth_api',
-                a:'see_notice',
-                p:p
             }),successCallback,errorCallback);
         },
         getIssueCouponList:function(limit,successCallback,errorCallback){

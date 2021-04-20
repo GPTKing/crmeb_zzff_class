@@ -1,4 +1,13 @@
 <?php
+// +----------------------------------------------------------------------
+// | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
+// +----------------------------------------------------------------------
+// | Copyright (c) 2016~2020 https://www.crmeb.com All rights reserved.
+// +----------------------------------------------------------------------
+// | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
+// +----------------------------------------------------------------------
+// | Author: CRMEB Team <admin@crmeb.com>
+// +----------------------------------------------------------------------
 
 include 'auto.php';
 if (IS_SAE)
@@ -29,9 +38,6 @@ error_reporting(E_ALL & ~E_NOTICE);
 header('Content-Type: text/html; charset=UTF-8');
 define('SITEDIR', _dir_path(substr(dirname(__FILE__), 0, -8)));//入口文件目录
 define('CRMEBDIR', _dir_path(substr(dirname(__FILE__), 0, -15)));//项目目录
-//define('SITEDIR2', substr(SITEDIR,0,-7));
-//echo SITEDIR;
-//exit;SITEDIR
 //数据库
 $sqlFile = 'zhishifufei.sql';
 $configFile = 'config.php';
@@ -204,7 +210,7 @@ switch ($step) {
                 echo json_encode($arr);
                 exit;
             }
-            mysqli_set_charset($conn, "utf8"); //,character_set_client=binary,sql_mode='';
+            mysqli_set_charset($conn, "utf8");
             $version = mysqli_get_server_info($conn);
             if ($version < 5.1) {
                 $arr['msg'] = '数据库版本太低! 必须5.1以上';
@@ -260,7 +266,6 @@ switch ($step) {
                     $ret = mysqli_query($conn, $sql);
                     $message = '';
                     $arr = array('n' => $i, 'msg' => $message);
-//                    echo json_encode($arr); exit;
                 }
             }
 
@@ -273,11 +278,15 @@ switch ($step) {
                 , 'eb_system_role'
                 , 'eb_system_config'
                 , 'eb_system_config_tab'
+                , 'eb_system_config_content'
                 , 'eb_system_menus'
                 , 'eb_system_file'
                 , 'eb_express'
                 , 'eb_system_group'
                 , 'eb_system_group_data'
+                , 'eb_member_ship'
+                , 'eb_live_gift'
+                , 'eb_recommend'
                 , 'eb_wechat_template'
                 , 'eb_routine_template');
                 foreach ($bl_table as $k => $v) {
@@ -300,15 +309,8 @@ switch ($step) {
             $strConfig = str_replace('#DB_PORT#', $_POST['dbport'], $strConfig);
             $strConfig = str_replace('#DB_PREFIX#', $dbPrefix, $strConfig);
             $strConfig = str_replace('#DB_CHARSET#', 'utf8', $strConfig);
-            // $strConfig = str_replace('#DB_DEBUG#', false, $strConfig);
             @chmod(CRMEBDIR . '/application/database.php', 0777); //数据库配置文件的地址
             @file_put_contents(CRMEBDIR . '/application/database.php', $strConfig); //数据库配置文件的地址
-
-            //读取配置文件，并替换换配置
-//            $strConfig = file_get_contents(SITEDIR . '/application/config.php');
-//            $strConfig = str_replace('CrmEb_cache_prefix', $uniqid_str, $strConfig);
-//            @chmod(SITEDIR . '/application/config.php',0777); //配置文件的地址
-//            @file_put_contents(SITEDIR . '/application/config.php', $strConfig); //配置文件的地址
 
             //更新网站配置信息2
 

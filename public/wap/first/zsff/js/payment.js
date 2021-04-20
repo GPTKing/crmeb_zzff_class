@@ -16,6 +16,10 @@
                 type: String,
                 default: '0.00'
             },
+            now_money: {
+                type: String,
+                default: '0.00'
+            },
             special_id: {
                 type: Number,
                 default: 0,
@@ -40,14 +44,18 @@
                 type: Boolean,
                 default: false
             },
+            isalipay: {
+                type: Boolean,
+                default: false
+            },
             signs: {
-                type: Object,
-                default: {}
+                type: Array,
+                default: []
             }
         },
         template: `<div>
         <div class="payment" :class="payment ? '' : 'up'">
-            <div class="title"><span class="iconfont icon-guanbi1" @click="close"></span>支付方式</div>
+            <div class="title"><span class="iconfont iconguanbi2" @click="close"></span>支付方式</div>
             <div class="total acea-row row-between-wrapper">
                 <div>支付总额</div>
                 <div class="money">¥ {{money}}</div>
@@ -57,15 +65,15 @@
                     <label class="well-check">
                         <input v-model="payType" type="radio" name="payment" value="weixin">
                         <i class="icon"></i>
-                        <span class="iconfont icon-weixinzhifu"></span>
+                        <span class="iconfont iconweixin2"></span>
                         <span class="sex">微信支付</span>
                     </label>
                 </div>
-                <div class="checkbox-wrapper">
+                <div v-if="isalipay" class="checkbox-wrapper">
                     <label class="well-check">
                         <input v-model="payType" type="radio" name="payment" value="zhifubao">
                         <i class="icon"></i>
-                        <span class="iconfont icon-umidd17" style="color: #00A0E9"></span>
+                        <span class="iconfont iconicon34" style="color: #00A0E9"></span>
                         <span class="sex">支付宝</span>
                     </label>
                 </div>
@@ -73,8 +81,8 @@
                     <label class="well-check">
                         <input v-model="payType" type="radio" name="payment" value="yue">
                         <i class="icon"></i>
-                        <span class="iconfont icon-qiandai" style="color: #FC992C"></span>
-                        <span class="sex">余额</span>
+                        <span class="iconfont iconicon-test" style="color: #FC992C"></span>
+                        <span class="sex">余额<b style="color: #aaa;font-size: 14px;">(可用余额:{{now_money}})</b></span>
                     </label>
                 </div>
             </div>
@@ -84,11 +92,12 @@
     </div>`,
         data: function () {
             return {
-                payType: phone_ios ? 'zhifubao' : (this.iswechat ? 'weixin':'zhifubao'),
+                payType: phone_ios ? (this.isalipay ?'zhifubao' : 'yue') : (this.iswechat ? 'weixin': (this.isalipay ?'zhifubao' : 'yue')),
                 phoneIos: phone_ios,
             }
         },
         mounted: function () {
+            console.log(this.isyue);
         },
         methods: {
             close: function () {
@@ -96,6 +105,10 @@
             },
             goPay: function () {
                 var that = this;
+                if(!that.isalipay && !that.iswechat && !that.isyue){
+                    that.$emit("change",{action:'payClose',value:true});
+                    return $h.showMsg('支付未开启');
+                }
                 $h.loadFFF();
                 app.basePost($h.U({
                     c: 'special',
@@ -106,7 +119,7 @@
                     payType: that.payType,
                     pinkId: that.pinkId,
                     link_pay_uid: that.link_pay_uid,
-                    sign: JSON.stringify(that.signs)
+                    sign: that.signs
                 }, function (res) {
                     $h.loadClear();
                     res.data.data.msg=res.data.msg;

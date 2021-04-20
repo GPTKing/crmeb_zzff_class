@@ -29,17 +29,17 @@ $admin = $root."../index.php/admin/index/";
 </div>
 <?php require './templates/footer.php';?>
 <script>
-    $(function(){
-        var version = '<?php echo trim($curent_version['version']);?>';
-        var version_code = '<?php echo trim($curent_version['version_code']);?>';
-        $.ajax({
-            type: "POST",
-            url: "http://store.crmeb.net/api/web/upgrade",
-            data: {host:'<?php echo $host;?>',https:'<?php echo 'http://'.$host;?>',version:version,version_code:version_code,ip:'<?php echo $_SERVER[HTTP_CLIENT_IP];?>'},
-            dataType: 'json',
-            success: function(){}
-        });
-    });
+$(function(){
+    var version = '<?php echo trim($curent_version['version']);?>';
+    var version_code = '<?php echo trim($curent_version['version_code']);?>';
+	$.ajax({
+	type: "POST",
+	url: "http://store.crmeb.net/api/web/upgrade",
+	data: {host:'<?php echo $host;?>',https:'<?php echo 'http://'.$host;?>',version:version,version_code:version_code,ip:'<?php echo $_SERVER[HTTP_CLIENT_IP];?>'},
+	dataType: 'json',
+	success: function(){}
+	});
+});
 </script>
 </body>
 </html>

@@ -71,7 +71,13 @@
           <td>必须开启</td>
           <td><?php echo $mysql; ?></td>
           <td>启用</td>
-        </tr>        
+        </tr>
+        <tr>
+          <td>swoole_loader</td>
+          <td>必须开启</td>
+          <td><?php echo $swoole; ?></td>
+          <td>启用</td>
+        </tr>
       </table>
       <table width="100%">
         <tr>
@@ -83,7 +89,6 @@
 		<?php
 		foreach($folder as $dir){
 		     $Testdir = CRMEBDIR.$dir;
-//			 echo $Testdir."<br/>";
             if(!is_file($Testdir)){
                 if(!is_dir($Testdir)){
                     dir_create($Testdir);
@@ -112,7 +117,7 @@
 		          <td><?php echo $r; ?></td>
 		        </tr>
 		<?php
-		}                
+		}
 		?>
       </table>
       <table width="100%">
@@ -148,12 +153,12 @@
           </tr>
       </table>
     </div>
-    <div class="bottom tac"> 
+    <div class="bottom tac">
 	    <a href="<?php echo $_SERVER['PHP_SELF']; ?>?step=2" class="btn">重新检测</a>
 	    <?php if($err>0){?>
-	    <a href="javascript:void(0)" onClick="javascript:alert('安装环境检测未通过，请检查')" class="btn" style="background: gray;">下一步</a> 
+	    <a href="javascript:void(0)" onClick="javascript:alert('安装环境检测未通过，请检查')" class="btn" style="background: gray;">下一步</a>
 	    <?php }else{?>
-	    <a href="<?php echo $_SERVER['PHP_SELF']; ?>?step=3" class="btn">下一步</a> 
+	    <a href="<?php echo $_SERVER['PHP_SELF']; ?>?step=3" class="btn">下一步</a>
 	    <?php }?>
     </div>
   </section>

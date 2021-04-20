@@ -7,7 +7,7 @@
         link.href = url;
         d.getElementsByTagName("head")[0].appendChild(link)
     };
-    includeCss("/wap/first/css/Mdate.css");
+    includeCss("/wap/first/zsff/css/Mdate.css");
     var dateopts = {
         beginYear: 2000,
         beginMonth: 1,
@@ -108,7 +108,6 @@
                     endNum = that.endDay
                 }
             }
-            // console.log(unitName);
             for (var i = beginNum; i <= endNum; i++) {
                 str += "<li " + dataStyle + "=" + i + ">" + that.dateForTen(i) + unitName + "</li>"
             }
@@ -126,13 +125,6 @@
                     } catch (err) {
                         return true
                     }
-                   //dayUl.innerHTML = that.createDateYMD("day");
-                   //  dayScroll.refresh();
-                   //  try {
-                   //      dayTag = dayUl.getElementsByTagName("li")[indexD].getAttribute("data-day")
-                   //  } catch (err) {
-                   //      return true
-                   //  }
                 }
             });
             monthScroll = new iScroll("monthwrapper", {
@@ -143,33 +135,13 @@
                     } else {
                         monthTag = monthUl.getElementsByTagName("li")[indexM].getAttribute("data-month");
                     }
-                    //dayUl.innerHTML = that.createDateYMD("day");
-                    // dayScroll.refresh();
-                    // try {
-                    //     dayTag = dayUl.getElementsByTagName("li")[indexD].getAttribute("data-day")
-                    // } catch (err) {
-                    //     return true
-                    // }
                 }
             });
-            // dayScroll = new iScroll("daywrapper", {
-            //     snap: "li", vScrollbar: false, onScrollEnd: function () {
-            //         indexD = Math.ceil(this.y / 40 * -1 + 1);
-            //         if (indexD == 1 && monthTag != that.beginMonth) {
-            //             dayTag = 1
-            //         } else {
-            //             dayTag = dayUl.getElementsByTagName("li")[indexD].getAttribute("data-day")
-            //         }
-            //     }
-            // })
         }, refreshScroll: function () {
             var that = this;
             var inputYear = that.acceptId.getAttribute("data-year");
             var inputMonth = that.acceptId.getAttribute("data-month");
             var inputDay = that.acceptId.getAttribute("data-day");
-            // inputYear = inputYear || that.beginYear;
-            // inputMonth = inputMonth || that.beginMonth;
-            // inputDay = inputDay || that.beginDay;
             inputYear = inputYear || new Date().getFullYear();
             inputMonth = inputMonth || new Date().getMonth()+1;
             inputDay = inputDay || new Date().getDate();
@@ -187,13 +159,12 @@
             yearScroll.refresh();
             yearScroll.scrollTo(0, inputYear * 40, 300, true);
             monthScroll.scrollTo(0, inputMonth * 40, 300, true);
-            // dayScroll.scrollTo(0, inputDay * 40, 300, true)
         }, dateSure: function () {
             var that = this;
             var sureBtn = d.getElementById("dateSure");
             var cancelBtn = d.getElementById("dateCancel");
             sureBtn.onclick = function () {
-                var monthTags = monthTag > 10 ? monthTag :'0'+monthTag;
+                var monthTags = monthTag >= 10 ? monthTag :'0'+monthTag;
                 if (that.format == "YMD") {
                     that.acceptId.value = yearTag + "年" + monthTags + "月"
                 } else {
@@ -201,7 +172,6 @@
                 }
                 that.acceptId.setAttribute("data-year", yearTag);
                 that.acceptId.setAttribute("data-month", monthTags);
-                // that.acceptId.setAttribute("data-day", dayTag);
                 that.dateCancel();
                 that.successFn && that.successFn(yearTag+'年'+monthTags+'月');
             };

@@ -5,7 +5,7 @@
         props: ['appear','url','site_name'],
         template:`<div>
                         <div class="entry" :class="appear?'':'up'">
-                            <div class="title"><span class="iconfont icon-guanbi1" @click="close"></span>手机号登录</div>
+                            <div class="title"><span class="iconfont iconguanbi2" @click="close"></span>手机号登录</div>
                             <div class="entry-list">
                                 <div class="item"><input type="number" v-model="phone" placeholder="请输入手机号"></div>
                                 <div class="item item1 acea-row row-between-wrapper">
@@ -62,7 +62,7 @@
                     });
                 },function (res) {
                     $h.loadClear();
-                    $h.showMsg(res)
+                    $h.pushMsgOnce(res)
                 },true);
             },
             code:function () {
@@ -71,7 +71,7 @@
                 if(!$reg.isPhone(that.phone)) return $h.pushMsgOnce('请输入正确的手机号码');
                 that.active = true;
                 var n = 60;
-                app.baseGet($h.U({c:'public_api',a:'code',q:{phone:that.phone}}),function (res){
+                app.baseGet($h.U({c:'auth_api',a:'code',q:{phone:that.phone}}),function (res){
                     var data=res.data.data;
                     if(data.Message=='OK' || data.Code=='OK'){
                         var run =setInterval(function(){

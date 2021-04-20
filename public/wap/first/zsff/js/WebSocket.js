@@ -7,7 +7,7 @@
         ws: null,
         connect: function () {
             var that = this;
-            that.ws = new WebSocket("ws://" + document.domain + ":" + port);//这里如果使用127.0.0.1或者localhost会出现连接失败。当时为了方便以后的维护，这里在php的全局文件里定义了一个常量来定义ip，后来本地开发完提交到linux服务器环境之后发现链接失败！按照此行代码会有效连接~
+            that.ws = new WebSocket("ws://" + document.domain + ":" + port+'?uid='+window.uid+'&room='+window.room);//这里如果使用127.0.0.1或者localhost会出现连接失败。当时为了方便以后的维护，这里在php的全局文件里定义了一个常量来定义ip，后来本地开发完提交到linux服务器环境之后发现链接失败！按照此行代码会有效连接~
             that.ws.onopen = this.onopen;
             that.ws.onmessage = this.onmessage;
             that.ws.onclose = function (e) {
@@ -45,7 +45,6 @@
                         break;
                     // 服务端ping客户端
                     case 'ping':
-                        console.log("我去心跳检测了：" + data);
                         break;
                     // 登录 更新用户列表
                     case 'handshake':
@@ -94,10 +93,7 @@
             },
         },
     };
-
     socket.connect();
-
     global.socket = socket;
-
     return socket
 }(this));
