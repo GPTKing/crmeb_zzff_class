@@ -14,13 +14,12 @@
         odj: '',
         initialize: function () {
             var that = this;
-            layui.use(['form', 'table', 'laydate', 'layer', 'laypage', 'element', 'upload'], function () {
+            layui.use(['form', 'table', 'laydate', 'layer', 'laypage', 'upload'], function () {
                 that.form = layui.form;
                 that.table = layui.table;
                 that.laydate = layui.laydate;
                 that.layer = layui.layer;
                 that.laypage = layui.laypage;
-                that.element = layui.element;
                 that.upload = layui.upload;
             })
             $('.layui-input-block').each(function () {
@@ -126,7 +125,7 @@
             elem: '#' + elemOdj,
             url: url,
             page: {
-                theme: '#0092dc'
+                theme: '#0092DC'
             },
             limit: limit,
             toolbar: toob,
@@ -262,7 +261,7 @@
     //时间选择器
     layList.date = function (IdName) {
         if (typeof IdName == 'string' && $('#' + IdName).length == 0) return console.info('并没有找到此元素');
-        var json = typeof IdName == 'object' ? IdName : {elem: '#' + IdName, range: true};
+        var json = typeof IdName == 'object' ? IdName : {elem: '#' + IdName, range: true, theme: '#0092DC'};
         this.laydate.render(json);
     }
     //监听复选框
