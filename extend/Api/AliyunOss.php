@@ -61,9 +61,18 @@ class AliyunOss extends AliyunSdk
     protected function checkUploadUrl()
     {
         $site_url=SystemConfigService::get('site_url');
-        $https = "/^https:[\/]{2}[a-z]+[.]{1}[a-z\d\-]+[.]{1}[a-z\d]*[\/]*[A-Za-z\d]*[\/]*[A-Za-z\d]*/";
+        if($site_url){
+            $arr = parse_url($site_url);
+            if($arr['scheme']){
+                $scheme=$arr['scheme'];
+            }else{
+                $scheme='http';
+            }
+        }else{
+            $scheme='http';
+        }
         if ($this->uploadUrl) {
-            if (preg_match($https, $site_url)) {
+            if ($scheme=='https') {
                 if (strstr($this->uploadUrl, 'https') === false) {
                     $this->uploadUrl = 'https://' . $this->uploadUrl;
                 }

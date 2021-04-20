@@ -7,7 +7,8 @@
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
-//
+// +----------------------------------------------------------------------
+
 
 namespace service;
 
@@ -55,4 +56,8 @@ class SystemConfigService
         return $keys;
     }
 
+    public static function setOneValue($menu,$value)
+    {
+        return SystemConfig::setValue($menu,$value);
+    }
 }

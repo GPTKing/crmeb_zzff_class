@@ -1,5 +1,4 @@
 <?php
-
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
@@ -8,17 +7,11 @@
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
-//
+// +----------------------------------------------------------------------
+
 namespace service;
 use think\Url;
 
-/**
- * 小程序支付
- * Created by PhpStorm.
- * User: Administrator
- * Date: 2018/5/29 0029
- * Time: 上午 10:10
- */
 class RoutineService{
 
     public static function options(){
@@ -67,7 +60,6 @@ class RoutineService{
            <trade_type>'.$trade_type.'</trade_type>
            <sign>'.$sign.'</sign>
         </xml> ';
-//        dump($post_xml);
         //统一接口prepay_id
         $url = 'https://api.mch.weixin.qq.com/pay/unifiedorder';
         $xml = self::http_request($url,$post_xml);
@@ -121,7 +113,6 @@ class RoutineService{
         }
         $wx_key = self::options()['pay_routine_key'] ? self::options()['pay_routine_key'] : '';//申请支付后有给予一个商户账号和密码，登陆后自己设置key
         $stringSignTemp = $stringA.'&key='.$wx_key;//申请支付后有给予一个商户账号和密码，登陆后自己设置key
-//        dump($stringSignTemp);
         return strtoupper(md5($stringSignTemp));
     }
 

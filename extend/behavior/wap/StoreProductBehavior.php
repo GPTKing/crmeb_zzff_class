@@ -7,14 +7,13 @@
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
-//
+// +----------------------------------------------------------------------
+
 
 namespace behavior\wap;
 
 
 use app\wap\model\store\StoreOrder;
-use app\wap\model\store\StorePink;
-use app\wap\model\store\StoreProduct;
 use app\wap\model\user\User;
 use app\wap\model\user\UserAddress;
 use app\wap\model\user\UserBill;
@@ -64,7 +63,6 @@ class StoreProductBehavior
      * $oid  string store_order表中的id
      */
     public static function storeProductOrderDeliveryAfter($data,$oid){
-        StoreOrder::orderPostageAfter($data,$oid);
     }
 
     /**
@@ -75,7 +73,6 @@ class StoreProductBehavior
      * $oid  string store_order表中的id
      */
     public static function storeProductOrderDeliveryGoodsAfter($data,$oid){
-        StoreOrder::orderPostageAfter($data,$oid);
     }
 
     /**
@@ -85,12 +82,8 @@ class StoreProductBehavior
      * @param $oid
      * $oid  string store_order表中的id
      */
-    public static function storeProductOrderTakeDeliveryAfter($order,$oid)
+    public static function storeProductOrderTakeDelivery($order,$oid)
     {
-        $res1 = StoreOrder::gainUserIntegral($order);
-        $res2 = User::backOrderBrokerage($order);
-        StoreOrder::orderTakeAfter($order);
-        if(!($res1 && $res2)) exception('收货失败!');
     }
 
     /**
@@ -100,10 +93,6 @@ class StoreProductBehavior
      */
     public static function storeProductOrderUserTakeDelivery($order, $uid)
     {
-        $res1 = StoreOrder::gainUserIntegral($order);
-        $res2 = User::backOrderBrokerage($order);
-        StoreOrder::orderTakeAfter($order);
-        if(!($res1 && $res2)) exception('收货失败!');
     }
 
     /**
@@ -123,7 +112,8 @@ class StoreProductBehavior
      * $oid  string store_order表中的id
      */
     public static function storeProductOrderRefundYAfter($data,$oid){
-       StoreOrderAdminModel::refundTemplate($data,$oid);
+        StoreOrderAdminModel::returnCommissionOne($oid);
+        StoreOrderAdminModel::refundTemplate($data,$oid);
     }
 
     /**
@@ -184,7 +174,6 @@ class StoreProductBehavior
      */
     public static function storeProductOrderReply($replyInfo, $cartInfo)
     {
-        StoreOrder::checkOrderOver($cartInfo['oid']);
     }
 
     /**

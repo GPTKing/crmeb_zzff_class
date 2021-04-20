@@ -7,7 +7,8 @@
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
-//
+// +----------------------------------------------------------------------
+
 
 namespace service;
 
@@ -40,21 +41,14 @@ class WechatTemplateService
     //退款进度通知
     const ORDER_REFUND_STATUS = 'OPENTM410119152';
 
-    //帐户资金变动提醒
-    const USER_BALANCE_CHANGE = 'OPENTM405847076';
+    //账户资金变动提醒
+    const USER_BALANCE_CHANGE = 'OPENTM415437052';
 
-    //佣金到账通知
-    const USER_BALANCE_CHANGE_v2 = 'OPENTM201812627';
     //开播通知
     const LIVE_START_NOTICE = 'OPENTM405456204';
 
     //拼单进度提醒
     const PINK_ORDER_REMIND = 'OPENTM415198906';
-    //客服通知提醒
-    const SERVICE_NOTICE = 'OPENTM204431262';
-
-    //服务进度提醒
-    const ADMIN_NOTICE = 'OPENTM408237350';
 
     //拼团成功通知
     const ORDER_USER_GROUPS_SUCCESS = 'OPENTM407456411';
@@ -62,9 +56,7 @@ class WechatTemplateService
     //拼团失败通知
     const ORDER_USER_GROUPS_LOSE   = 'OPENTM401113750';
 
-    //拼团成功
-    const ORDER_USER_PING_Ok  = 'OPENTM406772650';
-
+    //开团成功通知
     const ORDER_USER_PINGT_SUCCESS  = 'OPENTM411478702';
 
     public static function sendTemplate($openid,$templateId,array $data,$url = null,$defaultColor = '')
@@ -86,13 +78,8 @@ class WechatTemplateService
      */
     public static function sendAdminNoticeTemplate(array $data,$url = null,$defaultColor = '')
     {
-        $adminIds = explode(',',trim(SystemConfigService::get('site_store_admin_uids')));
         $kefuIds = ServiceModel::where('notify',1)->column('uid');
-        if(empty($adminIds[0])){
-            $adminList = array_unique($kefuIds);
-        }else{
-            $adminList = array_unique(array_merge($adminIds,$kefuIds));
-        }
+        $adminList = array_unique($kefuIds);
         if(!is_array($adminList) || empty($adminList)) return false;
         foreach ($adminList as $uid){
             try{
@@ -100,7 +87,7 @@ class WechatTemplateService
             }catch (\Exception $e){
                 continue;
             }
-            self::sendTemplate($openid,self::ADMIN_NOTICE,$data,$url,$defaultColor);
+            self::sendTemplate($openid,self::ORDER_PAY_SUCCESS,$data,$url,$defaultColor);
         }
     }
 

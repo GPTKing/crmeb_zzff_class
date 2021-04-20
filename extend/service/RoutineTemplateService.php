@@ -1,5 +1,4 @@
 <?php
-
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
@@ -8,14 +7,15 @@
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
-//
+// +----------------------------------------------------------------------
+
 namespace service;
 
-use app\routine\model\routine\RoutineServer;
+use app\wap\model\routine\RoutineServer;
 use think\Db;
 
 /**
- * 小程序模板消息
+ * 公众号订阅消息
  * Class RoutineTemplate
  * @package app\routine\model\routine
  */
@@ -23,21 +23,26 @@ class RoutineTemplateService{
 
 
     //订单支付成功
-    const ORDER_PAY_SUCCESS = 'AT0009';
-    //砍价成功
-    const BARGAIN_SUCCESS = 'AT1173';
-    //申请退款通知
-    const ORDER_REFUND_STATUS = 'AT0036';
-    //退款成功
-    const ORDER_REFUND_SUCCESS = 'AT0787';
+    const ORDER_PAY_SUCCESS = '6271';
     //订单发货提醒(快递)
-    const ORDER_POSTAGE_SUCCESS = 'AT0007';
-    //订单发货提醒(送货)
-    const ORDER_DELIVER_SUCCESS = 'AT0177';
-    //收益到账通知
-    const PROFIT_SUCCESS = 'AT0035';
-    //审核结果通知
-    const VERIFY='AT0146';
+    const ORDER_POSTAGE_SUCCESS = '3637';
+    //直播开播提醒
+    const LIVE_BROADCAST='16172';
+    //拼单进度提醒
+    const PINK_ORDER_REMIND = '5275';
+    //拼团成功通知
+    const ORDER_USER_GROUPS_SUCCESS = '3098';
+    //拼团失败通知
+    const ORDER_USER_GROUPS_LOSE   = '4534';
+    //开团成功通知
+    const ORDER_USER_PINGT_SUCCESS  = '4533';
+    //账户资金变动提醒
+    const USER_BALANCE_CHANGE = '4148';
+    //退款进度通知
+    const ORDER_REFUND_STATUS = '1451';
+    //收货提醒通知
+    const ORDER_TAKE_SUCCESS = '3510';
+
     /**
      * 根据模板编号获取模板ID
      * @param string $tempKey
@@ -47,84 +52,97 @@ class RoutineTemplateService{
         if($tempKey == '')return '';
         return Db::name('RoutineTemplate')->where('tempkey',$tempKey)->where('status',1)->value('tempid');
     }
+
     /**
-     * 获取小程序模板库所有标题列表
-     * @param string $accessToken
+     * 从公共模板库中选用模板，到私有模板库中
+     */
+    public static function addTemplate($tid,$kidList=[],$sceneDesc=''){
+        $accessToken = RoutineServer::get_access_token();
+        $url = "https://api.weixin.qq.com/wxaapi/newtmpl/addtemplate?access_token=".$accessToken;
+        $data['access_token'] = $accessToken;
+        $data['tid'] = $tid;
+        $data['kidList'] = $kidList;
+        $data['sceneDesc'] = $sceneDesc;
+        return json_decode(RoutineServer::curlPost($url,json_encode($data)),true);
+    }
+
+    /**
+     * 获取公众号所属类目，可用于查询类目下的公共模板
+     */
+    public static function getCategory()
+    {
+        $accessToken = RoutineServer::get_access_token();
+        $url = "https://api.weixin.qq.com/wxaapi/newtmpl/addtemplate?access_token=".$accessToken;
+        return json_decode(RoutineServer::curlGet($url),true);
+    }
+
+    /**
+     * 获取公共模板下的关键词列表
+     */
+    public static function getPubTemplateKeyWordsById($tid)
+    {
+        $accessToken = RoutineServer::get_access_token();
+        $url = "https://api.weixin.qq.com/wxaapi/newtmpl/getpubtemplatekeywords?access_token=".$accessToken;
+        $data['access_token'] = $accessToken;
+        $data['tid'] = $tid;
+        return json_decode(RoutineServer::curlGet($url,json_encode($data)),true);
+    }
+
+    /**
+     * 获取类目下的公共模板，可从中选用模板使用
+     */
+    public static function getPubTemplateTitleList($ids,$start=0,$limit=10)
+    {
+        $accessToken = RoutineServer::get_access_token();
+        $url = "https://api.weixin.qq.com/wxaapi/newtmpl/getpubtemplatetitles?access_token=".$accessToken;
+        $data['access_token'] = $accessToken;
+        $data['ids'] = $ids;
+        $data['start'] = $start;
+        $data['limit'] = $limit;
+        return json_decode(RoutineServer::curlGet($url,json_encode($data)),true);
+    }
+    /**
+     * 获取私有的模板列表
      * @param int $offset
      * @param int $count
      * @return mixed
      */
-    public static function getTemplateListAll($offset = 0,$count = 20){
+    public static function getTemplateList(){
         $accessToken = RoutineServer::get_access_token();
-        $url = "https://api.weixin.qq.com/cgi-bin/wxopen/template/library/list?access_token=".$accessToken;
-        $data['access_token'] = $accessToken;
-        $data['offset'] = $offset;
-        $data['count'] = $count;
-        return json_decode(RoutineServer::curlPost($url,json_encode($data)),true);
+        $url = "https://api.weixin.qq.com/wxaapi/newtmpl/gettemplate?access_token=".$accessToken;
+        return json_decode(RoutineServer::curlGet($url),true);
     }
 
     /**
-     * 获取模板库某个模板标题下关键词库
-     * @param string $templateId    模板ID 未添加之前的ID
-     * @return mixed
-     */
-    public static function getTemplateKeyword($templateId = 'AT0005'){
-        $accessToken = RoutineServer::get_access_token();
-        $url = "https://api.weixin.qq.com/cgi-bin/wxopen/template/library/get?access_token=".$accessToken;
-        $data['access_token'] = $accessToken;
-        $data['id'] = $templateId;
-        return json_decode(RoutineServer::curlPost($url,json_encode($data)),true);
-    }
-
-    /**
-     * 获取小程序模板库申请的标题列表
-     * @param int $offset
-     * @param int $count
-     * @return mixed
-     */
-    public static function getTemplateList($offset = 0,$count = 20){
-        $accessToken = RoutineServer::get_access_token();
-        $url = "https://api.weixin.qq.com/cgi-bin/wxopen/template/list?access_token=".$accessToken;
-        $data['access_token'] = $accessToken;
-        $data['offset'] = $offset;
-        $data['count'] = $count;
-        return json_decode(RoutineServer::curlPost($url,json_encode($data)),true);
-    }
-
-    /**
-     * 删除小程序中的某个模板消息
+     * 删除公众号中的某个订阅消息
      * @param string $templateId
      * @return bool|mixed
      */
-    public static function delTemplate($templateId = ''){
-        if($templateId == '') return false;
+    public static function delTemplate($priTmplId = ''){
+        if($priTmplId == '') return false;
         $accessToken = RoutineServer::get_access_token();
-        $url = "https://api.weixin.qq.com/cgi-bin/wxopen/template/del?access_token=".$accessToken;
+        $url = "https://api.weixin.qq.com/wxaapi/newtmpl/deltemplate?access_token=".$accessToken;
         $data['access_token'] = $accessToken;
-        $data['template_id'] = $templateId;
+        $data['priTmplId'] = $priTmplId;
         return json_decode(RoutineServer::curlPost($url,json_encode($data)),true);
     }
 
     /**
-     * 发送模板消息
+     * 发送订阅消息
      * @param string $openId   接收者（用户）的 openid
      * @param string $templateId 所需下发的模板消息的id
      * @param string $link 点击模板卡片后的跳转页面，仅限本小程序内的页面。支持带参数,（示例index?foo=bar）。该字段不填则模板无跳转。
-     * @param string $formId 表单提交场景下，为 submit 事件带上的 formId；支付场景下，为本次支付的 prepay_id
      * @param array $dataKey 模板内容，不填则下发空模板
-     * @param string $emphasisKeyword 模板需要放大的关键词，不填则默认无放大
      * @return bool|mixed
      */
-    public static function sendTemplate($openId = '',$templateId = '',$link = '',$dataKey = array(),$formId = '',$emphasisKeyword = ''){
-        if($openId == '' || $templateId == '' || $formId == '') return false;
+    public static function sendTemplate($openId = '',$templateId = '',$link = '',$dataKey = array()){
+        if($openId == '' || $templateId == '') return false;
         $accessToken = RoutineServer::get_access_token();
-        $url = "https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token=".$accessToken;
+        $url = "https://api.weixin.qq.com/cgi-bin/message/subscribe/bizsend?access_token=".$accessToken;
         $data['touser'] =  $openId;//接收者（用户）的 openid
         $data['template_id'] =  $templateId; //所需下发的模板消息的id
         $data['page'] =  $link; //点击模板卡片后的跳转页面，仅限本小程序内的页面。支持带参数,（示例index?foo=bar）。该字段不填则模板无跳转。
-        $data['form_id'] =  $formId; //	表单提交场景下，为 submit 事件带上的 formId；支付场景下，为本次支付的 prepay_id
         $data['data'] =  $dataKey;  //模板内容，不填则下发空模板
-        $data['emphasis_keyword'] =  $emphasisKeyword;  //模板需要放大的关键词，不填则默认无放大
         return json_decode(RoutineServer::curlPost($url,json_encode($data)),true);
     }
 }

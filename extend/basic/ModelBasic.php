@@ -7,7 +7,8 @@
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
-//
+// +----------------------------------------------------------------------
+
 namespace basic;
 
 use think\Db;
@@ -88,6 +89,14 @@ class ModelBasic extends Model
         }else{
             self::rollbackTrans();
         }
+    }
+    /**
+     * 根據模型修改
+     */
+    public static function saveFieldByWhere(array $where, array $data)
+    {
+        if (!$where || !$data) return false;
+        return self::where($where)->update($data);
     }
 
 }

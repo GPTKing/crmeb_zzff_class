@@ -7,7 +7,9 @@
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
-//
+// +----------------------------------------------------------------------
+
+
 namespace service;
 
 class UploadService
@@ -17,6 +19,10 @@ class UploadService
 
     //上传图片的大小 2MB 单位字节
     private static $imageValidate = ['size' => 2097152, 'ext' => 'jpg,jpeg,png,gif', 'mime' => 'image/jpeg,image/gif,image/png'];
+
+    private static $fileExt = ['pem', 'mp3', 'wma', 'wav', 'amr', 'mp4', 'key'];//上传文件后缀类型
+
+    private static $fileMime = ['text/plain', 'audio/mpeg','application/x-x509-ca-cert','application/octet-stream']; //上传文件类型
 
     /**
      * 初始化
@@ -127,14 +133,22 @@ class UploadService
         $dir = ROOT_PATH . DS . 'public' . DS . $path;
         if (!self::validDir($dir)) return self::setError('生成上传目录失败,请检查权限!');
         if (!isset($_FILES[$fileName])) return self::setError('上传文件不存在!');
-        $extension = strtolower(pathinfo($_FILES[$fileName]['name'], PATHINFO_EXTENSION));
-        if (strtolower($extension) == 'php' || !$extension)
-            return self::setError('上传文件非法!');
-        $file = request()->file($fileName);
-        if (count($autoValidate) > 0) $file = $file->validate($autoValidate);
-        $fileInfo = $file->rule($rule)->move($dir, $moveName);
-        if (false === $fileInfo) return self::setError($file->getError());
-        return self::successful($path, $fileInfo);
+        $uploaded_name = $_FILES[$fileName]['name'];
+        $uploaded_ext  = substr( $uploaded_name, strrpos( $uploaded_name, '.' ) + 1);
+        $uploaded_type = $_FILES[$fileName]['type'];
+        $uploaded_size = $_FILES[$fileName]['size'];
+        $extension = strtolower(pathinfo($uploaded_name, PATHINFO_EXTENSION));
+        if (strtolower($extension) === 'php' || !$extension) return self::setError('上传文件非法!');
+        if(in_array(strtolower($uploaded_ext),self::$fileExt) && ($uploaded_size < 2097152) && in_array($uploaded_type,self::$fileMime)) {
+            $file = request()->file($fileName);
+            if (count($autoValidate) > 0) $file = $file->validate($autoValidate);
+            $fileInfo = $file->rule($rule)->move($dir, $moveName);
+            if (false === $fileInfo) return self::setError($file->getError());
+            return self::successful($path, $fileInfo);
+        }else{
+            //无效文件
+            return self::setError('上传文件非法或文件太大!');
+        }
     }
 
     public static function pathToUrl($path)

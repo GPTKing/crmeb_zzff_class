@@ -8,23 +8,26 @@
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
-//
+// +----------------------------------------------------------------------
+
 namespace service;
 
 use service\FileService;
 use app\routine\model\routine\RoutineCode;
+use Intervention\Image\AbstractFont;
+use Intervention\Image\ImageManagerStatic as ImageManager;
 
 class CanvasService
 {
     const FILELINK = 'uploads/';
+    const BGIMG_PATH = 'public/';
     //背景图
-    const VOTEIMG = 'uploads/voteimg/voteimg.jpg';
+    //const VOTEIMG = 'uploads/voteimg/voteimg.jpg';
     //字体
-    const FONT = 'uploads/voteimg/simsunb.ttf';
-
-    const FONT_TWO = 'uploads/voteimg/fz-v4.0.ttf';
-
-    const BORDER = 'uploads/voteimg/border.png';
+    //const BG_FONT = 'wap/first/zsff/font/fzcyjt.ttf';
+    //const FONT = 'uploads/voteimg/simsunb.ttf';
+    //const FONT_TWO = 'uploads/voteimg/fz-v4.0.ttf';
+    //const BORDER = 'uploads/voteimg/border.png';
 
     protected static $canvas = null;
 
@@ -62,32 +65,101 @@ class CanvasService
         return imagecreatetruecolor($w ? $w : self::$backgroundWidth, $h ? $h : self::$backgroundHeight);
     }
 
-    public static function foundCode($special_id, $url, $backgroundImg, $ext = 'poster_code_')
+
+    public static function foundCode1($special, $url, $backgroundImg, $ext = 'poster_code_')
     {
         vendor('phpqrcode.phpqrcode');
+        $bg_path = self::BGIMG_PATH;
+        //底图尺寸大小
+        $bg = ImageManager::make($bg_path . 'bgimg/bg.png')->resize(750, 950);
+        $thumb = $backgroundImg;
+
+        //海报尺寸大小
+        if ($thumb) {
+            $thumb = ImageManager::make($thumb)->resize(690, 590);
+            //水印
+            $font_path = ROOT_PATH.'public/wap/first/zsff/font/';
+            $title1_font_ttf = $font_path.'PingFang-SC.ttf';
+            $site_name=SystemConfigService::get('site_name');
+            $thumb->text($site_name, 600, 570, function (AbstractFont $text) use ($title1_font_ttf){
+                $text->file($title1_font_ttf);
+                $text->size(20);
+                $text->color('#DDDDDD');
+                $text->align('center');
+            });
+            $bg->insert($thumb, 'top-left', 30, 35);
+        }
+
         $qrcodename = self::FILELINK . time() . 'qrcode.png';
         \QRcode::png($url, $qrcodename, 'L', 10, 2);
-        $image = self::ReatetrueColor();
-        //放背景
-        list($canvas, $borderRes) = self::CreatJpeg($backgroundImg);
-//        $color = imagecolorallocate($canvas, 255, 255, 255);
-//        imagefill($canvas, 0, 0, $color);
-        imagecopyresampled($image, $canvas, 0, 0, 0, 0, imagesx($canvas), imagesy($canvas), imagesx($canvas), imagesy($canvas));
-
-        list($code, $codeRes) = self::CreatJpeg($qrcodename);
-        imagecopyresampled($image, $code, 505, 1090, 0, 0, 156, 156, (int)$codeRes[0], (int)$codeRes[1]);
-
+        //二维码位置
+        if ($qrcodename) {
+            $qr = ImageManager::make($qrcodename)->resize(150, 150);
+            $bg->insert($qr, 'top-right', 45, 760);
+        }
+        //海报文字位置，活动分享标题
+        $font_path = ROOT_PATH.'public/wap/first/zsff/font/';
+        $title1_font_ttf = $font_path.'PingFang-SC.ttf';
+        $bg->text($special['title'], 50, 750, function (AbstractFont $text) use($title1_font_ttf){
+            $text->file($title1_font_ttf);
+            $text->size(14);
+            $text->color('#333333');
+            $text->align('left');
+        });
+        $bg->text($special['title'], 50, 750, function (AbstractFont $text) use($title1_font_ttf){
+            $text->file($title1_font_ttf);
+            $text->size(14);
+            $text->color('#333333');
+            $text->align('left');
+        });
+        $bg->text($special['fake_sales'] . '人已学习', 625, 750, function (AbstractFont $text) use ($title1_font_ttf) {
+            $text->file($title1_font_ttf);
+            $text->size(14);
+            $text->color('#666');
+            $text->align('center');
+        });
+        $title2_font_ttf = $font_path.'pingfang-sc-blod.ttf';
+        $bg->text(date("d"), 49, 869, function (AbstractFont $text) use($title2_font_ttf){
+            $text->file($title2_font_ttf);
+            $text->size(72);
+            $text->color('#f30606');
+            $text->align('left');
+        });
+        $month = array(
+            '01' => '一月',
+            '02' => '二月',
+            '03' => '三月',
+            '04' => '四月',
+            '05' => '五月',
+            '06' => '六月',
+            '07' => '七月',
+            '08' => '八月',
+            '09' => '九月',
+            '10' => '十月',
+            '11' => '十一月',
+            '12' => '十二月'
+        );
+        $title3_font_ttf = $font_path.'pingfang-sc-blod.ttf';
+        $bg->text($month[date("m")], 128, 869, function (AbstractFont $text) use($title3_font_ttf){
+            $text->file($title3_font_ttf);
+            $text->size(21);
+            $text->color('#000000');
+            $text->align('left');
+        });
+        $week = date("w");
+        if ($week == 0) {
+            $week = 7;
+        }
+        $week_path = $bg_path . "bgimg/" . $week . '.png';
+        $qr = ImageManager::make($week_path)->resize(114, 27);
+        $bg->insert($qr, 'top-left', 53, 876);
+        $filename = self::FILELINK . $ext . $special['id'] . ".png";
+        $bg->save($filename);
         $FileService = new FileService();
-        $FileService->create_dir(self::FILELINK);
-        $filename = self::FILELINK . $ext . $special_id . '.jpg';
-        imagejpeg($image, $filename, 70);
-
-        imagedestroy($image);
-
         $FileService->unlink_file($qrcodename);
-
         return $filename;
     }
+
 
     /**签到海报
      * @param $special_id
@@ -96,62 +168,171 @@ class CanvasService
      * @param string $ext
      * @return string
      */
-    public static function foundSignCode($uid, $url, $backgroundImg,$urls, $ext = 'poster_sign_')
+    public static function foundSignCode($uid, $url, $sign_info, $ext = 'poster_sign_')
     {
         vendor('phpqrcode.phpqrcode');
-        $qrcodename = self::FILELINK . time() . 'qrcode.png';
+        $bg_path = self::BGIMG_PATH;
+        //底图尺寸大小
+        $bg = ImageManager::make($bg_path . 'bgimg/bg.png')->resize(750, 950);
+        $thumb = $sign_info['poster'];
+
+        //海报尺寸大小
+        if ($thumb) {
+            $thumb = ImageManager::make($thumb)->resize(690, 590);
+            //水印
+            $font_path = ROOT_PATH.'public/wap/first/zsff/font/';
+            $title1_font_ttf = $font_path.'PingFang-SC.ttf';
+            $site_name=SystemConfigService::get('site_name');
+            $thumb->text($site_name, 600, 570, function (AbstractFont $text) use ($title1_font_ttf){
+                $text->file($title1_font_ttf);
+                $text->size(20);
+                $text->color('#DDDDDD');
+                $text->align('center');
+            });
+            $bg->insert($thumb, 'top-left', 30, 35);
+        }
+
+        $qrcodename = self::FILELINK .$ext.time() . 'qrcode.png';
         \QRcode::png($url, $qrcodename, 'L', 10, 2);
-        $image = self::ReatetrueColor();
-        //放背景
-        list($canvas, $borderRes) = self::CreatJpeg($backgroundImg);
-        imagecopyresampled($image, $canvas, 0, 0, 0, 0, imagesx($canvas), imagesy($canvas), imagesx($canvas), imagesy($canvas));
+        //二维码位置
+        if ($qrcodename) {
+            $qr = ImageManager::make($qrcodename)->resize(150, 150);
+            $bg->insert($qr, 'top-right', 45, 760);
+        }
+        //海报文字位置，活动分享标题
+        $font_path = ROOT_PATH.'public/wap/first/zsff/font/';
+        $title1_font_ttf = $font_path.'PingFang-SC.ttf';
+        $bg->text($sign_info['sign_talk'], 50, 750, function (AbstractFont $text) use($title1_font_ttf){
+            $text->file($title1_font_ttf);
+            $text->size(14);
+            $text->color('#333333');
+            $text->align('left');
+        });
 
-        list($code, $codeRes) = self::CreatJpeg($qrcodename);
-        imagecopyresampled($image, $code, 505, 1090, 0, 0, 156, 156, (int)$codeRes[0], (int)$codeRes[1]);
-        $red = imagecolorallocate($image,255,00,00);    // 字体颜色
-        $reds = imagecolorallocate($image,00,00,00);    // 字体颜色
-        $weekarray=array("日","一","二","三","四","五","六");//先定义一个数组
-        $font = 'wap/first/zsff/css/simsun.ttc';
-        $text = date('d',time());
-        $text1 = date('m',time()).'月';
-        $text2 = "星 期 ".$weekarray[date("w")];;
-        imageTTFText($image, 80, 0, 50, 1190, $red, $font,$text);
-        imageTTFText($image, 40, 0, 155, 1190, $reds, $font,$text1);
-        imageTTFText($image, 30, 0, 70, 1240, $reds, $font,$text2);
+        $bg->text('我们一起风雨兼程', 625, 750, function (AbstractFont $text) use ($title1_font_ttf) {
+            $text->file($title1_font_ttf);
+            $text->size(14);
+            $text->color('#666');
+            $text->align('center');
+        });
+        $title2_font_ttf = $font_path.'pingfang-sc-blod.ttf';
+        $bg->text(date("d"), 49, 869, function (AbstractFont $text) use($title2_font_ttf){
+            $text->file($title2_font_ttf);
+            $text->size(72);
+            $text->color('#f30606');
+            $text->align('left');
+        });
+        $month = array(
+            '01' => '一月',
+            '02' => '二月',
+            '03' => '三月',
+            '04' => '四月',
+            '05' => '五月',
+            '06' => '六月',
+            '07' => '七月',
+            '08' => '八月',
+            '09' => '九月',
+            '10' => '十月',
+            '11' => '十一月',
+            '12' => '十二月'
+        );
+        $title3_font_ttf = $font_path.'pingfang-sc-blod.ttf';
+        $bg->text($month[date("m")], 128, 869, function (AbstractFont $text) use($title3_font_ttf){
+            $text->file($title3_font_ttf);
+            $text->size(21);
+            $text->color('#000000');
+            $text->align('left');
+        });
+        $week = date("w");
+        if ($week == 0) {
+            $week = 7;
+        }
+        $week_path = $bg_path . "bgimg/" . $week . '.png';
+        $qr = ImageManager::make($week_path)->resize(114, 27);
+        $bg->insert($qr, 'top-left', 53, 876);
+        $filename = self::FILELINK . $ext .$uid . ".png";
+        $bg->save($filename);
         $FileService = new FileService();
-        $FileService->create_dir(self::FILELINK);
-        $filename = self::FILELINK . $ext . $uid . '.jpg';
-        imagejpeg($image, $filename, 70);
-
-        imagedestroy($image);
-
         $FileService->unlink_file($qrcodename);
-
         return $filename;
     }
 
-    public static function startPosterSpeclialIng($special_id, $backgroundImg, $url)
+
+    public static function startPosterSpeclialIng($special, $url,$uid)
     {
         vendor('phpqrcode.phpqrcode');
         $qrcodename = time() . '_show_qrcode.png';
-        \QRcode::png($url, $qrcodename, 'L', 10, 2);
-        $image = self::ReatetrueColor();
-        //放背景
-        list($canvas, $borderRes) = self::CreatJpeg($backgroundImg);
-        imagecopyresampled($image, $canvas, 0, 0, 0, 0, imagesx($canvas), imagesy($canvas), imagesx($canvas), imagesy($canvas));
-
-        list($code, $codeRes) = self::CreatJpeg($qrcodename);
-        imagecopyresampled($image, $code, 505, 1090, 0, 0, 156, 156, (int)$codeRes[0], (int)$codeRes[1]);
-
+        $bg_path = self::BGIMG_PATH;
+        //底图尺寸大小
+        $bg = ImageManager::make($bg_path . 'bgimg/group_poster.png')->resize(600, 723);
+        $thumb = $special['poster_image'];
+        $backg = ImageManager::make($bg_path . 'bgimg/backg.png')->resize(600, 553);
+        $bg->insert($backg, 'top-left', 0, 0);
+        //海报尺寸大小
+        if ($thumb) {
+            $thumb = ImageManager::make($thumb)->resize(540, 303);
+            $bg->insert($thumb, 'top-left', 30, 30);
+        }
+        \QRcode::png($url, $qrcodename, 'L', 10, 0);
+        //二维码位置
+        if ($qrcodename) {
+            $qr = ImageManager::make($qrcodename)->resize(126, 126);
+            $bg->insert($qr, 'top-left', 64, 579);
+        }
+        //海报文字位置，活动分享标题
+        $font_path = ROOT_PATH.'public/wap/first/zsff/font/';
+        $title1_font_ttf = $font_path.'PingFang-SC.ttf';
+        $bg->text('¥', 35, 400, function (AbstractFont $text) use($title1_font_ttf){
+            $text->file($title1_font_ttf);
+            $text->size(26);
+            $text->color('#FEB720');
+            $text->align('left');
+        });
+        $bg->text($special['pink_money'], 53, 400, function (AbstractFont $text) use($title1_font_ttf){
+            $text->file($title1_font_ttf);
+            $text->size(42);
+            $text->color('#FEB720');
+            $text->align('left');
+        });
+        $title=$special['title'];
+        $len=mb_strlen($title,'utf-8');
+        if($len>18){
+            $bg->text(mb_substr($title,0,18,'utf-8'), 35, 450, function (AbstractFont $text) use($title1_font_ttf){
+                $text->file($title1_font_ttf);
+                $text->size(28);
+                $text->color('#282828');
+                $text->align('left');
+            });
+            $bg->text(mb_substr($title,19,34,'utf-8').'...', 35, 500, function (AbstractFont $text) use($title1_font_ttf){
+                $text->file($title1_font_ttf);
+                $text->size(28);
+                $text->color('#282828');
+                $text->align('left');
+            });
+        }else{
+            $bg->text($title, 35, 450, function (AbstractFont $text) use($title1_font_ttf){
+                $text->file($title1_font_ttf);
+                $text->size(28);
+                $text->color('#282828');
+                $text->align('left');
+            });
+        }
+        $bg->text('邀您参与拼团课程', 226, 625, function (AbstractFont $text) use($title1_font_ttf){
+            $text->file($title1_font_ttf);
+            $text->size(22);
+            $text->color('#999999');
+            $text->align('left');
+        });
+        $bg->text('长按识别参与拼团', 226, 665, function (AbstractFont $text) use($title1_font_ttf){
+            $text->file($title1_font_ttf);
+            $text->size(22);
+            $text->color('#999999');
+            $text->align('left');
+        });
+        $filename = self::FILELINK . 'poster_' .$uid.'_'.$special['id'] . ".png";
+        $bg->save($filename);
         $FileService = new FileService();
-        $FileService->create_dir(self::FILELINK);
-        $filename = self::FILELINK . 'poster_' . $special_id . '.jpg';
-        imagejpeg($image, $filename, 70);
-
-        imagedestroy($image);
-
         $FileService->unlink_file($qrcodename);
-
         return $filename;
     }
 

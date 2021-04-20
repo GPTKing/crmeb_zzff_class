@@ -7,16 +7,16 @@
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
-//
+// +----------------------------------------------------------------------
+
 namespace service;
 
-use app\wap\model\activity\EventSignUp;
 use app\wap\model\store\StoreOrder;
-use service\HookService;
 use think\Log;
 use think\Request;
 use think\Url;
 use behavior\wechat\PaymentBehavior;
+use service\HookService;
 use service\SystemConfigService;
 
 
@@ -103,7 +103,7 @@ class AlipayTradeWapService
         if (isset($confing['notifyUrl'])) self::$returnUrl = $confing['notifyUrl'];
         if (isset($confing['signType'])) self::$signType = $confing['signType'];
         if (isset($confing['charset'])) self::$charset = $confing['charset'];
-        if (isset($confing['alipay_public_key'])) self::$alipayAppId = $confing['alipay_public_key'];
+        if (isset($confing['alipay_app_id'])) self::$alipayAppId = $confing['alipay_app_id'];
         if (isset($confing['alipay_public_key'])) self::$alipayPublicKey = $confing['alipay_public_key'];
         if (isset($confing['alipay_private_key'])) self::$alipayPrivateKey = $confing['alipay_private_key'];
         if (!self::$alipayAppId || !self::$alipayPublicKey || !self::$alipayPrivateKey) exception('请配置支付宝公钥私钥APPID');
@@ -212,17 +212,8 @@ class AlipayTradeWapService
     {
         self::init()->AliPayNotify(function ($data, $result) {
             if($result && isset($data->out_trade_no) && $data->passback_params) {
-                if (($count = strpos($data->out_trade_no, '_')) !== false) {
-                    $data->out_trade_no = substr($data->out_trade_no, $count + 1);
-                }
                 if($data->passback_params=='special') {
                     StoreOrder::where('order_id', $data->out_trade_no)->where('type',0)->update(['trade_no' => $data->trade_no]);
-                }elseif ($data->passback_params=='signup'){
-                    EventSignUp::where('order_id', $data->out_trade_no)->update(['trade_no' => $data->trade_no]);
-                }elseif ($data->passback_params=='member'){
-                    StoreOrder::where('order_id', $data->out_trade_no)->where('type',1)->update(['trade_no' => $data->trade_no]);
-                }elseif ($data->passback_params=='goods'){
-                    StoreOrder::where('order_id', $data->out_trade_no)->where('type',2)->update(['trade_no' => $data->trade_no]);
                 }
                 HookService::listen('wechat_pay_success', $data, null, true, PaymentBehavior::class);
             }
@@ -312,7 +303,7 @@ class AlipayTradeWapService
         //编码格式
         $aop->postCharset = self::$charset;
         //内容格式
-        $aop->format = 'JSON';
+        $aop->format = 'json';
         //加密方式
         $aop->signType = self::$signType;
         // 开启页面信息输出
@@ -373,7 +364,10 @@ class AlipayTradeWapService
     {
         $request = new \AlipayTradeRefundRequest();
         $request->setBizContent(self::setBizContent(compact('out_trade_no', 'trade_no', 'refund_amount', 'refund_reason', 'passback_params', 'product_code')));
-        return self::AopclientRequestExecute($request);
+        $result=self::AopclientRequestExecute($request);
+        $responseNode = str_replace(".", "_", $request->getApiMethodName()) . "_response";
+        $resultCode = $result->$responseNode->code;
+        return $resultCode;
     }
 
     /**

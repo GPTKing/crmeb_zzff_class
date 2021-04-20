@@ -383,7 +383,7 @@ class AliyunLive extends AliyunSdk
      * 查询录制的索引文件
      *
      * */
-    public function queryLiveRecordFiles($StreamName, $StartTime, $EndTime, $page = 1, $limit = 10, $Order = 'desc')
+    public function queryLiveRecordFiles($StreamName, $StartTime, $EndTime, $page = 1, $limit = 100, $Order = 'desc')
     {
         $request = new \live\Request\V20161101\DescribeLiveStreamRecordIndexFilesRequest();
         $request->setStreamName($StreamName)->setDomainName($this->playLike)->setAppName($this->appName)->setStartTime($StartTime)

@@ -7,7 +7,8 @@
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
-//
+// +----------------------------------------------------------------------
+
 
 namespace service;
 
@@ -134,7 +135,7 @@ class UtilService
      */
     public static function urlToPath($url)
     {
-        return ROOT_PATH.trim(str_replace('/',DS,$url),DS);
+        return ROOT_PATH.'public/'.trim(str_replace('/',DS,$url),DS);
     }
 
     public static function timeTran($time)

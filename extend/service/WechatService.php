@@ -7,7 +7,8 @@
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
-//
+// +----------------------------------------------------------------------
+
 
 namespace service;
 
@@ -34,12 +35,13 @@ class WechatService
 
     public static function options()
     {
-        $wechat = SystemConfigService::more(['wechat_appid','wechat_appsecret','wechat_token']);
+        $wechat = SystemConfigService::more(['wechat_appid','wechat_appsecret','wechat_token','wechat_encodingaeskey']);
         $payment = SystemConfigService::more(['pay_weixin_mchid','pay_weixin_client_cert','pay_weixin_client_key','pay_weixin_key','pay_weixin_open']);
         $config = [
             'app_id'=>isset($wechat['wechat_appid']) ? $wechat['wechat_appid']:'',
             'secret'=>isset($wechat['wechat_appsecret']) ? $wechat['wechat_appsecret']:'',
             'token'=>isset($wechat['wechat_token']) ? $wechat['wechat_token']:'',
+            'aes_key' => isset($wechat['wechat_encodingaeskey']) ? $wechat['wechat_encodingaeskey']:'',
             'guzzle' => [
                 'timeout' => 10.0, // 超时时间（秒）
             ],
@@ -134,7 +136,7 @@ class WechatService
                     break;
             }
 
-            return $response;
+            return $response ? $response : false;
         });
     }
 
@@ -283,22 +285,7 @@ class WechatService
 
     public static function downloadBill($day,$type = 'ALL')
     {
-//        $payment = self::paymentService();
-//        $merchant = $payment->getMerchant();
-//        $params = [
-//            'appid' => $merchant->app_id,
-//            'bill_date'=>$day,
-//            'bill_type'=>strtoupper($type),
-//            'mch_id'=> $merchant->merchant_id,
-//            'nonce_str' => uniqid()
-//        ];
-//        $params['sign'] = \EasyWeChat\Payment\generate_sign($params, $merchant->key, 'md5');
-//        $xml = XML::build($params);
-//        dump(self::paymentService()->downloadBill($day)->getContents());
-//        dump($payment->getHttp()->request('https://api.mch.weixin.qq.com/pay/downloadbill','POST',[
-//            'body' => $xml,
-//            'stream'=>true
-//        ])->getBody()->getContents());
+
     }
 
     public static function userTagService()

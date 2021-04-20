@@ -7,7 +7,8 @@
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
-//
+// +----------------------------------------------------------------------
+
 
 namespace behavior\wechat;
 
@@ -16,9 +17,8 @@ use app\wap\model\store\StoreOrder as StoreOrderRoutineModel;
 use app\wap\model\store\StoreOrder as StoreOrderWapModel;
 use app\wap\model\user\UserRecharge;
 use service\HookService;
-use service\RoutineRefund;
 use service\WechatService;
-use app\wap\model\activity\EventSignUp;
+
 class PaymentBehavior
 {
 
@@ -46,21 +46,6 @@ class PaymentBehavior
     }
 
     /**
-     * 商品订单支付成功后  微信公众号
-     * @param $orderId
-     * @param $notify
-     * @return bool
-     */
-    public static function wechatPaySuccessProduct($orderId, $notify)
-    {
-        try{
-            if(StoreOrderWapModel::be(['order_id'=>$orderId,'paid'=>1])) return true;
-            return StoreOrderWapModel::paySuccess($orderId);
-        }catch (\Exception $e){
-            return false;
-        }
-    }
-    /**
      * 专题订单支付成功后  微信公众号 支付宝
      * @param $orderId
      * @param $notify
@@ -71,53 +56,6 @@ class PaymentBehavior
         try{
             if(StoreOrderWapModel::be(['order_id'=>$orderId,'paid'=>1])) return true;
             return StoreOrderWapModel::paySuccess($orderId);
-        }catch (\Exception $e){
-            return false;
-        }
-    }
-    /**
-     * 会员订单支付成功后  微信公众号 支付宝
-     * @param $orderId
-     * @param $notify
-     * @return bool
-     */
-    public static function wechatPaySuccessMember($orderId, $notify)
-    {
-        try{
-            if(StoreOrderWapModel::be(['order_id'=>$orderId,'paid'=>1])) return true;
-            return StoreOrderWapModel::payMeSuccess($orderId);
-        }catch (\Exception $e){
-            return false;
-        }
-    }
-    /**
-     * 活动报名订单支付成功后  微信公众号 支付宝
-     * @param $orderId
-     * @param $notify
-     * @return bool
-     */
-    public static function wechatPaySuccessSignup($orderId, $notify)
-    {
-        try{
-            if(EventSignUp::be(['order_id'=>$orderId,'paid'=>1])) return true;
-            return EventSignUp::paySuccess($orderId);
-        }catch (\Exception $e){
-            return false;
-        }
-    }
-
-
-    /**
-     * 商品订单支付成功后  小程序
-     * @param $orderId
-     * @param $notify
-     * @return bool
-     */
-    public static function wechatPaySuccessProductr($orderId, $notify)
-    {
-        try{
-            if(StoreOrderRoutineModel::be(['order_id'=>$orderId,'paid'=>1])) return true;
-            return StoreOrderRoutineModel::paySuccess($orderId);
         }catch (\Exception $e){
             return false;
         }
@@ -140,30 +78,6 @@ class PaymentBehavior
     }
 
     /**
-     * 用户成为合伙人
-     * @param $orderId
-     * @param $notify
-     * @return bool
-     */
-    public static function wechatPaySuccessUserPartner($orderId, $notify)
-    {
-        try{
-            if(UserRecharge::be(['order_id'=>$orderId,'paid'=>1])) return true;
-            return UserRecharge::UserPartnerSuccess($orderId);
-        }catch (\Exception $e){
-            return false;
-        }
-    }
-    public static function wechatPaySuccessBuyVip($orderId, $notify){
-        try{
-            if(UserRecharge::be(['order_id'=>$orderId,'paid'=>1])) return true;
-            return UserRecharge::paySuccessBuyVip($orderId);
-        }catch (\Exception $e){
-            return false;
-        }
-    }
-
-    /**
      * 使用余额支付订单时
      * @param $userInfo
      * @param $orderInfo
@@ -173,8 +87,6 @@ class PaymentBehavior
 
 
     }
-
-
     /**
      * 微信支付订单退款
      * @param $orderNo

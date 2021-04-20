@@ -7,11 +7,13 @@
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
-//
+// +----------------------------------------------------------------------
+
 
 namespace basic;
 
 use service\JsonService;
+use think\Request;
 
 class SystemBasic extends \think\Controller
 {
@@ -103,5 +105,52 @@ class SystemBasic extends \think\Controller
     {
         $this->assign(compact('msg'));
         exit($this->fetch('public/exception'));
+    }
+    /**post提交
+     * @param $params
+     * @param Request|null $request
+     * @param bool $suffix
+     * @return array
+     */
+    final protected static function postMore($params,Request $request = null,$suffix = false)
+    {
+
+        if($request === null) $request = Request::instance();
+        $p = [];
+        $i = 0;
+        foreach ($params as $param){
+            if(!is_array($param)) {
+                $p[$suffix == true ? $i++ : $param] = $request->post($param);
+            }else{
+                if(!isset($param[1])) $param[1] = null;
+                if(!isset($param[2])) $param[2] = '';
+                $name = is_array($param[1]) ? $param[0].'/a' : $param[0];
+                $p[$suffix == true ? $i++ : (isset($param[3]) ? $param[3] : $param[0])] = $request->post($name,$param[1],$param[2]);
+            }
+        }
+        return $p;
+    }
+    /**get提交
+     * @param $params
+     * @param Request|null $request
+     * @param bool $suffix
+     * @return array
+     */
+    final protected static function getMore($params,Request $request=null,$suffix = false)
+    {
+        if($request === null) $request = Request::instance();
+        $p = [];
+        $i = 0;
+        foreach ($params as $param){
+            if(!is_array($param)) {
+                $p[$suffix == true ? $i++ : $param] = $request->get($param);
+            }else{
+                if(!isset($param[1])) $param[1] = null;
+                if(!isset($param[2])) $param[2] = '';
+                $name = is_array($param[1]) ? $param[0].'/a' : $param[0];
+                $p[$suffix == true ? $i++ : (isset($param[3]) ? $param[3] : $param[0])] = $request->get($name,$param[1],$param[2]);
+            }
+        }
+        return $p;
     }
 }
