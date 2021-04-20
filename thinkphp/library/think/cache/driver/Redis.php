@@ -12,6 +12,7 @@
 namespace think\cache\driver;
 
 use think\cache\Driver;
+use think\Config;
 
 /**
  * Redis缓存驱动，适合单机部署、有前端代理实现高可用的场景，性能最好
@@ -24,7 +25,7 @@ class Redis extends Driver
 {
     protected $options = [
         'host'       => '127.0.0.1',
-        'port'       => 6379,
+        'port'       => '6379',
         'password'   => '',
         'select'     => 0,
         'timeout'    => 0,
@@ -40,6 +41,10 @@ class Redis extends Driver
      */
     public function __construct($options = [])
     {
+        $redisConfig = Config::get('cache');
+        $this->options['host'] = $redisConfig['redis']['host'];
+        $this->options['port'] = $redisConfig['redis']['port'];
+        $this->options['password'] = $redisConfig['redis']['password'];
         if (!extension_loaded('redis')) {
             throw new \BadFunctionCallException('not support: redis');
         }
@@ -162,7 +167,7 @@ class Redis extends Driver
      */
     public function rm($name)
     {
-        return $this->handler->delete($this->getCacheKey($name));
+        return $this->handler->del($this->getCacheKey($name));
     }
 
     /**
@@ -177,12 +182,90 @@ class Redis extends Driver
             // 指定标签清除
             $keys = $this->getTagItem($tag);
             foreach ($keys as $key) {
-                $this->handler->delete($key);
+                $this->handler->del($key);
             }
             $this->rm('tag_' . md5($tag));
             return true;
         }
         return $this->handler->flushDB();
+    }
+    /**
+     * redis 获取队列长度
+     * @access public
+     * @param string        $name 队列名
+     * @return mixed
+     */
+    public function Llen($name = null)
+    {
+        return $this->handler->Llen($name);
+    }
+
+    /**
+     * redis 入队操作
+     * @access public
+     * @param string        $name 队列名
+     * @param string|array  $data 队列数据
+     * @return mixed
+     */
+    public function lpush($name, $data = null)
+    {
+        return $this->handler->lpush($name, $data);
+    }
+
+    /**
+     * @param $name
+     * @param $k
+     * @param $v
+     * @return bool|int
+     */
+    public function hset($name, $k, $v)
+    {
+        return $this->handler->hset($name, $k, $v);
+    }
+
+    /**
+     * @param $name
+     * @param $k
+     * @return string
+     */
+    public function hget($name, $k)
+    {
+        return $this->handler->hget($name, $k);
+    }
+    /**
+     * @param $name
+     * @param $has_key
+     * @param $v
+     * @return bool
+     */
+    public function hExists($name, $has_key)
+    {
+        return $this->handler->hExists($name, $has_key);
+    }
+    /**
+     * redis 出队操作
+     * @access public
+     * @param string        $name 队列名
+     * @return mixed
+     */
+    public function lpop($name = null)
+    {
+        return $this->handler->lpop($name);
+    }
+
+    /**删除has
+     * @param $name
+     * @param $key
+     * @return bool|int
+     */
+    public function hdel($name, $key)
+    {
+        return $this->handler->hdel($name, $key);
+    }
+
+    public function expire($key, $time)
+    {
+        return $this->handler->expire($key, $time);
     }
 
 }
