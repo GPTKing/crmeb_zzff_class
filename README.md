@@ -42,7 +42,7 @@ CRMEB知识付费系统是西安众邦科技旗下的具有自主知识产权的
  | [服务器](https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=dligum2z)
  | [授权价格](https://www.crmeb.com)
 
-### 项目演示
+### 商业项目演示
 ####  前台演示:
 ![前端演示](http://cremb-zsff.oss-cn-beijing.aliyuncs.com/00717202102271508212688.jpg)
 #### 后台演示:
@@ -50,6 +50,13 @@ CRMEB知识付费系统是西安众邦科技旗下的具有自主知识产权的
 * 账号：demo    
 * 密码：crmeb.com
 
+### 开源项目演示
+#### 前台演示：
+- 地址：http://kaiyuan.crmeb.net/wap/my/index.html
+#### 后台演示：
+- 地址：http://kaiyuan.crmeb.net/admin/index/index.html
+- 账号：demo
+- 密码：crmeb.com
 ###  技术交流
 **CRMEB知识付费QQ交流群**：780179818 （<a target="_blank" href="https://qm.qq.com/cgi-bin/qm/qr?k=7oOwLqKCjy3OZLVBWbjuSwqZF6B_6X6X&jump_from=webapi">立即加群</a>）
 
