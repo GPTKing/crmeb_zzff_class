@@ -52,7 +52,7 @@ CRMEB知识付费系统是西安众邦科技旗下的具有自主知识产权的
 
 ### 开源项目演示
 #### 前台演示：
-- 地址：http://kaiyuan.crmeb.net/wap/my/index.html
+- 地址：http://kaiyuan.crmeb.net/wap/index/index.html
 #### 后台演示：
 - 地址：http://kaiyuan.crmeb.net/admin/index/index.html
 - 账号：demo
