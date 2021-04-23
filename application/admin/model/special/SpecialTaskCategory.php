@@ -46,7 +46,7 @@ class SpecialTaskCategory extends ModelBasic
                 if($item>0){
                     $cate['sum']=SpecialTask::where('pid', $ket)->count();
                 }else{
-                    $pids=self::categoryId($item['id']);
+                    $pids=self::categoryId($ket);
                     $cate['sum']=SpecialTask::where('pid','in', $pids)->count();
                 }
                 array_push($list,$cate);
@@ -56,7 +56,7 @@ class SpecialTaskCategory extends ModelBasic
                 $cate=self::where('id',$item)->find();
                 if($cate) {
                     $cate=$cate->toArray();
-                    $pids=self::categoryId($item['id']);
+                    $pids=self::categoryId($item);
                     $cate['sum']=SpecialTask::where('pid','in', $pids)->count();
                     array_push($list,$cate);
                 }
@@ -68,7 +68,7 @@ class SpecialTaskCategory extends ModelBasic
     public static function setWhere($where)
     {
         $model = self::order('sort desc,add_time desc')->where('is_del', 0);
-        if($where['pid']) $model=$model->where('pid',$where['pid']);
+        if($where['pid']) $model=$model->where('id',$where['pid']);
         if ($where['cate_name'] != '') $model = $model->where('title', 'like', "%$where[cate_name]%");
         return $model;
     }
@@ -78,6 +78,7 @@ class SpecialTaskCategory extends ModelBasic
      */
     public static function categoryId($pid=0){
         $data=self::where('is_del', 0)->where('pid',$pid)->column('id');
+        array_push($data,$pid);
         return $data;
     }
 }
