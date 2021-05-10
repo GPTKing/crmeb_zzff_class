@@ -44,6 +44,8 @@ CRMEB知识付费系统是西安众邦科技旗下的具有自主知识产权的
  | [TP5开发手册](https://www.kancloud.cn/manual/thinkphp5/118003)
  | [服务器](https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=dligum2z)
  | [授权价格](https://www.crmeb.com)
+ 
+ 
 ---
 #### 开源项目演示
    [前端演示](http://kaiyuan.crmeb.net/wap/index/index.html)
@@ -58,7 +60,9 @@ CRMEB知识付费系统是西安众邦科技旗下的具有自主知识产权的
 ####  如果项目对您有帮助，请给个star
 ####  CRMEB知识付费QQ交流群：**780179818** （<a target="_blank" href="https://qm.qq.com/cgi-bin/qm/qr?k=7oOwLqKCjy3OZLVBWbjuSwqZF6B_6X6X&jump_from=webapi">立即加群</a>）
 
+
 ---
+
 ###  项目文档
 * 功能列表：[http://help.crmeb.net/crmeb_zsff/1809860](http://help.crmeb.net/crmeb_zsff/1809860)
 * 安装视频：<https://www.bilibili.com/video/BV16t4y1U7DD/>
