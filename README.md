@@ -44,25 +44,21 @@ CRMEB知识付费系统是西安众邦科技旗下的具有自主知识产权的
  | [TP5开发手册](https://www.kancloud.cn/manual/thinkphp5/118003)
  | [服务器](https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=dligum2z)
  | [授权价格](https://www.crmeb.com)
+---
+#### 开源项目演示
+   [前端演示](http://kaiyuan.crmeb.net/wap/index/index.html)
+ | [系统后台演示](http://kaiyuan.crmeb.net/admin/index/index.html)
 
-### 商业项目演示
-####  前台演示:
+#### 商业版演示:
+   [前端演示](http://zhishifufei.crmeb.net/wap/index/index)
+ | [系统后台演示](http://zhishifufei.crmeb.net/admin)
+
+#### 其他演示
 ![前端演示](http://cremb-zsff.oss-cn-beijing.aliyuncs.com/00717202102271508212688.jpg)
-#### 后台演示:
-* 地址：http://zhishifufei.crmeb.net/index.php/admin
-* 账号：demo    
-* 密码：crmeb.com
+####  如果项目对您有帮助，请给个star
+####  CRMEB知识付费QQ交流群：**780179818** （<a target="_blank" href="https://qm.qq.com/cgi-bin/qm/qr?k=7oOwLqKCjy3OZLVBWbjuSwqZF6B_6X6X&jump_from=webapi">立即加群</a>）
 
-### 开源项目演示
-#### 前台演示：
-- 地址：http://kaiyuan.crmeb.net/wap/index/index.html
-#### 后台演示：
-- 地址：http://kaiyuan.crmeb.net/admin/index/index.html
-- 账号：demo
-- 密码：crmeb.com
-###  技术交流
-**CRMEB知识付费QQ交流群**：780179818 （<a target="_blank" href="https://qm.qq.com/cgi-bin/qm/qr?k=7oOwLqKCjy3OZLVBWbjuSwqZF6B_6X6X&jump_from=webapi">立即加群</a>）
-
+---
 ###  项目文档
 * 功能列表：[http://help.crmeb.net/crmeb_zsff/1809860](http://help.crmeb.net/crmeb_zsff/1809860)
 * 安装视频：<https://www.bilibili.com/video/BV16t4y1U7DD/>
@@ -72,7 +68,7 @@ CRMEB知识付费系统是西安众邦科技旗下的具有自主知识产权的
 ### 运行环境
 * PHP  7.1 
 
-* MYSQL  5.7
+* MYSQL  5.6~5.7
 
 * PDO PHP Extension 
 
@@ -82,6 +78,8 @@ CRMEB知识付费系统是西安众邦科技旗下的具有自主知识产权的
 
 * Mylsqi PHP Extension
 需要开启端口: 20005 20014 20015 端口
+
+---
 ### 技术选型
 #### 后端技术
 |  技术   | 说明 | 官网 |
@@ -111,6 +109,7 @@ CRMEB知识付费系统是西安众邦科技旗下的具有自主知识产权的
 | Nginx  | 1.10 | http://nginx.org/en/download.html |
 | PHP  | 7.1 | https://www.php.net/ |
 
+---
 ### 功能说明
 * 前端页面设置：[首页、课程分类、在线商城、个人中心banner、图标、内容编辑修改
 ](http://help.crmeb.net/crmeb_zsff/1514740)
@@ -174,6 +173,8 @@ CRMEB知识付费系统是西安众邦科技旗下的具有自主知识产权的
 #### Windows环境安装
 *  宝塔版安装请参考：[windows+宝塔安装教程](http://help.crmeb.net/crmeb_zsff/2006076)
 #### 手动安装 [参考](http://help.crmeb.net/crmeb_zsff/1514721)
+
+---
 #### 注意：
 * 扩展安装：[知识付费需要安装PHP插件：fileinfo、redis](http://help.crmeb.net/crmeb_zsff/1863590)
 * 安装 swoole-loader：[请使用知识付费系统里help里的swoole-loader文件；不要在官方下载](http://help.crmeb.net/crmeb_zsff/1944228)
