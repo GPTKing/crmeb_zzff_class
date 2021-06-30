@@ -267,7 +267,6 @@ class StoreOrder extends ModelBasic
         if (!$userInfo) return self::setErrorInfo('用户不存在!');
         $total_price = 0;
         $combination_id = 0;
-        $order=self::where(['uid'=>$uid,'cart_id'=>$special->id,'paid'=>1,'is_gift'=>0,'refund_status'=>0])->find();
         switch ((int)$pay_type) {
             case 1:
                 //送朋友
@@ -282,6 +281,7 @@ class StoreOrder extends ModelBasic
                 if(isset($userInfo['level']) && $userInfo['level'] > 0 && $special->member_pay_type == 1 && $special->member_money > 0){
                     $total_price = $special->member_money;
                 }
+                $order=self::where(['uid'=>$uid,'cart_id'=>$special->id,'paid'=>1,'is_gift'=>0,'type'=>0,'status'=>0,'refund_status'=>0,'is_del'=>0])->find();
                 if($order) return self::setErrorInfo('您已购买专题，无需再次购买!');
                 break;
         }
