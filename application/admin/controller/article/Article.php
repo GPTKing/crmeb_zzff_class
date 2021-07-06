@@ -19,11 +19,7 @@ use app\admin\model\article\ArticleCategory as ArticleCategoryModel;
 use app\admin\model\article\Article as ArticleModel;
 use app\admin\model\system\SystemAttachment;
 
-/**
- * 图文管理
- * Class WechatNews
- * @package app\admin\controller\wechat
- */
+
 class Article extends AuthController
 {
     /**

@@ -26,7 +26,6 @@ use app\wap\model\user\WechatUser as WechatUserWap;
 /**
  * 微信充值记录
  * Class UserRecharge
- * @package app\admin\controller\user
  */
 class UserRecharge extends AuthController
 {

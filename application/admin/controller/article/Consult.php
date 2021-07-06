@@ -23,7 +23,6 @@ use traits\CurdControllerTrait;
 /**
  * 活动咨询控制器
  * Class Consult
- * @package app\admin\controller\wechat
  */
 class Consult extends AuthController
 {

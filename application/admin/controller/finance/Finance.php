@@ -25,8 +25,7 @@ use app\admin\model\user\UserExtract;
 
 /**
  * 微信充值记录
- * Class UserRecharge
- * @package app\admin\controller\user
+ * Class Finance
  */
 class Finance extends AuthController
 {

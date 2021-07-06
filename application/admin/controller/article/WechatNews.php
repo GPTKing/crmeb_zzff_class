@@ -22,7 +22,6 @@ use app\admin\model\system\SystemAttachment;
 /**
  * 图文管理
  * Class WechatNews
- * @package app\admin\controller\wechat
  */
 class WechatNews extends AuthController
 {
