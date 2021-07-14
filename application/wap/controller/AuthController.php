@@ -53,7 +53,11 @@ class AuthController extends WapBasic
     protected function _initialize()
     {
         parent::_initialize();
-        $this->redisModel = new Redis();
+        try {
+            $this->redisModel = new Redis();
+        } catch (\Exception $e) {
+            parent::serRedisPwd($e->getMessage());
+        }
         $this->isWechat = UtilService::isWechatBrowser();
         $spread_uid = $this->request->get('spread_uid', 0);
         $NoWechantVisitWhite = $this->NoWechantVisitWhite();

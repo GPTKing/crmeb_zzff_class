@@ -118,4 +118,21 @@ class WapBasic extends Controller
         return $openid;
     }
 
+    /**redis 返回信息
+     * @param $msg
+     */
+    public function serRedisPwd($msg){
+        if(strpos($msg,'username-password pair') !==false){
+            return $this->failed('请检查redis密码!','http://help.crmeb.net/crmeb_zsff/2291680');
+        }elseif (strpos($msg,'Connection refused') !==false){
+            return $this->failed('请安装redis软件或连接被拒绝!');
+        }elseif (strpos($msg,'NOAUTH Authentication required') !==false){
+            return $this->failed('redis认证错误!','http://help.crmeb.net/crmeb_zsff/2000690');
+        }elseif (strpos($msg,'not support: redis') !==false){
+            return $this->failed('请安装redis扩展!','http://help.crmeb.net/crmeb_zsff/1863590');
+        }else{
+            return $this->failed('请设置redis密码!','http://help.crmeb.net/crmeb_zsff/1907223');
+        }
+    }
+
 }
