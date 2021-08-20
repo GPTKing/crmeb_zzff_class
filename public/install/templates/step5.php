@@ -16,8 +16,8 @@ $admin = $root."../index.php/admin/index/";
   <?php require './templates/header.php';?>
   <section class="section">
     <div class="">
-      <div class="success_tip cc"> <a href="<?php echo $admin;?>" class="f16 b">安装完成，进入后台管理</a>
-		<p>为了您站点的安全，安装完成后即可将网站根目录下的“install”文件夹删除，或者/install/目录下创建install.lock文件防止重复安装。<p>
+      <div class="success_tip cc">
+          <a href="<?php echo $admin;?>" class="f16 b">安装完成，进入后台管理</a>
       </div>
 	        <div class="bottom tac">
 	        <a href="<?php echo 'http://'.$host;?>/index.php/wap/" class="btn">进入前台</a>
