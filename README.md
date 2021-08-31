@@ -114,7 +114,7 @@ CRMEB知识付费系统是西安众邦科技旗下的具有自主知识产权的
 
 ---
 ### 功能说明
-* 前端页面设置：[首页、课程分类、在线商城、个人中心banner、图标、内容编辑修改
+* 前端页面设置：[首页、课程分类、图标、内容编辑修改
 ](http://help.crmeb.net/crmeb_zsff/1514740)
 
 * 直播课堂：[直播课堂添加、列表管理、直播打赏、直播带货管理](http://help.crmeb.net/crmeb_zsff/1514744)
@@ -122,18 +122,8 @@ CRMEB知识付费系统是西安众邦科技旗下的具有自主知识产权的
 * 专题课程：[视频点播、付费音频、付费图文内容管理
 ](http://help.crmeb.net/crmeb_zsff/1514747)
 
-* 课程拼团：[课程、专题拼团活动开启、赠送好友、订单管理
-](http://help.crmeb.net/crmeb_zsff/1514751)
-
-* 讲师管理：[课程、直播讲师管理](http://help.crmeb.net/crmeb_zsff/2053392)
-
 * 分销系统：[课程分销推广、分销海报管理
 ](http://help.crmeb.net/crmeb_zsff/1514757)
-
-* 会员系统：[付费会员、实体会员卡、卡密激活、会员权益管理](http://help.crmeb.net/crmeb_zsff/1716093)
-
-* 商品管理：[实物商品添加、分类、订单、发货管理
-](http://help.crmeb.net/crmeb_zsff/1861031)
 
 * 客服管理：[在线客服管理
 ](http://help.crmeb.net/crmeb_zsff/1943119)
@@ -142,30 +132,34 @@ CRMEB知识付费系统是西安众邦科技旗下的具有自主知识产权的
 ](http://help.crmeb.net/crmeb_zsff/1988014)
 ### 界面展示
 #### 前端界面展示
-![](http://cremb-zsff.oss-cn-beijing.aliyuncs.com/a8fd0202102271508165357.jpg)
+![](http://cremb-zsff.oss-cn-beijing.aliyuncs.com/a2860202108311621017594.jpeg)
 ![](http://cremb-zsff.oss-cn-beijing.aliyuncs.com/ed92820210227150817214.jpeg)
-![](http://cremb-zsff.oss-cn-beijing.aliyuncs.com/12189202102271508176072.jpg)
+![](http://cremb-zsff.oss-cn-beijing.aliyuncs.com/541fc202108311621015000.jpeg)
 ![](http://cremb-zsff.oss-cn-beijing.aliyuncs.com/29462202102271508179282.jpg)
 #### 后端界面展示
-![](http://cremb-zsff.oss-cn-beijing.aliyuncs.com/d8017202102271507331006.png)
+![](http://cremb-zsff.oss-cn-beijing.aliyuncs.com/d4dbe202108311518211150.png)
 
-![](http://cremb-zsff.oss-cn-beijing.aliyuncs.com/e8227202102271508082044.png)
-![](http://cremb-zsff.oss-cn-beijing.aliyuncs.com/64d1f202102271508081565.png)
+![](http://cremb-zsff.oss-cn-beijing.aliyuncs.com/24af6202108311518211430.png)
+![](http://cremb-zsff.oss-cn-beijing.aliyuncs.com/93bc5202108311518223678.png)
+![](http://cremb-zsff.oss-cn-beijing.aliyuncs.com/f2f94202108311518202625.png)
+![](http://cremb-zsff.oss-cn-beijing.aliyuncs.com/77bf2202108311518204801.png)
+![](http://cremb-zsff.oss-cn-beijing.aliyuncs.com/34752202108311518225647.png)
+![](http://cremb-zsff.oss-cn-beijing.aliyuncs.com/90fd0202108311518211086.png)
+![](http://cremb-zsff.oss-cn-beijing.aliyuncs.com/2764f202108311518234824.png)
 
-![](http://cremb-zsff.oss-cn-beijing.aliyuncs.com/511ed202102271546198376.png)
-![](http://cremb-zsff.oss-cn-beijing.aliyuncs.com/89f96202102271508103359.png)
+![](http://cremb-zsff.oss-cn-beijing.aliyuncs.com/186a620210831151823942.png)
+![](http://cremb-zsff.oss-cn-beijing.aliyuncs.com/8eadb202108311518241856.png)
+![](http://cremb-zsff.oss-cn-beijing.aliyuncs.com/63d19202108311518259127.png)
+![](http://cremb-zsff.oss-cn-beijing.aliyuncs.com/b87ea202108311518244885.png)
 
-![](http://cremb-zsff.oss-cn-beijing.aliyuncs.com/d4154202102271508111196.png)
-![](http://cremb-zsff.oss-cn-beijing.aliyuncs.com/1fa7e202102271508076272.jpg)
-![](http://cremb-zsff.oss-cn-beijing.aliyuncs.com/2536d202102271508134546.png)
+![](http://cremb-zsff.oss-cn-beijing.aliyuncs.com/17fc6202108311518246319.png)
+![](http://cremb-zsff.oss-cn-beijing.aliyuncs.com/2545120210831151825680.png)
+![](http://cremb-zsff.oss-cn-beijing.aliyuncs.com/4f03a202108311518252361.png)
+![](http://cremb-zsff.oss-cn-beijing.aliyuncs.com/d3b44202108311518266851.png)
+![](http://cremb-zsff.oss-cn-beijing.aliyuncs.com/459c1202108311518266660.png)
 
-![](http://cremb-zsff.oss-cn-beijing.aliyuncs.com/804c6202102271508133025.png)
-![](http://cremb-zsff.oss-cn-beijing.aliyuncs.com/3c095202102271508144559.png)
-![](http://cremb-zsff.oss-cn-beijing.aliyuncs.com/ef561202102271508148071.png)
 
-![](http://cremb-zsff.oss-cn-beijing.aliyuncs.com/37826202102271508157278.png)
-![](http://cremb-zsff.oss-cn-beijing.aliyuncs.com/97403202102271508156909.png)
-![](http://cremb-zsff.oss-cn-beijing.aliyuncs.com/fffd420210227150816963.png)
+
 
 ### 功能对比
 
