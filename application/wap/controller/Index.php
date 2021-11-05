@@ -205,17 +205,15 @@ class Index extends AuthController
      */
     public function get_content_recommend($page = 1, $limit = 10)
     {
-        $recommend_list = json_encode(Recommend::getContentRecommend((int)$page, (int)$limit, $this->uid));
-
         //获取推荐列表
-//        $exists_recommend_reids = $this->redisModel->HEXISTS($this->subjectUrl."wap_index_has","recommend_list");
-//        if (!$exists_recommend_reids) {
-//            $recommend_list = json_encode(Recommend::getContentRecommend((int)$page, (int)$limit, $this->uid));
-//            $this->redisModel->hset($this->subjectUrl."wap_index_has","recommend_list", $recommend_list);
-//            $this->redisModel->expire($this->subjectUrl."wap_index_has",120);
-//        }else{
-//            $recommend_list = $this->redisModel->hget($this->subjectUrl."wap_index_has","recommend_list");
-//        }
+        $exists_recommend_reids = $this->redisModel->HEXISTS($this->subjectUrl."wap_index_has","recommend_list");
+        if (!$exists_recommend_reids) {
+            $recommend_list = json_encode(Recommend::getContentRecommend((int)$page, (int)$limit, $this->uid));
+            $this->redisModel->hset($this->subjectUrl."wap_index_has","recommend_list", $recommend_list);
+            $this->redisModel->expire($this->subjectUrl."wap_index_has",120);
+        }else{
+            $recommend_list = $this->redisModel->hget($this->subjectUrl."wap_index_has","recommend_list");
+        }
         return JsonService::successful(json_decode($recommend_list,true));
     }
 
