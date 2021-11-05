@@ -45,6 +45,15 @@ class Article extends AuthController
             'news_detail',
         ];
     }
+
+    /**新闻列表页
+     * @param string $cid
+     * @return mixed|void
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
     public function index($cid = '')
     {
         $title = '新闻列表';
@@ -56,6 +65,13 @@ class Article extends AuthController
         $this->assign(compact('title', 'cid'));
         return $this->fetch();
     }
+
+    /**新闻列表
+     * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
     public function unified_list()
     {
         $title = '新闻列表';
@@ -67,6 +83,10 @@ class Article extends AuthController
         ]);
         return $this->fetch();
     }
+
+    /**
+     * 获取新闻列表
+     */
     public function get_unifiend_list(){
         $where = UtilService::getMore([
             ['page', 1],
@@ -85,6 +105,10 @@ class Article extends AuthController
         return JsonService::successful($news_bulletin);
     }
 
+    /**新闻详情页
+     * @param int $id
+     * @return mixed
+     */
     public function details($id = 0)
     {
         $this->assign('id',$id);
