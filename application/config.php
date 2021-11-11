@@ -218,7 +218,7 @@ return [
             'type'   => 'redis',
             // 服务器地址
             'host'  => '127.0.0.1',
-            'password'   => '123456',
+            'password'   => '',
             'port'   => 6379,
         ],
     ],
