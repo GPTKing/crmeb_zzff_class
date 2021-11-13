@@ -24,7 +24,10 @@ use think\Url;
 use service\FormBuilder as Form;
 use app\admin\model\wechat\WechatNewsCategory as WechatNewsCategoryModel;
 
-
+/**新闻控制器
+ * Class ArticleV1
+ * @package app\admin\controller\article
+ */
 class ArticleV1 extends AuthController
 {
     public function index($cid = 0)
