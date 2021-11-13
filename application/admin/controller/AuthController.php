@@ -92,7 +92,7 @@ class AuthController extends SystemBasic
         $adminInfo = SystemAdmin::getValidAdminInfoOrFail($adminId);
         if (!$adminInfo) $this->failed(SystemAdmin::getErrorInfo('请登陆!'));
         $this->adminInfo = $adminInfo;
-        SystemAdmin::setLoginInfo($adminInfo);
+        SystemAdmin::setLoginInfo($adminInfo->toArray());
         return $adminInfo;
     }
 }

@@ -118,7 +118,7 @@ class SystemAdmin extends ModelBasic
     public static function activeAdminAuthOrFail()
     {
         $adminInfo = self::activeAdminInfoOrFail();
-        return $adminInfo->level === 0 ? SystemRole::getAllAuth() : SystemRole::rolesByAuth($adminInfo->roles);
+        return $adminInfo['level'] === 0 ? SystemRole::getAllAuth() : SystemRole::rolesByAuth($adminInfo['roles']);
     }
 
     /**
