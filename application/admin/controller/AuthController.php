@@ -59,7 +59,7 @@ class AuthController extends SystemBasic
         $this->adminId = $adminInfo['id'];
         $this->getActiveAdminInfo();
         $this->auth = SystemAdmin::activeAdminAuthOrFail();
-        $this->adminInfo->level === 0 || $this->checkAuth();
+        $this->adminInfo['level'] === 0 || $this->checkAuth();
         $this->assign('_admin', $this->adminInfo);
         HookService::listen('admin_visit', $this->adminInfo, 'system', false, SystemBehavior::class);
     }

@@ -25,7 +25,7 @@ class SystemBehavior
 {
     public static function adminVisit($adminInfo,$type = 'system')
     {
-        if(strtolower(Request::instance()->controller()) != 'index') SystemLog::adminVisit($adminInfo->id,$adminInfo->account,$type);
+        if(strtolower(Request::instance()->controller()) != 'index') SystemLog::adminVisit($adminInfo['id'],$adminInfo['account'],$type);
     }
 
     public static function systemAdminLoginAfter($adminInfo)
