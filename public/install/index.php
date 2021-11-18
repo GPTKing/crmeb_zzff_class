@@ -354,6 +354,16 @@ switch ($step) {
         @touch('./install.lock');
         exit();
 }
+//读取版本号
+function getversion(){
+    $version_arr = [];
+    $curent_version = @file(dirname(dirname(__DIR__)).'/.version');
+    foreach ($curent_version as $val){
+        list($k,$v)=explode('=',$val);
+        $version_arr[$k]=trim($v);
+    }
+    return $version_arr;
+}
 
 function testwrite($d)
 {
