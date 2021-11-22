@@ -324,7 +324,7 @@ class AliyunLive extends AuthController
     public function special_live($subject_id = 0)
     {
         $special_type = $this->request->param("special_type");
-        $role_session = Session::get("adminInfo") ? Session::get("adminInfo")->toArray() : [];
+        $role_session = Session::get("adminInfo") ? Session::get("adminInfo") : [];
         if ($role_session) {
             $login_role = RoleModel::where(['id' => $role_session['roles']])->field('role_name, id, sign, status')->find()->toArray();
         }
