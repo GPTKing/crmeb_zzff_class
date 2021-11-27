@@ -62,8 +62,7 @@ class AuthController extends WapBasic
         $spread_uid = $this->request->get('spread_uid', 0);
         $NoWechantVisitWhite = $this->NoWechantVisitWhite();
         $subscribe = false;
-        $site_url = SystemConfigService::get('site_url');
-        $this->subjectUrl=getUrlToDomain($site_url);
+        $this->subjectUrl=getUrlToDomain();
         try {
             $uid = User::getActiveUid();
             if (!empty($uid)) {
@@ -84,16 +83,6 @@ class AuthController extends WapBasic
                 if (!isset($this->userInfo['is_promoter'])) $this->userInfo['is_promoter'] = 0;
                 if (!isset($this->userInfo['avatar'])) $this->userInfo['avatar'] = '';
                 if (!isset($this->userInfo['nickname'])) $this->userInfo['nickname'] = '';
-                //提取二维码
-                try {
-                    $codeUrl = WechatQrcode::getTemporaryQrcode('binding', $this->uid);
-                    if (empty($this->userInfo))
-                        $codeUrl = SystemConfigService::get('wechat_qrcode');
-                    else
-                        $codeUrl = $codeUrl['url'];
-                } catch (\Throwable $e) {
-                    $codeUrl = '';
-                }
                 //是否关注公众号
                 $subscribe = WechatUser::where('uid', $this->uid)->value('subscribe');
                 if (!$NoWechantVisitWhite) {

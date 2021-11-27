@@ -19,6 +19,7 @@ use service\SystemConfigService;
 use think\cache\driver\Redis;
 use traits\ModelTrait;
 use basic\ModelBasic;
+use basic\WapBasic;
 use app\wap\model\article\Article;
 use think\Db;
 
@@ -73,15 +74,19 @@ class Search extends ModelBasic
                 $id=0;
             }
         }
-        $redisModel = new Redis();
-        $site_url = SystemConfigService::get('site_url');
-        $subjectUrl=getUrlToDomain($site_url);
-        $exists_search_reids = $redisModel->HEXISTS($subjectUrl."wap_index_has",self::searchHistory.$uid);
-        if ($exists_search_reids && $id) {
-            $data['id'] = $id;
-            $search_list_redis = json_decode($redisModel->hget($subjectUrl."wap_index_has",self::searchHistory.$uid),true);
-            $redis_tmp = array_merge([$data], $search_list_redis);
-            $redisModel->hset($subjectUrl."wap_index_has",self::searchHistory.$uid, json_encode($redis_tmp));
+        try {
+            $redisModel = new Redis();
+            $subjectUrl=getUrlToDomain();
+            $exists_search_reids = $redisModel->HEXISTS($subjectUrl."wap_index_has","search_history_".$uid);
+            if ($exists_search_reids && $id) {
+                $data['id'] = $id;
+                $search_list_redis = json_decode($redisModel->hget($subjectUrl."wap_index_has","search_history_".$uid),true);
+                $redis_tmp = array_merge([$data], $search_list_redis);
+                $redisModel->hset($subjectUrl."wap_index_has","search_history_".$uid, json_encode($redis_tmp));
+            }
+        } catch (\Exception $e) {
+            $basic=new WapBasic;
+            return $basic->serRedisPwd($e->getMessage());
         }
         return $searchList;
     }

@@ -29,13 +29,17 @@ function getUserNickname($uid){
 function del_redis_hash($name, $key)
 {
     if (!$name || !$key) return false;
-    $redisModel = new \think\cache\driver\Redis();
-    $site_url = \service\SystemConfigService::get('site_url');
-    $subjectUrl=GetUrlToDomain($site_url);
-    $name=$subjectUrl.$subjectUrl;
-    $exists_recommend_redis = $redisModel->HEXISTS($name,$key);
-    if ($exists_recommend_redis)  $redisModel->hdel($name,$key);
-    return true;
+    try {
+        $redisModel = new \think\cache\driver\Redis();
+        $subjectUrl=getUrlToDomain();
+        $name=$subjectUrl.$name;
+        $exists_recommend_redis = $redisModel->HEXISTS($name,$key);
+        if ($exists_recommend_redis)  $redisModel->hdel($name,$key);
+        return true;
+    } catch (\Exception $e) {
+        $basic=new \basic\WapBasic;
+        return $basic->serRedisPwd($e->getMessage());
+    }
 }
 /**
  * 获取产品名称

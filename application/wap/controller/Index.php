@@ -205,16 +205,20 @@ class Index extends AuthController
      */
     public function get_content_recommend($page = 1, $limit = 10)
     {
-        //获取推荐列表
-        $exists_recommend_reids = $this->redisModel->HEXISTS($this->subjectUrl."wap_index_has","recommend_list");
-        if (!$exists_recommend_reids) {
-            $recommend_list = json_encode(Recommend::getContentRecommend((int)$page, (int)$limit, $this->uid));
-            $this->redisModel->hset($this->subjectUrl."wap_index_has","recommend_list", $recommend_list);
-            $this->redisModel->expire($this->subjectUrl."wap_index_has",120);
-        }else{
-            $recommend_list = $this->redisModel->hget($this->subjectUrl."wap_index_has","recommend_list");
+        try {
+            //获取推荐列表
+            $exists_recommend_reids = $this->redisModel->HEXISTS($this->subjectUrl."wap_index_has","recommend_list");
+            if (!$exists_recommend_reids) {
+                $recommend_list = json_encode(Recommend::getContentRecommend((int)$page, (int)$limit, $this->uid));
+                $this->redisModel->hset($this->subjectUrl."wap_index_has","recommend_list", $recommend_list);
+                $this->redisModel->expire($this->subjectUrl."wap_index_has",120);
+            }else{
+                $recommend_list = $this->redisModel->hget($this->subjectUrl."wap_index_has","recommend_list");
+            }
+            return JsonService::successful(json_decode($recommend_list,true));
+        } catch (\Exception $e) {
+            return JsonService::fail(parent::serRedisPwd($e->getMessage()));
         }
-        return JsonService::successful(json_decode($recommend_list,true));
     }
 
     /**
@@ -233,7 +237,11 @@ class Index extends AuthController
         $uid=$this->userInfo['uid'] ? $this->userInfo['uid'] : 0;
         if($uid) {
             $res=Db::name('search_history')->where('uid',$uid)->delete();
-            $res1=$this->redisModel->hdel($this->subjectUrl."wap_index_has","search_history_".$uid);
+            try {
+                $res1=$this->redisModel->hdel($this->subjectUrl."wap_index_has","search_history_".$this->uid);
+            } catch (\Exception $e) {
+                return JsonService::fail(parent::serRedisPwd($e->getMessage()));
+            }
             if($res && $res1){
                 return JsonService::successful('清除成功！');
             }else{
@@ -247,22 +255,26 @@ class Index extends AuthController
      * */
     public function get_search_history($search = '', $limit = 0)
     {
-        $uid=$this->userInfo['uid'] ? $this->userInfo['uid'] : 0;
-        if($uid) {
-           $exists_search_reids = $this->redisModel->HEXISTS($this->subjectUrl."wap_index_has","search_history_".$uid);
-           if (!$exists_search_reids) {
-               $search_list = Search::userSearchHistory($uid) ? json_encode(Search::userSearchHistory($uid)) : [];
-               if ($search_list) {
-                   $this->redisModel->hset($this->subjectUrl."wap_index_has","search_history_".$uid, $search_list);
-                   $this->redisModel->expire($this->subjectUrl."wap_index_has",120);
-               }else{
-                   $this->redisModel->hdel($this->subjectUrl."wap_index_has","search_history_".$uid);
-               }
-           }else{
-               $search_list = $this->redisModel->hget($this->subjectUrl."wap_index_has","search_history_".$uid);
-           }
+        if($this->uid) {
+            try {
+                $exists_search_reids = $this->redisModel->HEXISTS($this->subjectUrl."wap_index_has","search_history_".$this->uid);
+                if (!$exists_search_reids) {
+                    $search_list = Search::userSearchHistory($this->uid);
+                    $search_list = count($search_list) > 0 ? json_encode($search_list) : [];
+                    if ($search_list) {
+                        $this->redisModel->hset($this->subjectUrl."wap_index_has","search_history_".$this->uid, $search_list);
+                        $this->redisModel->expire($this->subjectUrl."wap_index_has",120);
+                    }else{
+                        $this->redisModel->hdel($this->subjectUrl."wap_index_has","search_history_".$this->uid);
+                    }
+                }else{
+                    $search_list = $this->redisModel->hget($this->subjectUrl."wap_index_has","search_history_".$this->uid);
+                }
+            } catch (\Exception $e) {
+                return JsonService::fail(parent::serRedisPwd($e->getMessage()));
+            }
         }else{
-           $search_list=[];
+            $search_list=[];
         }
         return JsonService::successful($search_list ? json_decode($search_list, true) : []);
     }

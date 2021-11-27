@@ -83,8 +83,7 @@ class StoreOrder extends ModelBasic
 
     public static function cacheOrderInfo($uid, $cartInfo, $priceGroup, $cacheTime = 600)
     {
-        $site_url = SystemConfigService::get('site_url');
-        $subjectUrl=getUrlToDomain($site_url);
+        $subjectUrl=getUrlToDomain();
         $key = md5(time());
         Cache::store("redis")->set($subjectUrl.'user_order_' . $uid . $key, compact('cartInfo', 'priceGroup'), $cacheTime);
         return $key;
@@ -92,8 +91,7 @@ class StoreOrder extends ModelBasic
 
     public static function getCacheOrderInfo($uid, $key)
     {
-        $site_url = SystemConfigService::get('site_url');
-        $subjectUrl=getUrlToDomain($site_url);
+        $subjectUrl=getUrlToDomain();
         $cacheName = $subjectUrl.'user_order_' . $uid . $key;
         if (!Cache::store("redis")->has($cacheName)) return null;
         return Cache::store("redis")->get($cacheName);
@@ -101,8 +99,7 @@ class StoreOrder extends ModelBasic
 
     public static function clearCacheOrderInfo($uid, $key)
     {
-        $site_url = SystemConfigService::get('site_url');
-        $subjectUrl=getUrlToDomain($site_url);
+        $subjectUrl=getUrlToDomain();
         Cache::store("redis")->clear($subjectUrl.'user_order_' . $uid . $key);
     }
 

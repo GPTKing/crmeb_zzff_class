@@ -167,11 +167,13 @@ function money_rate_num($money, $type) {
     }
 }
 
-function getUrlToDomain($domain) {
-    if($domain=='') $domain=$_SERVER['PHP_SELF'];
-    $arr = parse_url($domain);
+function getUrlToDomain() {
+    $site_url = \service\SystemConfigService::get('site_url');
+    if($site_url=='') $site_url=$_SERVER['PHP_SELF'];
+    $arr = parse_url($site_url);
     if (!isset($arr['host'])) $arr['host'] = $arr['path'];
-    return $arr['host'];
+    $array=explode('.',$arr['host']);
+    return implode('_',$array);
 }
 
 if (!function_exists('filter_emoji')) {
