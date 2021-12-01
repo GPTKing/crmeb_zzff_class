@@ -402,6 +402,7 @@ class Special extends AuthController
             case 30://虚拟币充值
                 $auth_api = new AuthApi();
                 $auth_api->user_wechat_recharge($special_id, $payType);
+                break;
             default://专题支付
                 $this->create_special_order($special_id, $pay_type_num, $payType, $pinkId, $total_num, $link_pay_uid);
         }

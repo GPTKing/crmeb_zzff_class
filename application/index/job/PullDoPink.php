@@ -68,10 +68,6 @@ class PullDoPink {
      */
     private function doPinkJob($data)
     {
-        //SpecialBuy::set(['order_id' => 1111, 'special_id' => $data['b'], 'uid' => 222]);
-       // print("<info>Hello Job Started. job Data is: ".var_export($data,true)."</info> \n");
-       // print("<info>Hello Job is Fired at " . date('Y-m-d H:i:s') ."</info> \n");
-       // print("<info>Hello Job is Done!"."</info> \n");
         return true;
     }
 }

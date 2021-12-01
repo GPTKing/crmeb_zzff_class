@@ -511,7 +511,7 @@ class StoreOrder extends ModelBasic
         User::bcInc($order['uid'], 'pay_count', 1, 'uid');
         $res1 = self::where('order_id', $orderId)->where('type',0)->update(['paid' => 1, 'pay_time' => time()]);
         if ($order->combination_id && $res1 && !$order->refund_status) {
-            $resPink = StorePink::createPink($order);//创建拼团
+            return false;
         } else {
             if (!$order->is_gift) {
                 //如果是专栏，记录专栏下所有专题购买。
