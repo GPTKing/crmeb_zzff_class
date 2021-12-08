@@ -54,7 +54,7 @@
     </div>
 </div>
 <div class="footer" style="    position: fixed;bottom: 0;width: 100%;left: 0;margin: 0;opacity: 0.8;">
-    <div class="pull-right">Copyright © CRMEB 版本号：<a href="http://www.crmeb.com/" target="_blank">CRMEB-ZSFF-OPENv1.4.4</a>
+    <div class="pull-right">Copyright © CRMEB 版本号：<a href="http://www.crmeb.com/" target="_blank">CRMEB-ZSFF-KY-v1.4.4</a>
     </div>
 </div>
 <script src="{__PLUG_PATH}jquery-1.10.2.min.js"></script>

@@ -141,7 +141,7 @@
         <!--底部版权-->
         <div class="footer"  @touchmove.prevent >
             <div class="pull-right" style="padding-left: 10px"></div>
-            <div class="pull-right">Copyright © CRMEB 版本号：<a href="http://www.crmeb.com/" target="_blank">CRMEB-ZSFF-OPENv1.4.4</a>
+            <div class="pull-right">Copyright © CRMEB 版本号：<a href="http://www.crmeb.com/" target="_blank">CRMEB-ZSFF-KY-v1.4.4</a>
             </div>
         </div>
     </div>
