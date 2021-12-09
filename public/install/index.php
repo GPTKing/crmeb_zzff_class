@@ -345,7 +345,6 @@ switch ($step) {
     case '5':
         $ip = get_client_ip();
         $host = $_SERVER['HTTP_HOST'];
-        $curent_version = getversion();
         $time = time();
         $mt_rand_str = $create_date . sp_random_string(6);
         $str_constant = "<?php" . PHP_EOL . "define('INSTALL_DATE'," . $time . ");" . PHP_EOL . "define('SERIALNUMBER','" . $mt_rand_str . "');";
