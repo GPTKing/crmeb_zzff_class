@@ -22,6 +22,7 @@ use behavior\wechat\UserBehavior;
 use service\HookService;
 use service\UtilService;
 use service\WechatService;
+use service\WechatSubscribe;
 use think\Cookie;
 use think\Request;
 use think\Session;
@@ -79,45 +80,6 @@ class WapBasic extends Controller
         return $this->failed('请求页面不存在!',$url);
     }
 
-    /**
-     * 微信用户自动登陆
-     * @return string $openid
-     */
-    protected function oauth($spread_uid=0)
-    {
-        $openid = Session::get('loginOpenid','wap');
-        if($openid) return $openid;
-        if(!UtilService::isWechatBrowser()) exit($this->failed('请在微信客户端打开链接'));
-        if($this->request->isAjax()) exit($this->failed('请登陆!'));
-        $errorNum = (int)Cookie::get('_oen');
-        if($errorNum && $errorNum > 3) exit($this->failed('微信用户信息获取失败!!'));
-        try{
-            $wechatInfo = WechatService::oauthService()->user()->getOriginal();
-        }catch (\Exception $e){
-            Cookie::set('_oen',++$errorNum,900);
-            exit(WechatService::oauthService()->scopes(['snsapi_base'])
-                ->redirect($this->request->url(true))->send());
-        }
-        if(!isset($wechatInfo['nickname'])){
-            $wechatInfo = WechatService::getUserInfo($wechatInfo['openid']);
-            if(!$wechatInfo['subscribe'] && !isset($wechatInfo['nickname']))
-                exit(WechatService::oauthService()->scopes(['snsapi_userinfo'])
-                    ->redirect($this->request->url(true))->send());
-            if(isset($wechatInfo['tagid_list']))
-                $wechatInfo['tagid_list'] = implode(',',$wechatInfo['tagid_list']);
-        }else{
-            if(isset($wechatInfo['privilege'])) unset($wechatInfo['privilege']);
-            if (!WechatUser::be(['openid' => $wechatInfo['openid']])) $wechatInfo['subscribe'] = 0;
-        }
-        Cookie::delete('_oen');
-        $openid = $wechatInfo['openid'];
-        $wechatInfo['spread_uid']=$spread_uid;
-        HookService::afterListen('wechat_oauth',$openid,$wechatInfo,false,UserBehavior::class);
-        Session::set('loginOpenid',$openid,'wap');
-        Cookie::set('is_login',1);
-        return $openid;
-    }
-
     /**redis 返回信息
      * @param $msg
      */
@@ -133,6 +95,49 @@ class WapBasic extends Controller
         }else{
             return $this->failed('请设置redis密码!','http://help.crmeb.net/crmeb_zsff/1907223');
         }
+    }
+
+    protected function oauth($spread_uid=0)
+    {
+        $openid = Session::get('loginOpenid','wap');
+        if($openid) return $openid;
+        if(!UtilService::isWechatBrowser()) exit($this->failed('请在微信客户端打开链接'));
+        if($this->request->isAjax()) exit($this->failed('请登陆!'));
+        $errorNum = (int)Cookie::get('_oen');
+        if($errorNum && $errorNum > 3) exit($this->failed('微信用户信息获取失败!!'));
+        try{
+            $original=WechatService::oauthService()->getAccessToken($this->request->get('code'));
+            if (!WechatUser::be(['openid' => $original->openid]) && $original->scope === 'snsapi_base'){
+                exit(WechatService::oauthService()->scopes(['snsapi_userinfo'])
+                    ->redirect($this->request->url(true))->send());
+            }
+            $wechatInfo=WechatSubscribe::baseParseGet($original->access_token,$original->openid);//获取单个用户信息
+            if(isset($wechatInfo['errcode']) && $wechatInfo['errcode']==48001){
+                exit(WechatService::oauthService()->scopes(['snsapi_userinfo'])
+                    ->redirect($this->request->url(true))->send());
+            }
+        }catch (\Exception $e){
+            Cookie::set('_oen',++$errorNum,900);
+            exit(WechatService::oauthService()->scopes(['snsapi_base'])
+                ->redirect($this->request->url(true))->send());
+        }
+        if(isset($wechatInfo['openid']) && $wechatInfo['openid']){
+            $wechatInfoData = WechatService::getUserInfo($wechatInfo['openid']);
+            $wechatInfo['subscribe'] =$wechatInfoData['subscribe'];
+            $wechatInfo['subscribe_time'] =$wechatInfoData['subscribe_time'];
+            $wechatInfo['groupid'] =$wechatInfoData['groupid'];
+            if(isset($wechatInfoData['tagid_list'])) $wechatInfo['tagid_list'] = implode(',',$wechatInfoData['tagid_list']);
+        }else{
+            if(isset($wechatInfo['privilege'])) unset($wechatInfo['privilege']);
+            if (!WechatUser::be(['openid' => $wechatInfo['openid']])) $wechatInfo['subscribe'] = 0;
+        }
+        Cookie::delete('_oen');
+        $openid = $wechatInfo['openid'];
+        $wechatInfo['spread_uid']=$spread_uid;
+        HookService::afterListen('wechat_oauth',$openid,$wechatInfo,false,UserBehavior::class);
+        Session::set('loginOpenid',$openid,'wap');
+        Cookie::set('is_login',1);
+        return $openid;
     }
 
 }
