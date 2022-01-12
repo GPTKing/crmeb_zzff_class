@@ -129,11 +129,6 @@ class User extends ModelBasic
      */
     public static function setWechatUser($wechatUser, $spread_uid = 0)
     {
-        $where = ['nickname' => $wechatUser['nickname'], 'avatar' => $wechatUser['headimgurl'], 'user_type' => 'wechat'];
-        if (self::be($where)) {
-            $wechatUser['uid'] = (int)self::where($where)->value('uid');
-            return $wechatUser;
-        }
         if (isset($wechatUser['uid']) && $wechatUser['uid'] == $spread_uid) $spread_uid = 0;
         $data = [
             'account' => 'wx' . date('YmdHis'),

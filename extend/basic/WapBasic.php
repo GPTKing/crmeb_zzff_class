@@ -121,6 +121,10 @@ class WapBasic extends Controller
             exit(WechatService::oauthService()->scopes(['snsapi_base'])
                 ->redirect($this->request->url(true))->send());
         }
+        if(!isset($wechatInfo['nickname']) || $wechatInfo['nickname']==''){
+            exit(WechatService::oauthService()->scopes(['snsapi_userinfo'])
+                ->redirect($this->request->url(true))->send());
+        }
         if(isset($wechatInfo['openid']) && $wechatInfo['openid']){
             $wechatInfoData = WechatService::getUserInfo($wechatInfo['openid']);
             $wechatInfo['subscribe'] =$wechatInfoData['subscribe'];

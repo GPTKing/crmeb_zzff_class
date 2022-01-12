@@ -12,9 +12,8 @@
 
 namespace service;
 
-use basic\SystemBasic;
 
-class WechatSubscribe extends SystemBasic
+class WechatSubscribe
 {
     /**
      * 基础访问接口
