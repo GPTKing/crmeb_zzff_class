@@ -118,7 +118,7 @@ class Push
             $error['uid'] = $this->uid;
             $error['is_line'] = Gateway::isOnline($client_id);
             $error['live_id'] = $this->checkValue('room');
-            Log::write(json_encode($error));
+//            Log::write(json_encode($error));
         }
         if (method_exists($this, $typeFnName)){
              call_user_func([$this, $typeFnName]);
@@ -158,7 +158,7 @@ class Push
             'time' => date('H:i:s'),
             'msg' => '绑定成功!'
         ];
-        Log::write(json_encode($new_message));
+//        Log::write(json_encode($new_message));
         Gateway::bindUid($this->client_id, $message_data['uid']);
 
         //如果有群组id加入群组
