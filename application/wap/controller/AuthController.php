@@ -67,6 +67,14 @@ class AuthController extends WapBasic
             $uid = User::getActiveUid();
             if (!empty($uid)) {
                 $this->userInfo = User::getUserInfo($uid);
+                if($this->isWechat){
+                    if($this->userInfo['nickname']=='' && $this->userInfo['avatar']=='' || $this->userInfo['nickname']=='' && $this->userInfo['avatar']=='/system/images/user_log.jpg'){
+                        $url = $this->request->url(true);
+                        if (!$this->request->isAjax()){
+                            return $this->redirect(Url::build('Login/index', ['spread_uid' => $spread_uid]) . '?ref=' . base64_encode(htmlspecialchars($url)));
+                        }
+                    }
+                }
                 if($spread_uid) $spreadUserInfo = User::getUserInfo($spread_uid);
                 $this->uid = $this->userInfo['uid'];
                 $this->phone = User::getLogPhone($uid);
