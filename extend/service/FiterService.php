@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2021 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -15,14 +15,14 @@ class Fiter
 {
     private $dict;
     private $dictPath = '';
- 
+
     public function __construct($dictPath = '')
     {
         $this->dict = array();
         $this->dictPath = $dictPath;
         $this->initDict();
     }
- 
+
     private function initDict()
     {
         $handle = fopen($this->dictPath, 'r');
@@ -47,7 +47,7 @@ class Fiter
         }
         fclose($handle);
     }
- 
+
     public function filter($str, $maxDistance = 5)
     {
         if ($maxDistance < 1) {
@@ -81,7 +81,7 @@ class Fiter
         }
         return implode($uStr);
     }
- 
+
     public function unicodeSplit($str)
     {
         $str = strtolower($str);

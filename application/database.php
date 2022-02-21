@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2021 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -15,11 +15,11 @@ return [
     // 服务器地址
     'hostname'        => 'localhost',
     // 数据库名
-    'database'        => 'zsffv144',
+    'database'        => 'crmeb_zsff_v144',
     // 用户名
-    'username'        => 'zsffv144',
+    'username'        => 'crmeb_zsff_v144',
     // 密码
-    'password'        => 'zsffv144',
+    'password'        => 'crmeb_zsff_v144',
 
     // 端口
     'hostport'        => '3306',

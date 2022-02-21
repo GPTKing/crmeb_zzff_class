@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2021 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2022 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -88,7 +88,7 @@ trait ModelTrait
         if(is_numeric($eachFn) && is_numeric($model)){
             return parent::page($model,$eachFn);
         }
-        
+
         if(is_numeric($eachFn)){
             $limit = $eachFn;
             $eachFn = null;
