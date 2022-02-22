@@ -210,7 +210,7 @@ switch ($step) {
                 echo json_encode($arr);
                 exit;
             }
-            mysqli_set_charset($conn, "utf8");
+            mysqli_set_charset($conn, "utf8mb4");
             $version = mysqli_get_server_info($conn);
             if ($version < 5.1) {
                 $arr['msg'] = '数据库版本太低! 必须5.1以上';
@@ -220,7 +220,7 @@ switch ($step) {
 
             if (!mysqli_select_db($conn, $dbName)) {
                 //创建数据时同时设置编码
-                if (!mysqli_query($conn, "CREATE DATABASE IF NOT EXISTS `" . $dbName . "` DEFAULT CHARACTER SET utf8;")) {
+                if (!mysqli_query($conn, "CREATE DATABASE IF NOT EXISTS `" . $dbName . "` DEFAULT CHARACTER SET utf8mb4;")) {
                     $arr['msg'] = '数据库 ' . $dbName . ' 不存在，也没权限创建新的数据库！';
                     echo json_encode($arr);
                     exit;
@@ -232,6 +232,8 @@ switch ($step) {
                     exit;
                 }
                 mysqli_select_db($conn, $dbName);
+                $updateSql="ALTER DATABASE".$dbName."CHARACTER SET utf8mb4 collate utf8mb4_unicode_ci";
+                mysqli_query($conn,$updateSql);
             }
 
             //读取数据文件
@@ -308,7 +310,7 @@ switch ($step) {
             $strConfig = str_replace('#DB_PWD#', $dbPwd, $strConfig);
             $strConfig = str_replace('#DB_PORT#', $_POST['dbport'], $strConfig);
             $strConfig = str_replace('#DB_PREFIX#', $dbPrefix, $strConfig);
-            $strConfig = str_replace('#DB_CHARSET#', 'utf8', $strConfig);
+            $strConfig = str_replace('#DB_CHARSET#', 'utf8mb4', $strConfig);
             @chmod(CRMEBDIR . '/application/database.php', 0777); //数据库配置文件的地址
             @file_put_contents(CRMEBDIR . '/application/database.php', $strConfig); //数据库配置文件的地址
 
@@ -395,7 +397,7 @@ function sql_split($sql, $tablepre)
     if ($tablepre != "tp_")
         $sql = str_replace("tp_", $tablepre, $sql);
 
-    $sql = preg_replace("/TYPE=(InnoDB|MyISAM|MEMORY)( DEFAULT CHARSET=[^; ]+)?/", "ENGINE=\\1 DEFAULT CHARSET=utf8", $sql);
+    $sql = preg_replace("/TYPE=(InnoDB|MyISAM|MEMORY)( DEFAULT CHARSET=[^; ]+)?/", "ENGINE=\\1 DEFAULT CHARSET=utf8mb4", $sql);
 
     $sql = str_replace("\r", "\n", $sql);
     $ret = array();
