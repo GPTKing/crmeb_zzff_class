@@ -568,9 +568,13 @@ class WechatService
     {
         $userService = self::userService();
         $userInfo = is_array($openid) ? $userService->batchGet($openid) : $userService->get($openid);
+        if(is_array($openid)){
+            foreach ($userInfo as $key=>&$item){
+                unset($item['nickname'],$item['headimgurl']);
+            }
+        }else{
+            unset($userInfo['nickname'],$userInfo['headimgurl']);
+        }
         return $userInfo;
     }
-
-
-
 }
