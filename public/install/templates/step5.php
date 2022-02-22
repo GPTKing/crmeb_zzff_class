@@ -20,8 +20,8 @@ $admin = $root."../index.php/admin/index/";
           <a href="<?php echo $admin;?>" class="f16 b">安装完成，进入后台管理</a>
       </div>
 	        <div class="bottom tac">
-	        <a href="<?php echo 'http://'.$host;?>/index.php/wap/" class="btn">进入前台</a>
-	        <a href="<?php echo 'http://'.$host;?>/index.php/admin/login/index" class="btn btn_submit J_install_btn">进入后台</a>
+            <a href="<?php echo 'http://'.$host;?>" class="btn">进入前台</a>
+            <a href="<?php echo 'http://'.$host;?>/admin/login/index" class="btn btn_submit J_install_btn">进入后台</a>
       </div>
       <div class=""> </div>
     </div>
