@@ -638,38 +638,6 @@ class SpecialType extends AuthController
             $liveInfo['stop_play_time'] = date('Y-m-d H:i:s', bcadd(strtotime($liveInfo['live_time']), bcmul($liveInfo['live_duration'], 60)));
             $liveInfo['live_introduction'] = $data['abstract'];
             unset($liveInfo['live_time'], $liveInfo['password']);
-            $cacheModel = Db::name('cache');
-            $aliyunLive = ApiAliyunLive::instance([
-                'AccessKey' => SystemConfigService::get('accessKeyId'),
-                'AccessKeySecret' => SystemConfigService::get('accessKeySecret'),
-                'OssEndpoint' => SystemConfigService::get('aliyun_live_end_point'),
-                'OssBucket' => SystemConfigService::get('aliyun_live_oss_bucket'),
-                'appName' => SystemConfigService::get('aliyun_live_appName'),
-                'payKey' => SystemConfigService::get('aliyun_live_play_key'),
-                'key' => SystemConfigService::get('aliyun_live_push_key'),
-                'playLike' => SystemConfigService::get('aliyun_live_playLike'),
-                'rtmpLink' => SystemConfigService::get('aliyun_live_rtmpLink'),
-            ]);
-            if (!$cacheModel->where('key', 'LiveNotifyUrl')->count()) {
-                try {
-                    $res = $aliyunLive->setLiveNotifyUrl(SystemConfigService::get('site_url') . Url::build('live/index/serve'))->executeResponse();
-                    if ($res) {
-                        $cacheModel->insert(['key' => 'LiveNotifyUrl', 'add_time' => time()]);
-                    }
-                } catch (\Throwable $e) {
-                    echo $e->getMessage();
-                }
-            }
-            if (!$cacheModel->where('key', 'liveRecordConfig')->count()) {
-                try {
-                    $res = $aliyunLive->liveRecordConfig()->executeResponse();
-                    if ($res) {
-                        $cacheModel->insert(['key' => 'liveRecordConfig', 'add_time' => time()]);
-                    }
-                } catch (\Throwable $e) {
-                    echo $e->getMessage();
-                }
-            }
         }
         $banner = [];
         SpecialModel::beginTrans();
