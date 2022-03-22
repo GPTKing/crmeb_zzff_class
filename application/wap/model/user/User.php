@@ -198,7 +198,14 @@ class User extends ModelBasic
         //有推广人直接更新
         $editData = [];
         //不是推广人，并且有上级id绑定关系
-        if (!$userinfo->is_promoter && $spread_uid && !$userinfo->spread_uid && $spread_uid != $uid) $editData = self::manageSpread($spread_uid, $editData);
+        if (!$userinfo->is_promoter && $spread_uid && !$userinfo->spread_uid && $spread_uid != $uid)
+        {
+            $editData = self::manageSpread($spread_uid, $editData);
+        }
+        if($userinfo['nickname']=='' || $userinfo['avatar']==''){
+            $editData['nickname']=$wechatUser['nickname'];
+            $editData['avatar']=$wechatUser['headimgurl'];
+        }
         return self::edit($editData, $uid, 'uid');
     }
 
