@@ -18,6 +18,7 @@ $admin = $root."../index.php/admin/index/";
     <div class="">
       <div class="success_tip cc">
           <a href="<?php echo $admin;?>" class="f16 b">安装完成，进入后台管理</a>
+          <p>为了您站点的安全，安装完成后即可将网站根目录下“public/install”文件夹中除install.lock外的文件及文件夹全部删除。<p>
       </div>
 	        <div class="bottom tac">
             <a href="<?php echo 'http://'.$host;?>" class="btn">进入前台</a>
