@@ -48,7 +48,7 @@ class AuthController extends WapBasic
 
     protected $redisModel;
 
-    protected $subjectUrl='';
+    protected $subjectUrl = '';
 
     protected function _initialize()
     {
@@ -62,28 +62,28 @@ class AuthController extends WapBasic
         $spread_uid = $this->request->get('spread_uid', 0);
         $NoWechantVisitWhite = $this->NoWechantVisitWhite();
         $subscribe = false;
-        $this->subjectUrl=getUrlToDomain();
+        $this->subjectUrl = getUrlToDomain();
         try {
             $uid = User::getActiveUid();
             if (!empty($uid)) {
                 $this->userInfo = User::getUserInfo($uid);
-                if($this->isWechat){
-                    if($this->userInfo['nickname']=='' && $this->userInfo['avatar']=='' || $this->userInfo['nickname']=='' && $this->userInfo['avatar']=='/system/images/user_log.jpg'){
+                if ($this->isWechat) {
+                    if ($this->userInfo['nickname'] == '' && $this->userInfo['avatar'] == '' || $this->userInfo['nickname'] == '' && $this->userInfo['avatar'] == '/system/images/user_log.jpg') {
                         $url = $this->request->url(true);
-                        if (!$this->request->isAjax()){
+                        if (!$this->request->isAjax()) {
                             return $this->redirect(Url::build('Login/index', ['spread_uid' => $spread_uid]) . '?ref=' . base64_encode(htmlspecialchars($url)));
                         }
                     }
                 }
-                if($spread_uid) $spreadUserInfo = User::getUserInfo($spread_uid);
+                if ($spread_uid) $spreadUserInfo = User::getUserInfo($spread_uid);
                 $this->uid = $this->userInfo['uid'];
                 $this->phone = User::getLogPhone($uid);
                 //绑定临时推广人
-                if ($spread_uid && $spreadUserInfo && $this->uid != $spread_uid && $spreadUserInfo['spread_uid']!=$this->uid && $this->userInfo['spread_uid'] != $spread_uid  && !$this->userInfo['spread_uid']) {
+                if ($spread_uid && $spreadUserInfo && $this->uid != $spread_uid && $spreadUserInfo['spread_uid'] != $this->uid && $this->userInfo['spread_uid'] != $spread_uid && !$this->userInfo['spread_uid']) {
                     $storeBrokerageStatu = SystemConfigService::get('store_brokerage_statu') ?: 1;//获取后台分销类型
                     if ($storeBrokerageStatu == 1) {
-                        if($spreadUserInfo['is_promoter']) User::edit(['spread_uid' => $spread_uid], $this->uid, 'uid');
-                    }else{
+                        if ($spreadUserInfo['is_promoter']) User::edit(['spread_uid' => $spread_uid], $this->uid, 'uid');
+                    } else {
                         User::edit(['spread_uid' => $spread_uid], $this->uid, 'uid');
                     }
                 }
@@ -117,9 +117,9 @@ class AuthController extends WapBasic
         }
 
         $codeUrl = SystemConfigService::get('wechat_qrcode');
-        $balance_switch=SystemConfigService::get('balance_switch');//余额开关
-        $alipay_switch=SystemConfigService::get('alipay_switch');//支付宝开关
-        $this->force_binding=SystemConfigService::get('force_binding');//微信端是否强制绑定手机号
+        $balance_switch = SystemConfigService::get('balance_switch');//余额开关
+        $alipay_switch = SystemConfigService::get('alipay_switch');//支付宝开关
+        $this->force_binding = SystemConfigService::get('force_binding');//微信端是否强制绑定手机号
         $this->assign([
             'code_url' => $codeUrl,
             'is_yue' => $balance_switch,
@@ -132,7 +132,7 @@ class AuthController extends WapBasic
             'isWechat' => $this->isWechat,
             'overallShareWechat' => json_encode($overallShareWechat),
             'Auth_site_name' => SystemConfigService::get('site_name'),
-            'menus'=>GroupDataService::getData('bottom_navigation')
+            'menus' => GroupDataService::getData('bottom_navigation')
         ]);
     }
 
