@@ -41,7 +41,6 @@
     }
 
     function set_chat_list(data){
-        console.log(data);
         var html = '';
         for(var i=0;i<data.length;i++){
             html += get_html(data[i]);
@@ -49,7 +48,6 @@
                 $("#"+data[i]["to_info"]["uid"]+"_"+data[i]["to_info"]["mer_id"]).remove();
             }
         }
-        console.log(html);
         if(last_time > 0)
             $(".list").prepend(html);
         else

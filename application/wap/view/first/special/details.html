@@ -860,7 +860,6 @@
                         if (!this.qr_password) return $h.showMsg('请输入密码');
                         if (this.qr_password != this.studio_pwd) return $h.showMsg('密码不正确');
                         document.cookie = this.stream_name + "studio_pwd" + "=" + this.studio_pwd + ";expires=7200" + ";path=/";
-                        console.log(this.stream_name + "stuido_pwd" + "=" + this.studio_pwd);
                         window.location.href = $h.U({ c: 'live', a: 'index', q: { stream_name: this.stream_name } });
                     },
                     goPink: function (pink_id,uid) {
