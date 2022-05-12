@@ -34,7 +34,7 @@ class Alipay extends WapBasic
      * @param string $info 加密后的支付参数
      * @return mixed|void
      */
-    public function index($info = '',$params = false)
+    public function index($info = '', $params = false)
     {
         if (!$info) return $this->failed('缺少支付参数');
         $info = json_decode(base64_decode($info), true);
