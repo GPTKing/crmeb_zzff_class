@@ -76,7 +76,7 @@
             }).catch(function(err){
                 swal(err);
             });
-        }).catch(console.log);
+        });
     });
 </script>
 {/block}

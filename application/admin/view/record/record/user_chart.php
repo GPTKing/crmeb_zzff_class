@@ -184,7 +184,6 @@
                     var that=this;
                     layList.baseGet(layList.U({a:'getUserChartList',q:{status:this.status,is_promoter:this.Promoter,data:this.data}}),function (rem) {
                         var option=that.setoption(rem.data.seriesdata,rem.data.xdata,rem.data.Zoom);
-                        console.log(option);
                         that.myChart.list.setOption(option);
                         var fenxiao=that.setoption(rem.data.fenbu_data,rem.data.fenbu_xdata,'','分销商分布','pic');
                         that.myChart.fenxiao.setOption(fenxiao);

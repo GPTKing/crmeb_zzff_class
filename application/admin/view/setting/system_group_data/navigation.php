@@ -101,9 +101,7 @@
 
   //监听导航点击
   element.on('nav(nav)', function(elem){
-    // //console.log(elem)
     // // layer.msg(elem.text());
-    // console.log(elem)
     var type = elem.data('type');
     if (type == 1) {
         $eb.createModalFrame('添加固定跳转导航','{:Url('create_recemmend')}',{w:800,h:500});
@@ -114,7 +112,6 @@
   
   //监听导航点击
 //   element.on('nav(demo)', function(elem){
-//     //console.log(elem)
 //     layer.msg(elem.text());
 //   });
 // });

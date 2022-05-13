@@ -358,10 +358,6 @@
                             if (value.indexOf(this.selectImages[i]) == -1) list.push(this.selectImages[i]);
                         }
                         parent.$f.changeField(parentinputname, list);
-
-                        console.log(nowpics);
-                        console.log(maxlength);
-                        console.log(selectlength);
                         parent.$f.closeModal(parentinputname);
                     } else {
                         //独立图片选择页面
@@ -400,7 +396,6 @@
                     }
                     item.sort = 0;
                 }
-//                console.log(this.selectImagesIDS)
                 this.$set(this, 'selectImages', this.selectImages);
                 this.$set(this, 'selectImagesIDS', this.selectImagesIDS);
             },

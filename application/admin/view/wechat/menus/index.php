@@ -225,7 +225,6 @@
                     this.parentMenuId = index;
                 },
                 delMenu:function(){
-                    console.log(this.parentMenuId);
                     this.parentMenuId === null ?
                         this.menus.splice(this.checkedMenuId,1) : this.menus[this.parentMenuId].sub_button.splice(this.checkedMenuId,1);
                     this.parentMenuId = null;

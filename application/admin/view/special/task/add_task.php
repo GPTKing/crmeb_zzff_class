@@ -247,7 +247,6 @@
             })
         },
         success:function (res) {
-            console.log(res);
             layList.msg('上传成功');
             Help.percentHide();
             $('.layui-video-box').html(Help.videoHtml(res.url,res.key));
@@ -284,7 +283,6 @@
         delete data.file_image;
         delete data.link_key;
         delete data.video;
-        console.log(data);
         if(data.special_id == 0) return layList.msg('请选择专题');
         if(!data.title) return layList.msg('请填写任务标题');
         if(!data.image) return layList.msg('请上传任务封面');

@@ -804,7 +804,6 @@
                 }else{
                     $("li[title*='"+keyword+"']").show();
                 }
-//                console.log($("li[title*='"+keyword+"']"));
             });
         });
     </script>

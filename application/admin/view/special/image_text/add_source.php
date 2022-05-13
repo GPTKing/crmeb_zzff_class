@@ -287,11 +287,9 @@
                     layList.form.render();
                     //实例化编辑器
                     UE.registerUI('imagenone',function(editor,name){
-                        console.log('1111',editor)
                         var $btn = new UE.ui.Button({
                             name : 'image',
                             onclick : function(){
-                                console.log(editor);
                                 that.editorActive = editor;
                                 ossUpload.createFrame('选择图片',{fodder:'editor'},{w:800,h:550});
                             },

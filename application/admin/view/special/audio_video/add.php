@@ -631,7 +631,7 @@
                     });
                 },
                 del:function (e) {
-                    console.log(e);
+                    
                 }
             },
             mounted: function () {

@@ -205,7 +205,6 @@
                     var that=this;
                     layList.baseGet(layList.U({a:'getProductCount',q:{id:this.id,data:this.data}}),function(rem){
                         that.count=rem.data;
-                        console.log(that.count)
                         layList.laypage.render({
                             elem: that.$refs.page
                             ,count:that.count
