@@ -115,7 +115,6 @@
     }
     //选择图片插入到编辑器中
     function insertEditor(list){
-        console.log(list);
         um.execCommand('insertimage', list);
     }
 </script>

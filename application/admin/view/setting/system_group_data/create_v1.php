@@ -165,7 +165,6 @@
 
     layList.form.on('radio(type)', function (data) {
         Help.getTypeHtml(data.value);
-        console.log(data.value)
     });
 
     /**

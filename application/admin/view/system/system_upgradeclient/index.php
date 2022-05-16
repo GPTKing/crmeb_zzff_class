@@ -125,7 +125,6 @@
             },
             watch:{
                 count:function (n) {
-                    console.log(n);
                     if(n<=0){
                         this.content='已是最新版本';
                     }else{

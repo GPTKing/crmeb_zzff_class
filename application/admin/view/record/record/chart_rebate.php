@@ -198,7 +198,6 @@
             },
             watch:{
                 page:function (n) {
-                    // console.log(n);
                     this.getFanList();
                 }
             },

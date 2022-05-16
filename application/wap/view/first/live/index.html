@@ -620,7 +620,6 @@
                                 processData: false,
                                 dataType: 'json',
                                 success: function (res) {
-                                    console.log(res);
                                     if (res.code == 200) {
                                         that.isAnimate = true;
                                         socket.ws.send('{"room":' + that.liveInfo.id + ',"uid":' + window.uids + ',"content":"' + res.data.url + '","ms_type":"2","type":"send"}');
@@ -823,9 +822,7 @@
                         };
                     });
                     this.$set(that, name, this[name]);
-                    mapleWx($jssdk(), function () {
-                        console.log(this);
-                    })
+                    mapleWx($jssdk());
                     if (is_play) {
                         audio = new Audio(item.content);
                         audio.load();

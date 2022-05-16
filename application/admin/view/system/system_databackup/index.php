@@ -50,7 +50,6 @@
             type: 'post',
             dataType: 'json',
             success: function (res) {
-                console.log(res);
                 if(res.data){
                     if(res.code){
                         setTimeout(ipmosrting(time,res.data.part,res.data.start),2000);
@@ -60,9 +59,6 @@
                     return false;
                 }
 
-            },
-            error: function (err) {
-                console.log(err)
             }
         });
 

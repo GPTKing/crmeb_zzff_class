@@ -70,7 +70,6 @@
 <script>
     var _vm ;
     var rules = {$rules};
-    console.log(rules);
     _mpApi = parent._mpApi;
     mpFrame.start(function(Vue){
         require(['axios','system/util/mpFormBuilder'],function(axios,mpFormBuilder){

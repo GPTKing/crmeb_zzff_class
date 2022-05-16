@@ -76,7 +76,6 @@
     layList.form.val('formswitch',{
         state: is_show_or_hide == 1 ? true : false
     })
-    console.log($('.test').val())
     //加载列表
     layList.tableList('List', "{:Url('get_group_data_list',['gid'=>$gid])}", function () {
         return [
@@ -109,7 +108,6 @@
             a: 'is_show_or_hide',
             q: {value: data.elem.checked==true ? 1 : 2}
         }), function (res) {
-            console.log(res);
             layList.msg(res.msg);
         });
     });
