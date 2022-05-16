@@ -149,7 +149,7 @@
                                             </p>
                                         </div>
                                     </div>
-                                    <div class="upload-image" v-show="formData.banner.length <= 3" @click="upload('banner',5)">
+                                    <div class="upload-image" v-show="formData.banner.length < 5" @click="upload('banner',5 - formData.banner.length)">
                                         <div class="fiexd"><i class="fa fa-plus"></i></div>
                                         <p>选择图片</p>
                                     </div>

@@ -96,9 +96,6 @@
                 phoneIos: phone_ios,
             }
         },
-        mounted: function () {
-            console.log(this.isyue);
-        },
         methods: {
             close: function () {
                 this.$emit("change", { action: 'payClose', value: true })//$emit():注册事件；
