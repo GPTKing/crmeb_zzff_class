@@ -100,17 +100,17 @@ class Live extends AuthController
         if ($liveInfo->is_del) return $this->failed('直播间已被删除', Url::build('index/index'));
         $userInfo = LiveUser::setLiveUser($this->uid, $liveInfo->id);
         if ($userInfo === false) return $this->failed(LiveUser::getErrorInfo('用户写入不成功'), Url::build('index/index'));
-        $specialLive =Special::where(['is_show' => 1, 'is_del' => 0, 'id' => $liveInfo->special_id])->find();
+        $specialLive = Special::where(['is_show' => 1, 'is_del' => 0, 'id' => $liveInfo->special_id])->find();
         if (!$specialLive) return $this->failed('专题不存在或者已被删除', Url::build('index/index'));
         $user_level = !$this->uid ? 0 : User::where('uid', $this->uid)->find();
         if ($specialLive->pay_type == 1 && !SpecialBuy::PaySpecial($specialLive->id, $this->uid)) {
-            if($specialLive->member_pay_type == 1 || ($user_level['level'] <= 0 && $specialLive->member_pay_type == 0)){
+            if ($specialLive->member_pay_type == 1 || ($user_level['level'] <= 0 && $specialLive->member_pay_type == 0)) {
                 return $this->failed('您还没有支付请支付后再进行观看', Url::build('special/details', ['id' => $liveInfo->special_id]));
             }
         }
         if ($specialLive->pay_type == 2) {
-            $cookie_value = Cookie::get($stream_name."studio_pwd");
-            if (!$cookie_value || $cookie_value!=$liveInfo['studio_pwd']) {
+            $cookie_value = Cookie::get($stream_name . "studio_pwd");
+            if (!$cookie_value || $cookie_value != $liveInfo['studio_pwd']) {
                 return $this->failed('您需要先获得密码后再进行观看', Url::build('special/details', ['id' => $liveInfo->special_id]));
             }
         }
@@ -203,6 +203,7 @@ class Live extends AuthController
         if (!$live_id) return JsonService::fail('缺少参数!');
         return JsonService::successful(LiveBarrage::getCommentList(false, $live_id, $page, $limit, $add_time));
     }
+
     /**
      * 获取直播间下的录制内容
      * @param string $record_id
@@ -222,19 +223,20 @@ class Live extends AuthController
         if (!$liveStudio['stream_name']) return JsonService::fail('缺少直播间id');
         $data = [];
         $count = 0;
-        $data = compact('data','count');
+        $data = compact('data', 'count');
         if ($liveStudio['is_playback'] == 1) {
-            $where['stream_name']=$liveStudio['stream_name'];
-            $where['page']=$page;
-            $where['limit']=$limit;
-            $where['start_time']=$start_time;
-            $where['end_time']=$end_time;
-            $data= LivePlayback::getLivePlaybackList($where);
+            $where['stream_name'] = $liveStudio['stream_name'];
+            $where['page'] = $page;
+            $where['limit'] = $limit;
+            $where['start_time'] = $start_time;
+            $where['end_time'] = $end_time;
+            $data = LivePlayback::getLivePlaybackList($where);
         }
         $data['page'] = $page++;
         return JsonService::successful($data);
 
     }
+
     /**
      * 获取直播间下的录制内容
      * @param string $record_id
@@ -334,8 +336,8 @@ class Live extends AuthController
         //看金币是否足够
         $gift_price = $live_gift['live_gift_price'] * $live_gift_num;
         $gold_name = SystemConfigService::get('gold_name');
-        if ($user_info['gold_num'] <= 0 || $gift_price > $user_info['gold_num']) return JsonService::fail('您当前'.$gold_name.'不够，请充值',[],406);
-        try{
+        if ($user_info['gold_num'] <= 0 || $gift_price > $user_info['gold_num']) return JsonService::fail('您当前' . $gold_name . '不够，请充值', [], 406);
+        try {
             User::beginTrans();
             //插入打赏数据
             $add_gift['uid'] = $uid;
@@ -358,12 +360,12 @@ class Live extends AuthController
             LiveBarrage::set($add_barrage);
             //插入虚拟货币支出记录（资金监管记录表）
             $gold_name = SystemConfigService::get("gold_name");
-            $mark = '用户赠送'.$stream_name."号直播间".$live_gift_num.'个'.$live_gift["live_gift_name"].',扣除'.$gold_name.$gift_price.'金币';
-            UserBill::expend('用户打赏扣除金币',$uid,'gold_num','live_reward',$gift_price,0,$this->userInfo['gold_num'],$mark);
-            User::bcDec($uid,'gold_num',$gift_price,'uid');
+            $mark = '用户赠送' . $stream_name . "号直播间" . $live_gift_num . '个' . $live_gift["live_gift_name"] . ',扣除' . $gold_name . $gift_price . '金币';
+            UserBill::expend('用户打赏扣除金币', $uid, 'gold_num', 'live_reward', $gift_price, 0, $this->userInfo['gold_num'], $mark);
+            User::bcDec($uid, 'gold_num', $gift_price, 'uid');
             User::commitTrans();
             return JsonService::successful($mark);
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             User::rollbackTrans();
             return JsonService::fail('网路异常，打赏失败');
         }
@@ -378,7 +380,7 @@ class Live extends AuthController
         list($live_id) = UtilService::getMore([
             ['live_id', 0],
         ], $this->request, true);
-        return JsonService::successful(LiveGoods::getLiveGoodsList(['is_show'=>1, 'live_id' => $live_id], 0, 0));
+        return JsonService::successful(LiveGoods::getLiveGoodsList(['is_show' => 1, 'live_id' => $live_id], 0, 0));
     }
 
     /**直播礼物排行榜
@@ -398,9 +400,9 @@ class Live extends AuthController
         $user_info = $this->userInfo;
         if ($uid != $user_info['uid']) return JsonService::fail('非法用户');
         if (!$live_id) return JsonService::fail('直播间参数缺失');
-        $live_info = LiveStudio::where('id',$live_id)->find();
+        $live_info = LiveStudio::where('id', $live_id)->find();
         if (!$live_info) return JsonService::fail('直播间不存在');
-        $data = LiveReward::getLiveRewardList(['live_id'=>$live_id], $page, $limit);
+        $data = LiveReward::getLiveRewardList(['live_id' => $live_id], $page, $limit);
         $now_user_reward = LiveReward::getLiveRewardOne(['live_id' => $live_id, 'uid' => $uid]);
         $data['now_user_reward'] = $now_user_reward;
         return JsonService::successful($data);
