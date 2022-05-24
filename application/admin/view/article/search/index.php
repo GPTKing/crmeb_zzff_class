@@ -1,12 +1,10 @@
 {extend name="public/container"}
 {block name="content"}
 <div class="layui-fluid">
-    <div class="layui-row layui-col-space15"  id="app" v-cloak>
+    <div class="layui-row layui-col-space15" id="app" v-cloak>
         <div class="layui-col-md12">
             <div class="layui-card">
-                <div class="layui-card-header">
-                    <div style="font-weight: bold;">关键词搜索</div>
-                </div>
+                <div class="layui-card-header">关键词搜索</div>
                 <div class="layui-card-body">
                     <div class="layui-row layui-col-space15">
                         <div class="layui-col-md12">

@@ -1,12 +1,10 @@
 {extend name="public/container"}
 {block name="content"}
 <div class="layui-fluid">
-    <div class="layui-row layui-col-space15"  id="app">
+    <div class="layui-row layui-col-space15">
         <div class="layui-col-md12">
             <div class="layui-card">
-                <div class="layui-card-header">
-                    <div style="font-weight: bold;">礼物设置</div>
-                </div>
+                <div class="layui-card-header">礼物设置</div>
                 <div class="layui-card-body">
                     <div class="layui-btn-group">
                         <button type="button" class="layui-btn layui-btn-normal layui-btn-sm" onclick="$eb.createModalFrame('添加礼物','{:Url('create')}',{h:800,w:1000})">

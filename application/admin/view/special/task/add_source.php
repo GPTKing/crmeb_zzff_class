@@ -81,9 +81,7 @@
     <div v-cloak class="layui-row layui-col-space15" id="app">
         <div class="layui-col-md12">
             <div class="layui-card">
-                <div class="layui-card-header">
-                    <div style="font-weight: bold;">基本信息</div>
-                </div>
+                <div class="layui-card-header">基本信息</div>
                 <div class="layui-card-body">
                     <form action="" class="layui-form">
                         <div class="layui-form-item">

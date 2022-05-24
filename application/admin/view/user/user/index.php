@@ -43,9 +43,7 @@
 <div class="layui-row layui-col-space15">
     <div class="layui-col-md12">
         <div class="layui-card">
-            <div class="layui-card-header">
-                <div style="font-weight: bold;">用户管理</div>
-            </div>
+            <div class="layui-card-header">用户管理</div>
             <div class="layui-card-body">
                 <div class="layui-row layui-col-space15">
                     <div class="layui-col-md12">

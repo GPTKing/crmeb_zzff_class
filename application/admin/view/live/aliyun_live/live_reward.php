@@ -4,9 +4,7 @@
     <div class="layui-row layui-col-space15" id="app" v-cloak>
         <div class="layui-col-md12">
             <div class="layui-card">
-                <div class="layui-card-header">
-                    <div style="font-weight: bold;">直播贡献</div>
-                </div>
+                <div class="layui-card-header">直播贡献</div>
                 <div class="layui-card-body">
                     <div class="layui-carousel layadmin-carousel layadmin-shortcut" lay-anim="" lay-indicator="inside" lay-arrow="none" style="background:none">
                         <div class="layui-card-body">
