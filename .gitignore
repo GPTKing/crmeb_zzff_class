@@ -4,7 +4,6 @@
 /public/uploads
 /public/nginx.htaccess
 *.txt
-think
 .htaccess
 *.log:
 /application/database.php
