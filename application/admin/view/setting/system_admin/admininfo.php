@@ -23,9 +23,7 @@
     <div class="layui-row layui-col-space15">
         <div class="layui-col-md12">
             <div class="layui-card">
-                <div class="layui-card-header">
-                    <div style="font-weight: bold;">个人资料</div>
-                </div>
+                <div class="layui-card-header">个人资料</div>
                 <div class="layui-card-body">
                     <div class="layui-row">
                         <div class="layui-col-md4 layui-col-md-offset3">

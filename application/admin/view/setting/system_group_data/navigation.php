@@ -41,9 +41,7 @@
         <!--产品列表-->
         <div class="layui-col-md12">
             <div class="layui-card">
-                <div class="layui-card-header">
-                    <div style="font-weight: bold;">导航配置</div>
-                </div>
+                <div class="layui-card-header">导航配置</div>
                 <div class="layui-card-body">
                     <ul class="layui-nav layui-inline layui-bg-blue" lay-filter="nav">
                         <li class="layui-nav-item">

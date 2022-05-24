@@ -3,9 +3,7 @@
 {block name="content"}
 <div class="layui-fluid">
     <div class="layui-card">
-        <div class="layui-card-header">
-            <div style="font-weight: bold;">客服管理</div>
-        </div>
+        <div class="layui-card-header">客服管理</div>
         <div class="layui-card-body">
             <div class="layui-row layui-col-space15">
                 <div class="layui-col-md12">

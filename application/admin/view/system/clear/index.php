@@ -4,9 +4,7 @@
     <div class="layui-row layui-col-space15">
         <div class="layui-col-md12">
             <div class="layui-card">
-                <div class="layui-card-header">
-                    <div style="font-weight: bold;">刷新缓存</div>
-                </div>
+                <div class="layui-card-header">刷新缓存</div>
                 <div class="layui-card-body">
                     <div class="layui-btn-container">
                         <button type="button" class="layui-btn layui-btn-normal" data-url="{:Url('system.clear/refresh_cache')}">刷新数据缓存</button>

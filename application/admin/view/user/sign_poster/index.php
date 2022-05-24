@@ -4,9 +4,7 @@
     <div class="layui-row layui-col-space15"  id="app">
         <div class="layui-col-md12">
             <div class="layui-card">
-                <div class="layui-card-header">
-                    <div style="font-weight: bold;">签到海报</div>
-                </div>
+                <div class="layui-card-header">签到海报</div>
                 <div class="layui-card-body">
                         <div class="layui-btn-group">
                             <button type="button" class="layui-btn layui-btn-normal layui-btn-sm" onclick="$eb.createModalFrame('添加海报','{:Url('create')}',{w:800,h:600})" ><i class="layui-icon">&#xe608;</i>添加海报</button>
