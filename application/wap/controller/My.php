@@ -61,24 +61,27 @@ class My extends AuthController
         Session::delete('loginUid', 'wap');
         return JsonService::successful('已退出登录');
     }
+
     /**
      * 获取获取个人中心菜单
      */
     public function getPersonalCenterMenu()
     {
-        $uid=$this->uid ? $this->uid : 0;
-        $store_brokerage_statu=SystemConfigService::get('store_brokerage_statu');
-        if($store_brokerage_statu==1){
-            $is_statu=$this->userInfo['is_promoter'] >0 ? 1 : 0;
-        }else if($store_brokerage_statu==2){
-            $is_statu=1;
+        $uid = $this->uid ? $this->uid : 0;
+        $store_brokerage_statu = SystemConfigService::get('store_brokerage_statu');
+        if ($store_brokerage_statu == 1) {
+            $is_statu = $this->userInfo['is_promoter'] > 0 ? 1 : 0;
+        } else if ($store_brokerage_statu == 2) {
+            $is_statu = 1;
         }
-        return JsonService::successful(Recommend::getPersonalCenterMenuList($is_statu,$uid));
+        return JsonService::successful(Recommend::getPersonalCenterMenuList($is_statu, $uid));
     }
+
     public function my_gift()
     {
         return $this->fetch();
     }
+
     public function sign_list()
     {
 
@@ -104,7 +107,7 @@ class My extends AuthController
         ], $this->request, true);
         if (!$phone) return JsonService::fail('请输入手机号码');
         if (!$code) return JsonService::fail('请输入验证码');
-        $code=md5('is_phone_code'.$code);
+        $code = md5('is_phone_code' . $code);
         if (!SmsCode::CheckCode($phone, $code)) return JsonService::fail('验证码验证失败');
         SmsCode::setCodeInvalid($phone, $code);
         return JsonService::successful('验证成功');
@@ -117,7 +120,7 @@ class My extends AuthController
             ['nickname', ''],
             ['grade_id', 0]
         ], $this->request);
-        if($data['nickname'] != strip_tags($data['nickname'])){
+        if ($data['nickname'] != strip_tags($data['nickname'])) {
             $data['nickname'] = htmlspecialchars($data['nickname']);
         }
         if (!$data['nickname']) return JsonService::fail('用户昵称不能为空');
@@ -145,29 +148,29 @@ class My extends AuthController
             ], $this->request, true);
             if (!$phone) return JsonService::fail('请输入手机号码');
             if (!$code) return JsonService::fail('请输入验证码');
-            $code=md5('is_phone_code'.$code);
+            $code = md5('is_phone_code' . $code);
             if (!SmsCode::CheckCode($phone, $code)) return JsonService::fail('验证码验证失败');
             SmsCode::setCodeInvalid($phone, $code);
-            $user=User::where(['phone' => $phone, 'is_h5user' => 0])->find();
-            if($type && $user){
-                if($user['uid']==$this->uid){
+            $user = User::where(['phone' => $phone, 'is_h5user' => 0])->find();
+            if ($type && $user) {
+                if ($user['uid'] == $this->uid) {
                     return JsonService::fail('不能绑定相同手机号');
-                }else if($user['uid']!=$this->uid){
+                } else if ($user['uid'] != $this->uid) {
                     return JsonService::fail('当前手机号码已绑定微信用户');
                 }
-            }else if($type==0 && $user){
-                if($user) return JsonService::fail('当前手机号码已绑定微信用户');
+            } else if ($type == 0 && $user) {
+                if ($user) return JsonService::fail('当前手机号码已绑定微信用户');
             }
             //查找H5手机号码账户
             $phoneUser = PhoneUser::where(['phone' => $phone])->find();
             //H5页面有注册过
-            if ($phoneUser && $phoneUser['uid']!=$this->uid) {
+            if ($phoneUser && $phoneUser['uid'] != $this->uid) {
                 //检测当前用户是否是H5用户
                 if (User::where('uid', $phoneUser['uid'])->value('is_h5user')) {
                     $res = User::setUserRelationInfos($phone, $phoneUser['uid'], $this->uid);
                     if ($res === false) return JsonService::fail(User::getErrorInfo());
                 }
-            }else if($phoneUser && $phoneUser['uid']==$this->uid){
+            } else if ($phoneUser && $phoneUser['uid'] == $this->uid) {
                 return JsonService::fail('不能绑定相同手机号');
             }
             if (!isset($res)) User::update(['phone' => $phone], ['uid' => $this->uid]);
@@ -185,48 +188,52 @@ class My extends AuthController
      */
     public function index()
     {
-        $store_brokerage_statu=SystemConfigService::get('store_brokerage_statu');
-        if($store_brokerage_statu==1){
-            $is_statu=$this->userInfo['is_promoter'] >0 ? 1 : 0;
-        }else if($store_brokerage_statu==2){
-            $is_statu=1;
+        $store_brokerage_statu = SystemConfigService::get('store_brokerage_statu');
+        if ($store_brokerage_statu == 1) {
+            $is_statu = $this->userInfo['is_promoter'] > 0 ? 1 : 0;
+        } else if ($store_brokerage_statu == 2) {
+            $is_statu = 1;
         }
         $this->assign([
-            'gold_name'=>SystemConfigService::get('gold_name'),
+            'gold_name' => SystemConfigService::get('gold_name'),
             'collectionNumber' => SpecialRelation::where('uid', $this->uid)->count(),
             'recordNumber' => SpecialRecord::where('uid', $this->uid)->count(),
-            'overdue_time'=>date('Y-m-d',$this->userInfo['overdue_time']),
-            'is_statu'=>$is_statu
+            'overdue_time' => date('Y-m-d', $this->userInfo['overdue_time']),
+            'is_statu' => $is_statu
         ]);
         return $this->fetch();
     }
+
     /**虚拟币明细
      * @return mixed
      */
-    public function gold_coin(){
-        $gold_name=SystemConfigService::get('gold_name');//虚拟币名称
+    public function gold_coin()
+    {
+        $gold_name = SystemConfigService::get('gold_name');//虚拟币名称
         $this->assign(compact('gold_name'));
         return $this->fetch('coin_detail');
     }
+
     /**签到
      * @return mixed
      */
     public function sign_in()
     {
-        $urls=SystemConfigService::get('site_url').'/';
-        $gold_name=SystemConfigService::get('gold_name');//虚拟币名称
-        $gold_coin=SystemConfigService::get('single_gold_coin');//签到获得虚拟币
+        $urls = SystemConfigService::get('site_url') . '/';
+        $gold_name = SystemConfigService::get('gold_name');//虚拟币名称
+        $gold_coin = SystemConfigService::get('single_gold_coin');//签到获得虚拟币
         $signed = UserSign::checkUserSigned($this->userInfo['uid']);//今天是否签到
-        $sign_image = $urls."uploads/" . "poster_sign_" .$this->userInfo['uid'] . ".png";
+        $sign_image = $urls . "uploads/" . "poster_sign_" . $this->userInfo['uid'] . ".png";
         $signCount = UserSign::userSignedCount($this->userInfo['uid']);//累记签到天数
-        $this->assign(compact('signed', 'signCount',  'gold_name','gold_coin', 'sign_image'));
+        $this->assign(compact('signed', 'signCount', 'gold_name', 'gold_coin', 'sign_image'));
         return $this->fetch();
     }
 
     /**签到明细
      * @return mixed
      */
-    public function sign_in_list(){
+    public function sign_in_list()
+    {
 
         return $this->fetch();
     }
@@ -241,7 +248,7 @@ class My extends AuthController
      */
     public function address()
     {
-        $address=UserAddress::getUserValidAddressList($this->userInfo['uid'], 'id,real_name,phone,province,city,district,detail,is_default');
+        $address = UserAddress::getUserValidAddressList($this->userInfo['uid'], 'id,real_name,phone,province,city,district,detail,is_default');
         $this->assign([
             'address' => json_encode($address)
         ]);
@@ -256,7 +263,7 @@ class My extends AuthController
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public function edit_address($addressId = '',$cartId=0)
+    public function edit_address($addressId = '', $cartId = 0)
     {
         if ($addressId && is_numeric($addressId) && UserAddress::be(['is_del' => 0, 'id' => $addressId, 'uid' => $this->userInfo['uid']])) {
             $addressInfo = UserAddress::find($addressId)->toArray();
@@ -264,9 +271,10 @@ class My extends AuthController
             $addressInfo = [];
         }
         $addressInfo = json_encode($addressInfo);
-        $this->assign(compact('addressInfo','cartId'));
+        $this->assign(compact('addressInfo', 'cartId'));
         return $this->fetch();
     }
+
     public function recharge()
     {
         return $this->fetch();
@@ -317,17 +325,16 @@ class My extends AuthController
     }
 
 
-
     /**申请退款
      * @param string $order_id
      * @return mixed
      */
-    public function refund_apply($order_id='')
+    public function refund_apply($order_id = '')
     {
         if (!$order_id || !$order = StoreOrder::getUserOrderDetail($this->userInfo['uid'], $order_id)) return $this->redirect(Url::build('order_list'));
         $this->assign([
-            'order' => StoreOrder::tidyOrder($order, true,true),
-            'order_id'=>$order_id
+            'order' => StoreOrder::tidyOrder($order, true, true),
+            'order_id' => $order_id
         ]);
         return $this->fetch();
     }
@@ -472,7 +479,8 @@ class My extends AuthController
     /**
      * 余额明细
      */
-    public function bill_detail(){
+    public function bill_detail()
+    {
 
         return $this->fetch();
     }
