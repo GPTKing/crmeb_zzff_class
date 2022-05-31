@@ -33,7 +33,7 @@ class Login extends WapBasic
         $ref && $ref = htmlspecialchars_decode(base64_decode($ref));
         if (UtilService::isWechatBrowser()) {
             $this->_logout();
-            $openid = $this->oauth($spread_uid);
+            $this->oauth($spread_uid);
             Cookie::delete('_oen');
             exit($this->redirect(empty($ref) ? Url::build('Index/index') : $ref));
         }
@@ -54,7 +54,7 @@ class Login extends WapBasic
         ], $request, true);
         if (!$phone || !$code) return $this->failed('请输入登录账号');
         if (!$code) return $this->failed('请输入验证码');
-        $code=md5('is_phone_code'.$code);
+        $code = md5('is_phone_code' . $code);
         if (!SmsCode::CheckCode($phone, $code)) return JsonService::fail('验证码验证失败');
         SmsCode::setCodeInvalid($phone, $code);
         if (($info = PhoneUser::UserLogIn($phone, $request)) !== false)
