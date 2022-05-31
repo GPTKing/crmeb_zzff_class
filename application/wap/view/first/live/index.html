@@ -1165,7 +1165,6 @@
                             input_demo.scrollIntoViewIfNeeded();
                             document.activeElement.scrollIntoViewIfNeeded()
                         }, 100);
-                        // $('.footer').css('position','relative');
                         window.addEventListener('focusin', () => {
                             scrollTops = document.body.scrollHeight;
                         })
@@ -1178,7 +1177,6 @@
                 changeText: function (e) {
                     var input = this.$refs.input;
                     input.focus();
-                    //input.scrollTop = input.scrollHeigHt;
                 },
                 mine: function (item) {
                     this.$refs.input.value += item.type;
