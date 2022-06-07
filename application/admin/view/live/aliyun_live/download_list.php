@@ -162,10 +162,10 @@
     });
     //实例化form
     layList.form.render();
-    layList.date({elem:'#start_time',theme:'#393D49',type:'datetime'});
-    layList.date({elem:'#syn_start_time',theme:'#393D49',type:'datetime'});
-    layList.date({elem:'#end_time',theme:'#393D49',type:'datetime'});
-    layList.date({elem:'#syn_end_time',theme:'#393D49',type:'datetime'});
+    layList.date({elem:'#start_time',type:'datetime'});
+    layList.date({elem:'#syn_start_time',type:'datetime'});
+    layList.date({elem:'#end_time',type:'datetime'});
+    layList.date({elem:'#syn_end_time',type:'datetime'});
     //加载列表
     layList.tableList('List',"{:Url('get_live_record_list')}?stream_name={$stream_name}&record_id={$record_id}",function (){
         return [

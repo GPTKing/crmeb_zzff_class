@@ -82,8 +82,8 @@
 <script>
     //实例化form
     layList.form.render();
-    layList.date({elem:'#start_time',theme:'#393D49',type:'datetime'});
-    layList.date({elem:'#end_time',theme:'#393D49',type:'datetime'});
+    layList.date({elem:'#start_time',type:'datetime'});
+    layList.date({elem:'#end_time',type:'datetime'});
     //加载列表
     layList.tableList({o:'List', done:function () {}
     },"{:Url('live_goods_list',['live_id'=>$live_id])}",function (){

@@ -670,7 +670,6 @@
                 window.changeIMG = that.changeIMG;
                 layList.date({
                     elem: '#start_time',
-                    theme: '#393D49',
                     type: 'datetime',
                     done: function (value) {
                         that.formData.pink_strar_time = value;
@@ -678,7 +677,6 @@
                 });
                 layList.date({
                     elem: '#end_time',
-                    theme: '#393D49',
                     type: 'datetime',
                     done: function (value) {
                         that.formData.pink_end_time = value;

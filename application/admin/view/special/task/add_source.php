@@ -628,7 +628,6 @@
                 //实例化form
                 layList.date({
                     elem:'#live_time',
-                    theme:'#393D49',
                     type:'datetime',
                     done:function (value) {
                         that.formData.live_time = value;

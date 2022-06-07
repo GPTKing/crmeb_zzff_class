@@ -406,7 +406,6 @@
                 that.getSpreadList();
                 layList.date({
                     elem:'#start_time',
-                    theme:'#393D49',
                     type:'datetime',
                     done:function (value){
                         that.bill_date_start=value;
@@ -414,7 +413,6 @@
                 });
                 layList.date({
                     elem:'#end_time',
-                    theme:'#393D49',
                     type:'datetime',
                     done:function (value){
                         that.bill_date_end=value;
@@ -423,7 +421,6 @@
 
                 layList.date({
                     elem:'#start_date',
-                    theme:'#393D49',
                     type:'datetime',
                     done:function (value){
                         that.start_date=value;
@@ -431,7 +428,6 @@
                 });
                 layList.date({
                     elem:'#end_date',
-                    theme:'#393D49',
                     type:'datetime',
                     done:function (value){
                         that.end_date=value;

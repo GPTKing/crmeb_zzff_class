@@ -17,5 +17,16 @@
         window.controlle="{:getController()}";
         window.module="{:getModule()}";
     </script>
+    <script>
+        layui.laydate.set({
+            trigger: 'click',
+            theme: '#0092DC'
+        });
+    </script>
+    <style>
+        .layui-form-switch {
+            box-sizing: content-box;
+        }
+    </style>
 
 
