@@ -10,63 +10,53 @@
 {/block}
 {block name="content"}
 <div class="layui-fluid">
-    <div class="layui-row layui-col-space15">
-        <div class="layui-col-md12">
-            <div class="layui-card">
-                <div class="layui-card-header">课程分类</div>
-                <div class="layui-card-body">
-                    <div class="layui-row layui-col-space15">
-                        <div class="layui-col-md12">
-                            <form class="layui-form layui-form-pane" action="">
-                                <div class="layui-form-item">
-                                    <div class="layui-inline">
-                                        <label class="layui-form-label">分类名称</label>
-                                        <div class="layui-input-inline">
-                                            <input type="text" name="name" class="layui-input" placeholder="请输入分类名称">
-                                        </div>
-                                    </div>
-                                    <div class="layui-inline">
-                                        <div class="layui-input-inline">
-                                            <div class="layui-btn-group">
-                                                <button class="layui-btn layui-btn-normal layui-btn-sm" lay-submit="search" lay-filter="search">
-                                                    <i class="layui-icon">&#xe615;</i>搜索
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
+    <div class="layui-card">
+        <div class="layui-card-header">课程分类</div>
+        <div class="layui-card-body">
+            <form class="layui-form layui-form-pane" action="">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">分类名称</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="name" class="layui-input" placeholder="请输入分类名称">
                         </div>
-                        <div class="layui-col-md12">
+                    </div>
+                    <div class="layui-inline">
+                        <div class="layui-input-inline">
                             <div class="layui-btn-group">
-                                <button type="button" class="layui-btn layui-btn-normal layui-btn-sm" data-type="add">
-                                    <i class="layui-icon">&#xe608;</i>添加分类
-                                </button>
-                                <button type="button" class="layui-btn layui-btn-normal layui-btn-sm" data-type="refresh">
-                                    <i class="layui-icon">&#xe669;</i>刷新
+                                <button class="layui-btn layui-btn-normal layui-btn-sm" lay-submit="search" lay-filter="search">
+                                    <i class="layui-icon layui-icon-search"></i>搜索
                                 </button>
                             </div>
-                            <table id="List" lay-filter="List"></table>
-                            <script type="text/html" id="picture">
-                                {{#  if(d.grade_id){ }}
-                                <img style="cursor: pointer;" src="{{d.pic}}" height="50" lay-event='open_image'>
-                                {{#  } }}
-                            </script>
-                            <script type="text/html" id="is_show">
-                                <input type='checkbox' name='id' lay-skin='switch' value="{{d.id}}" lay-filter='is_show' lay-text='显示|隐藏'  {{ d.is_show == 1 ? 'checked' : '' }}>
-                            </script>
-                            <script type="text/html" id="act">
-                                <button type="button" class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit" onclick="$eb.createModalFrame('编辑','{:Url('create')}?id={{d.id}}',{h:500,w:800})">
-                                  <i class="layui-icon">&#xe642;</i>编辑
-                                </button>
-                                <button type="button" class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">
-                                  <i class="layui-icon">&#xe640;</i>删除
-                                </button>
-                            </script>
                         </div>
                     </div>
                 </div>
+            </form>
+            <div class="layui-btn-container">
+                <button type="button" class="layui-btn layui-btn-normal layui-btn-sm" data-type="add">
+                    <i class="layui-icon layui-icon-add-1"></i>添加分类
+                </button>
+                <button type="button" class="layui-btn layui-btn-normal layui-btn-sm" data-type="refresh">
+                    <i class="layui-icon layui-icon-refresh-1"></i>刷新
+                </button>
             </div>
+            <table id="List" lay-filter="List"></table>
+            <script type="text/html" id="picture">
+                {{#  if(d.grade_id){ }}
+                <img style="cursor: pointer;" src="{{d.pic}}" height="50" lay-event='open_image'>
+                {{#  } }}
+            </script>
+            <script type="text/html" id="is_show">
+                <input type='checkbox' name='id' lay-skin='switch' value="{{d.id}}" lay-filter='is_show' lay-text='显示|隐藏'  {{ d.is_show == 1 ? 'checked' : '' }}>
+            </script>
+            <script type="text/html" id="act">
+                <button type="button" class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit" onclick="$eb.createModalFrame('编辑','{:Url('create')}?id={{d.id}}',{h:500,w:800})">
+                    <i class="layui-icon layui-icon-edit"></i>编辑
+                </button>
+                <button type="button" class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">
+                    <i class="layui-icon layui-icon-delete"></i>删除
+                </button>
+            </script>
         </div>
     </div>
 </div>

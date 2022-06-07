@@ -17,5 +17,24 @@
         window.controlle="{:getController()}";
         window.module="{:getModule()}";
     </script>
+    <script>
+        layui.laydate.set({
+            trigger: 'click',
+            theme: '#0092DC'
+        });
+    </script>
+    <style>
+        .layui-form-switch {
+            box-sizing: content-box;
+        }
+
+        .layui-laydate-footer span:hover {
+            color: #0092DC;
+        }
+
+        .layui-laydate-footer span[lay-type=date] {
+            color: #0092DC;
+        }
+    </style>
 
 

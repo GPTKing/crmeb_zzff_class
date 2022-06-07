@@ -70,7 +70,6 @@
     layList.form.render();
     layList.date({
         elem: '#datetime',
-        theme: '#0092DC',
         type: 'datetime',
         range: '~'
     });

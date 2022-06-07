@@ -1,121 +1,109 @@
 {extend name="public/container"}
 {block name="content"}
 <div class="layui-fluid">
-    <div class="layui-row layui-col-space15">
-        <div class="layui-col-md12">
-            <div class="layui-card">
-                <div class="layui-card-header">图文专题</div>
-                <div class="layui-card-body">
-                    <div class="layui-row layui-col-space15">
-                        <div class="layui-col-md12">
-                            <form class="layui-form layui-form-pane" action="">
-                                <div class="layui-form-item">
-                                    <div class="layui-inline">
-                                        <label class="layui-form-label">专题搜索</label>
-                                        <div class="layui-input-inline">
-                                            <input type="text" name="store_name" class="layui-input" placeholder="专题名称、简介、短语、编号">
-                                            <input type="hidden" name="activity_type" value="{$activity_type}">
-                                            <input type="hidden" name="subject_id" value="{$subject_id}">
-                                        </div>
-                                    </div>
-                                    <div class="layui-inline">
-                                        <label class="layui-form-label">专题分类</label>
-                                        <div class="layui-input-inline">
-                                            <select name="subject_id" lay-search="">
-                                                <option value="0">全部</option>
-                                                {volist name='subject_list' id='vc'}
-                                                <option {if $vc.grade_id==0}disabled{/if} value="{$vc.id}">{$vc.html}{$vc.name}</option>
-                                                {/volist}
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="layui-inline">
-                                        <label class="layui-form-label">显示状态</label>
-                                        <div class="layui-input-inline">
-                                            <select name="is_show">
-                                                <option value="">全部</option>
-                                                <option value="1">显示</option>
-                                                <option value="0">隐藏</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="layui-inline">
-                                        <label class="layui-form-label">时间范围</label>
-                                        <div class="layui-input-inline" style="width: 260px;">
-                                            <input type="text" name="datetime" class="layui-input" id="datetime" placeholder="时间范围">
-                                        </div>
-                                    </div>
-                                    <div class="layui-inline">
-                                        <div class="layui-input-inline">
-                                            <div class="layui-btn-group">
-                                                <button class="layui-btn layui-btn-sm layui-btn-normal" lay-submit="search" lay-filter="search">
-                                                    <i class="layui-icon">&#xe615;</i>搜索
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
+    <div class="layui-card">
+        <div class="layui-card-header">图文专题</div>
+        <div class="layui-card-body">
+            <form class="layui-form layui-form-pane" action="">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">专题搜索</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="store_name" class="layui-input" autocomplete="off" placeholder="专题名称、简介、短语、编号">
+                            <input type="hidden" name="activity_type" value="{$activity_type}">
+                            <input type="hidden" name="subject_id" value="{$subject_id}">
                         </div>
-                        <div class="layui-col-md12">
-                            <div class="layui-btn-group">
-                                <button type="button" class="layui-btn layui-btn-normal layui-btn-sm" data-type="add" onclick="action.open_add('{:Url('add',['special_type' =>$special_type])}','添加{$special_title}')">
-                                    <i class="layui-icon">&#xe608;</i>添加{$special_title}
-                                </button>
-                                <button type="button" class="layui-btn layui-btn-normal layui-btn-sm" data-type="refresh" onclick="window.location.reload()">
-                                    <i class="layui-icon">&#xe669;</i>刷新
-                                </button>
-                            </div>
-                            <table class="layui-hide" id="List" lay-filter="List"></table>
-                            <script type="text/html" id="recommend">
-                                <div class="layui-btn-container">
-                                {{#  layui.each(d.recommend, function(index, item){ }}
-                                <button type="button" class="layui-btn  layui-btn-normal layui-btn-xs" data-type="recommend" data-id="{{index}}" data-pid="{{d.id}}">{{item}}</button>
-                                {{#  }); }}
-                                </div>
-                            </script>
-                            <script type="text/html" id="is_pink">
-                                {{# if(d.is_pink){ }}
-                                <span class="layui-badge layui-bg-blue">开启</span>
-                                {{# }else{ }}
-                                <span class="layui-badge">关闭</span>
-                                {{# } }}
-                            </script>
-                            <script type="text/html" id="is_live_goods">
-                                <input type='checkbox' name='is_live_goods' lay-skin='switch' value="{{d.id}}" lay-filter='is_live_goods' lay-text='是|否'  {{ d.is_live_goods == 1 ? 'checked' : '' }}>
-                            </script>
-                            <script type="text/html" id="is_show">
-                                <input type='checkbox' name='id' lay-skin='switch' value="{{d.id}}" lay-filter='is_show' lay-text='上架|下架'  {{ d.is_show == 1 ? 'checked' : '' }}>
-                            </script>
-                            <script type="text/html" id="image">
-                                <img style="cursor: pointer;" height="50" lay-event='open_image' src="{{d.image}}">
-                            </script>
-                            <script type="text/html" id="act">
-                                <button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="dropdown(this)">
-                                  <i class="layui-icon">&#xe625;</i>操作
-                                </button>
-                                <ul class="layui-nav-child layui-anim layui-anim-upbit">
-                                    <li>
-                                        <a  href="javascript:void(0)" onclick="action.open_add('{:Url('add')}?id={{d.id}}&special_type={$special_type}','编辑专题')">
-                                            <i class="fa fa-paste"></i> 编辑专题
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="javascript:void(0)" onclick="$eb.createModalFrame('{{d.title}}-推荐管理','{:Url('recommend')}?special_id={{d.id}}',{h:300,w:400})">
-                                            <i class="fa fa-check-circle"></i> 推荐至首页
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a lay-event='delect' href="javascript:void(0)">
-                                            <i class="fa fa-trash"></i> 删除专题
-                                        </a>
-                                    </li>
-                                </ul>
-                            </script>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">专题分类</label>
+                        <div class="layui-input-inline">
+                            <select name="subject_id" lay-search="">
+                                <option value="0">全部</option>
+                                {volist name='subject_list' id='vc'}
+                                <option {if $vc.grade_id==0}disabled{/if} value="{$vc.id}">{$vc.html}{$vc.name}</option>
+                                {/volist}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">显示状态</label>
+                        <div class="layui-input-inline">
+                            <select name="is_show">
+                                <option value="">全部</option>
+                                <option value="1">显示</option>
+                                <option value="0">隐藏</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">时间范围</label>
+                        <div class="layui-input-inline" style="width: 260px;">
+                            <input type="text" name="datetime" class="layui-input" id="datetime" placeholder="时间范围">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <div class="layui-input-inline">
+                            <button class="layui-btn layui-btn-sm layui-btn-normal" lay-submit="search" lay-filter="search">
+                                <i class="layui-icon layui-icon-search"></i>搜索
+                            </button>
                         </div>
                     </div>
                 </div>
+            </form>
+            <div class="layui-btn-container">
+                <button type="button" class="layui-btn layui-btn-normal layui-btn-sm" data-type="add" onclick="action.open_add('{:Url('add',['special_type' =>$special_type])}','添加{$special_title}')">
+                    <i class="layui-icon layui-icon-add-1"></i>添加{$special_title}
+                </button>
+                <button type="button" class="layui-btn layui-btn-normal layui-btn-sm" data-type="refresh" onclick="window.location.reload()">
+                    <i class="layui-icon layui-icon-refresh-1"></i>刷新
+                </button>
             </div>
+            <table id="List" lay-filter="List"></table>
+            <script type="text/html" id="recommend">
+                <div class="layui-btn-container">
+                {{#  layui.each(d.recommend, function(index, item){ }}
+                <button type="button" class="layui-btn  layui-btn-normal layui-btn-xs" data-type="recommend" data-id="{{index}}" data-pid="{{d.id}}">{{item}}</button>
+                {{#  }); }}
+                </div>
+            </script>
+            <script type="text/html" id="is_pink">
+                {{# if(d.is_pink){ }}
+                <span class="layui-badge layui-bg-blue">开启</span>
+                {{# }else{ }}
+                <span class="layui-badge">关闭</span>
+                {{# } }}
+            </script>
+            <script type="text/html" id="is_live_goods">
+                <input type='checkbox' name='is_live_goods' lay-skin='switch' value="{{d.id}}" lay-filter='is_live_goods' lay-text='是|否'  {{ d.is_live_goods == 1 ? 'checked' : '' }}>
+            </script>
+            <script type="text/html" id="is_show">
+                <input type='checkbox' name='id' lay-skin='switch' value="{{d.id}}" lay-filter='is_show' lay-text='上架|下架'  {{ d.is_show == 1 ? 'checked' : '' }}>
+            </script>
+            <script type="text/html" id="image">
+                <img style="cursor: pointer;" height="50" lay-event='open_image' src="{{d.image}}">
+            </script>
+            <script type="text/html" id="act">
+                <button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="dropdown(this)">
+                    <i class="layui-icon layui-icon-triangle-d"></i>操作
+                </button>
+                <ul class="layui-nav-child layui-anim layui-anim-upbit">
+                    <li>
+                        <a  href="javascript:void(0)" onclick="action.open_add('{:Url('add')}?id={{d.id}}&special_type={$special_type}','编辑专题')">
+                            <i class="fa fa-paste"></i> 编辑专题
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)" onclick="$eb.createModalFrame('{{d.title}}-推荐管理','{:Url('recommend')}?special_id={{d.id}}',{h:300,w:400})">
+                            <i class="fa fa-check-circle"></i> 推荐至首页
+                        </a>
+                    </li>
+                    <li>
+                        <a lay-event='delect' href="javascript:void(0)">
+                            <i class="fa fa-trash"></i> 删除专题
+                        </a>
+                    </li>
+                </ul>
+            </script>
         </div>
     </div>
 </div>
@@ -130,7 +118,6 @@
     layList.form.render();
     layList.date({
         elem: '#datetime',
-        theme: '#0092DC',
         type: 'datetime',
         range: '~'
     });

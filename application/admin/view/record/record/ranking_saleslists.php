@@ -56,8 +56,8 @@
 <script src="{__ADMIN_PATH}js/layuiList.js"></script>
 <script>
     layList.form.render();
-    layList.date({elem:'#start_time',theme:'#393D49',type:'datetime'});
-    layList.date({elem:'#end_time',theme:'#393D49',type:'datetime'});
+    layList.date({elem:'#start_time',type:'datetime'});
+    layList.date({elem:'#end_time',type:'datetime'});
     layList.tableList('userList',"{:Url('getSaleslists')}",function () {
         return [
             {field: 'id', title: '商品编号', sort: true,event:'id'},

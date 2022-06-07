@@ -752,17 +752,17 @@
                 window.changeIMG = that.changeIMG;
                 //实例化form
                 layList.date({
-                    elem: '#live_time', theme: '#393D49', type: 'datetime', done: function (value) {
+                    elem: '#live_time', type: 'datetime', done: function (value) {
                         that.formData.live_time = value;
                     }
                 });
                 layList.date({
-                    elem: '#start_time', theme: '#393D49', type: 'datetime', done: function (value) {
+                    elem: '#start_time', type: 'datetime', done: function (value) {
                         that.formData.pink_strar_time = value;
                     }
                 });
                 layList.date({
-                    elem: '#end_time', theme: '#393D49', type: 'datetime', done: function (value) {
+                    elem: '#end_time', type: 'datetime', done: function (value) {
                         that.formData.pink_end_time = value;
                     }
                 });
