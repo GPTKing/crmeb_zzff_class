@@ -27,6 +27,14 @@
         .layui-form-switch {
             box-sizing: content-box;
         }
+
+        .layui-laydate-footer span:hover {
+            color: #0092DC;
+        }
+
+        .layui-laydate-footer span[lay-type=date] {
+            color: #0092DC;
+        }
     </style>
 
 
