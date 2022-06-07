@@ -43,7 +43,7 @@
                     </div>
                     <div class="layui-inline">
                         <div class="layui-input-inline">
-                            <button class="layui-btn layui-btn-sm layui-btn-normal" lay-submit="search" lay-filter="search">
+                            <button class="layui-btn layui-btn-normal layui-btn-sm" lay-submit="search" lay-filter="search">
                                 <i class="layui-icon layui-icon-search"></i>搜索
                             </button>
                         </div>
@@ -62,7 +62,7 @@
             <script type="text/html" id="recommend">
                 <div class="layui-btn-container">
                 {{#  layui.each(d.recommend, function(index, item){ }}
-                <button type="button" class="layui-btn  layui-btn-normal layui-btn-xs" data-type="recommend" data-id="{{index}}" data-pid="{{d.id}}">{{item}}</button>
+                <button type="button" class="layui-btn layui-btn-normal layui-btn-xs" data-type="recommend" data-id="{{index}}" data-pid="{{d.id}}">{{item}}</button>
                 {{#  }); }}
                 </div>
             </script>
