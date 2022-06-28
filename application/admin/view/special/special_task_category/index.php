@@ -10,72 +10,62 @@
 {/block}
 {block name="content"}
 <div class="layui-fluid">
-    <div class="layui-row layui-col-space15">
-        <div class="layui-col-md12">
-            <div class="layui-card">
-                <div class="layui-card-header">素材分类</div>
-                <div class="layui-card-body">
-                    <div class="layui-row layui-col-space15">
-                        <div class="layui-col-md12">
-                            <form class="layui-form layui-form-pane" action="">
-                                <div class="layui-form-item">
-                                    <div class="layui-inline">
-                                        <label class="layui-form-label">素材分类</label>
-                                        <div class="layui-input-inline">
-                                            <select name="pid" lay-search="">
-                                                <option value="0">全部</option>
-                                                {volist name='category' id='vo'}
-                                                <option value="{$vo.id}" {eq name="pid" value="$vo.id"}selected="selected"{/eq}>{$vo.html}{$vo.title}</option>
-                                                {/volist}
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="layui-inline">
-                                        <label class="layui-form-label">素材分类名称</label>
-                                        <div class="layui-input-inline">
-                                            <input type="text" name="cate_name" class="layui-input" placeholder="请输入素材分类名称">
-                                        </div>
-                                    </div>
-                                    <div class="layui-inline">
-                                        <div class="layui-input-inline">
-                                            <button class="layui-btn layui-btn-sm layui-btn-normal" lay-submit="search" lay-filter="search">
-                                                <i class="layui-icon">&#xe615;</i>搜索
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
+    <div class="layui-card">
+        <div class="layui-card-header">素材分类</div>
+        <div class="layui-card-body">
+            <form class="layui-form layui-form-pane" action="">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">素材分类</label>
+                        <div class="layui-input-inline">
+                            <select name="pid" lay-search="">
+                                <option value="0">全部</option>
+                                {volist name='category' id='vo'}
+                                <option value="{$vo.id}" {eq name="pid" value="$vo.id"}selected="selected"{/eq}>{$vo.html}{$vo.title}</option>
+                                {/volist}
+                            </select>
                         </div>
-                        <div class="layui-col-md12">
-                            <div class="layui-btn-group">
-                                {if condition="$pid neq 0"}
-                                <a class="layui-btn layui-btn-normal layui-btn-sm" href="{:Url('admin/special.special_task_category/index')}">
-                                    <i class="layui-icon">&#xe608;</i>返回首页
-                                </a>
-                                {/if}
-                                <button type="button" class="layui-btn layui-btn-normal layui-btn-sm" data-type="add">
-                                    <i class="layui-icon">&#xe608;</i>添加素材分类
-                                </button>
-                                <button type="button" class="layui-btn layui-btn-normal layui-btn-sm" data-type="refresh">
-                                    <i class="layui-icon">&#xe669;</i>刷新
-                                </button>
-                            </div>
-                            <table id="List" lay-filter="List"></table>
-                            <script type="text/html" id="is_show">
-                                <input type='checkbox' name='id' lay-skin='switch' value="{{d.id}}" lay-filter='is_show' lay-text='显示|隐藏'  {{ d.is_show == 1 ? 'checked' : '' }}>
-                            </script>
-                            <script type="text/html" id="act">
-                                <button type="button" class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">
-                                    <i class="layui-icon">&#xe642;</i>编辑
-                                </button>
-                                <button type="button" class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">
-                                    <i class="layui-icon">&#xe640;</i>删除
-                                </button>
-                            </script>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">素材分类名称</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="cate_name" class="layui-input" placeholder="请输入素材分类名称">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <div class="layui-input-inline">
+                            <button class="layui-btn layui-btn-normal layui-btn-sm" lay-submit="search" lay-filter="search">
+                                <i class="layui-icon layui-icon-search"></i>搜索
+                            </button>
                         </div>
                     </div>
                 </div>
+            </form>
+            <div class="layui-btn-container">
+                {if condition="$pid neq 0"}
+                <a class="layui-btn layui-btn-normal layui-btn-sm" href="{:Url('admin/special.special_task_category/index')}">
+                    <i class="layui-icon layui-icon-home"></i>返回首页
+                </a>
+                {/if}
+                <button type="button" class="layui-btn layui-btn-normal layui-btn-sm" data-type="add">
+                    <i class="layui-icon layui-icon-add-1"></i>添加素材分类
+                </button>
+                <button type="button" class="layui-btn layui-btn-normal layui-btn-sm" data-type="refresh">
+                    <i class="layui-icon layui-icon-refresh-1"></i>刷新
+                </button>
             </div>
+            <table id="List" lay-filter="List"></table>
+            <script type="text/html" id="is_show">
+                <input type='checkbox' name='id' lay-skin='switch' value="{{d.id}}" lay-filter='is_show' lay-text='显示|隐藏'  {{ d.is_show == 1 ? 'checked' : '' }}>
+            </script>
+            <script type="text/html" id="act">
+                <button type="button" class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">
+                    <i class="layui-icon layui-icon-edit"></i>编辑
+                </button>
+                <button type="button" class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">
+                    <i class="layui-icon layui-icon-delete"></i>删除
+                </button>
+            </script>
         </div>
     </div>
 </div>

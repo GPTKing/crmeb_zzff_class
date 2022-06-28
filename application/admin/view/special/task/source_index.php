@@ -1,113 +1,102 @@
 {extend name="public/container"}
 {block name="content"}
 <div class="layui-fluid">
-    <div class="layui-row layui-col-space15">
-        <div class="layui-col-md12">
-            <div class="layui-card">
-                <div class="layui-card-header">素材列表</div>
-                <div class="layui-card-body">
-                    <div class="layui-row layui-col-space15">
-                        <div class="layui-col-md12">
-                            <form class="layui-form layui-form-pane" action="">
-                                <div class="layui-form-item">
-                                    <div class="layui-inline">
-                                        <label class="layui-form-label">是否显示</label>
-                                        <div class="layui-input-inline">
-                                            <select name="is_show">
-                                                <option value="">是否显示</option>
-                                                <option value="1">显示</option>
-                                                <option value="0">不显示</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="layui-inline">
-                                        <label class="layui-form-label">素材分类</label>
-                                        <div class="layui-input-inline">
-                                            <select name="pid" lay-search="">
-                                                <option value="">全部</option>
-                                                {volist name='category' id='vo'}
-                                                <option value="{$vo.id}">{$vo.html}{$vo.title}</option>
-                                                {/volist}
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="layui-inline">
-                                        <label class="layui-form-label">素材名称</label>
-                                        <div class="layui-input-inline">
-                                            <input type="text" name="title" class="layui-input" placeholder="请输入素材名称">
-                                        </div>
-                                    </div>
-                                    <div class="layui-inline">
-                                        <div class="layui-input-inline">
-                                            <button class="layui-btn layui-btn-sm layui-btn-normal" lay-submit="search" lay-filter="search">
-                                                <i class="layui-icon">&#xe615;</i>搜索
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
+    <div class="layui-card">
+        <div class="layui-card-header">素材列表</div>
+        <div class="layui-card-body">
+            <form class="layui-form layui-form-pane" action="">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">是否显示</label>
+                        <div class="layui-input-inline">
+                            <select name="is_show">
+                                <option value="">是否显示</option>
+                                <option value="1">显示</option>
+                                <option value="0">不显示</option>
+                            </select>
                         </div>
-                        <div class="layui-col-md12">
-                            <div class="layui-btn-group">
-                                <button type="button" class="layui-btn layui-btn-normal layui-btn-sm" data-type="add" onclick="action.open_add('{:Url('admin/special.special_type/addSources')}','添加素材')">
-                                    <i class="layui-icon">&#xe608;</i>添加素材
-                                </button>
-                                <button type="button" class="layui-btn layui-btn-normal layui-btn-sm" data-type="refresh" onclick="window.location.reload()">
-                                    <i class="layui-icon">&#xe669;</i>刷新
-                                </button>
-                            </div>
-                            <table id="List" lay-filter="List"></table>
-                            <script type="text/html" id="image">
-                                <img style="cursor: pointer;" height="50" lay-event='open_image' src="{{d.image}}">
-                            </script>
-                            <script type="text/html" id="recommend">
-                                <div class="layui-btn-container">
-                                {{#  layui.each(d.recommend, function(index, item){ }}
-                                <button type="button" class="layui-btn  layui-btn-normal layui-btn-xs" data-type="recommend" data-id="{{index}}" data-pid="{{d.id}}">{{item}}</button>
-                                <!-- <span class="layui-badge layui-bg-blue recom-item" data-id="{{index}}" data-pid="{{d.id}}" style="margin-bottom: 5px;">{{item}}</span> -->
-                                {{#  }); }}
-                                </div>
-                            </script>
-                            <script type="text/html" id="is_pay_status_c">
-                                {{# if(d.is_pay_status>0){ }}
-                                <a onclick="$eb.createModalFrame('设置收费专题','{:Url('is_pay_status_c')}?id='+{{d.id}},{w:800})" class="layui-btn layui-btn-normal layui-btn-xs">已设置收费</a>
-                                {{# }else if(d.use>0){ }}
-                                <span class="layui-badge">未设置收费</span>
-                                {{# }else{ }}
-                                <span class="layui-badge">未使用</span>
-                                {{# } }}
-                            </script>
-                            <script type="text/html" id="is_show">
-                                <input type='checkbox' name='id' lay-skin='switch' value="{{d.id}}" lay-filter='is_show' lay-text='显示|隐藏'  {{ d.is_show == 1 ? 'checked' : '' }}>
-                            </script>
-                            <script type="text/html" id="act">
-                                <button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="dropdown(this)">
-                                  <i class="layui-icon">&#xe625;</i>操作
-                                </button>
-                                <ul class="layui-nav-child layui-anim layui-anim-upbit">
-                                    <li>
-                                        <a href="javascript:;" onclick="action.open_add('{:Url('admin/special.special_type/addSources')}?id={{d.id}}','编辑')" >
-                                            <i class="layui-icon">&#xe642;</i> 编辑
-                                        </a>
-                                    </li>
-                                    {{# if(d.is_pay_status==0){ }}
-                                    <li>
-                                        <a href="javascript:void(0)" onclick="$eb.createModalFrame('{{d.title}}-推荐管理','{:Url('sourceRecommend')}?source_id={{d.id}}',{h:300,w:400})">
-                                            <i class="fa fa-check-circle"></i> 推荐至首页
-                                        </a>
-                                    </li>
-                                    {{# } }}
-                                    <li>
-                                        <a lay-event='delete' href="javascript:;">
-                                            <i class="layui-icon">&#xe640;</i> 删除
-                                        </a>
-                                    </li>
-                                </ul>
-                            </script>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">素材分类</label>
+                        <div class="layui-input-inline">
+                            <select name="pid" lay-search="">
+                                <option value="">全部</option>
+                                {volist name='category' id='vo'}
+                                <option value="{$vo.id}">{$vo.html}{$vo.title}</option>
+                                {/volist}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">素材名称</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="title" class="layui-input" placeholder="请输入素材名称">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <div class="layui-input-inline">
+                            <button class="layui-btn layui-btn-normal layui-btn-sm" lay-submit="search" lay-filter="search">
+                                <i class="layui-icon layui-icon-search"></i>搜索
+                            </button>
                         </div>
                     </div>
                 </div>
+            </form>
+            <div class="layui-btn-container">
+                <button type="button" class="layui-btn layui-btn-normal layui-btn-sm" data-type="add" onclick="action.open_add('{:Url('admin/special.special_type/addSources')}','添加素材')">
+                    <i class="layui-icon layui-icon-add-1"></i>添加素材
+                </button>
+                <button type="button" class="layui-btn layui-btn-normal layui-btn-sm" data-type="refresh" onclick="window.location.reload()">
+                    <i class="layui-icon layui-icon-refresh-1"></i>刷新
+                </button>
             </div>
+            <table id="List" lay-filter="List"></table>
+            <script type="text/html" id="image">
+                <img style="cursor: pointer;" height="50" lay-event='open_image' src="{{d.image}}">
+            </script>
+            <script type="text/html" id="recommend">
+                <div class="layui-btn-container">
+                {{#  layui.each(d.recommend, function(index, item){ }}
+                <button type="button" class="layui-btn layui-btn-normal layui-btn-xs" data-type="recommend" data-id="{{index}}" data-pid="{{d.id}}">{{item}}</button>
+                {{#  }); }}
+                </div>
+            </script>
+            <script type="text/html" id="is_pay_status_c">
+                {{# if(d.is_pay_status>0){ }}
+                <a onclick="$eb.createModalFrame('设置收费专题','{:Url('is_pay_status_c')}?id='+{{d.id}},{w:800})" class="layui-btn layui-btn-normal layui-btn-xs">已设置收费</a>
+                {{# }else if(d.use>0){ }}
+                <span class="layui-badge">未设置收费</span>
+                {{# }else{ }}
+                <span class="layui-badge">未使用</span>
+                {{# } }}
+            </script>
+            <script type="text/html" id="is_show">
+                <input type='checkbox' name='id' lay-skin='switch' value="{{d.id}}" lay-filter='is_show' lay-text='显示|隐藏'  {{ d.is_show == 1 ? 'checked' : '' }}>
+            </script>
+            <script type="text/html" id="act">
+                <button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="dropdown(this)">
+                    <i class="layui-icon layui-icon-triangle-d"></i>操作
+                </button>
+                <ul class="layui-nav-child layui-anim layui-anim-upbit">
+                    <li>
+                        <a href="javascript:;" onclick="action.open_add('{:Url('admin/special.special_type/addSources')}?id={{d.id}}','编辑')" >
+                            <i class="layui-icon">&#xe642;</i> 编辑
+                        </a>
+                    </li>
+                    {{# if(d.is_pay_status==0){ }}
+                    <li>
+                        <a href="javascript:void(0)" onclick="$eb.createModalFrame('{{d.title}}-推荐管理','{:Url('sourceRecommend')}?source_id={{d.id}}',{h:300,w:400})">
+                            <i class="fa fa-check-circle"></i> 推荐至首页
+                        </a>
+                    </li>
+                    {{# } }}
+                    <li>
+                        <a lay-event='delete' href="javascript:;">
+                            <i class="layui-icon">&#xe640;</i> 删除
+                        </a>
+                    </li>
+                </ul>
+            </script>
         </div>
     </div>
 </div>
