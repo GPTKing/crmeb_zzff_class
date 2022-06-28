@@ -87,134 +87,131 @@
 {/block}
 {block name="content"}
 <div class="layui-fluid" style="background: #fff">
-    <div class="layui-row layui-col-space15"  id="app" v-cloak="">
-        <form action="" class="layui-form">
-            <div class="layui-col-md12">
-                <div class="layui-card" v-cloak="">
-                    <div class="layui-card-header">基本信息</div>
-                    <div class="layui-card-body" style="padding: 10px 150px;">
-                        <div class="layui-form-item">
-                            <label class="layui-form-label" >素材名称：</label>
-                            <div class="layui-input-block">
-                                <input type="text" name="title" v-model="formData.title" autocomplete="off" placeholder="请输入素材名称" class="layui-input">
-                            </div>
-                        </div>
-                        <div class="layui-form-item submit">
-                            <label class="layui-form-label">素材分类</label>
-                            <div class="layui-input-block">
-                                <select name="pid" v-model="formData.pid" lay-search="" lay-filter="pid" >
-                                    <option v-for="item in cateList"  :value="item.id" >{{item.html}}{{item.title}}</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="layui-form-item m-t-5">
-                            <label class="layui-form-label">素材排序</label>
-                            <div class="layui-input-block">
-                                <input type="number" style="width: 20%" name="sort" v-model="formData.sort" autocomplete="off" class="layui-input">
-                            </div>
-                        </div>
-                        <div class="layui-form-item m-t-5" v-cloak="">
-                            <label class="layui-form-label">
-                                <div>素材封面</div>
-                                <div>(710*400px)</div>
-                            </label>
-                            <div class="layui-input-block">
-                                <div class="upload-image-box" v-if="formData.image" @mouseenter="mask.image = true" @mouseleave="mask.image = false">
-                                    <img :src="formData.image" alt="">
-                                    <div class="mask" v-show="mask.image" style="display: block">
-                                        <p><i class="fa fa-eye" @click="look(formData.image)"></i><i class="fa fa-trash-o" @click="delect('image')"></i></p>
-                                    </div>
-                                </div>
-                                <div class="upload-image"  v-show="!formData.image" @click="upload('image')">
-                                    <div class="fiexd"><i class="fa fa-plus"></i></div>
-                                    <p>选择图片</p>
-                                </div>
-                            </div>
-                            {if condition="$special_type eq 3"}
-                            <div class="layui-form-item m-t-5" >
-                                <label class="layui-form-label">插入视频</label>
-                                <div class="layui-input-block">
-                                    <input type="text" name="title" v-model="link" style="width:50%;display:inline-block;margin-right: 10px;" autocomplete="off" placeholder="请输入视频链接" class="layui-input">
-                                    <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" @click="confirmAdd()" v-show="is_upload==false">确认添加</button>
-                                    <label style="display: inline;" class="file" v-show="is_upload==false">
-                                        <input style="display: none;" id="ossupload" type="file" class="layui-btn layui-btn-sm layui-btn-normal" >上传视频
-                                    </label>
-                                    <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" v-show="is_upload" @click="delVideo()">删除</button>
-                                </div>
-                                <div class="layui-input-block" style="width: 50%;margin-top: 20px" v-show="is_video">
-                                    <div class="layui-progress" style="margin-bottom: 10px">
-                                        <div class="layui-progress-bar layui-bg-blue" :style="'width:'+videoWidth+'%'"></div>
-                                    </div>
-                                    <button type="button" class="layui-btn layui-btn-sm layui-btn-danger"
-                                            @click="cancelUpload" v-show="demand_switch==2 && is_video">取消
-                                    </button>
-                                    <button type="button" id="authUpload" class="layui-btn layui-btn-sm layui-btn-danger" v-show="demand_switch==1 && is_video">开始上传
-                                    </button>
-                                    <button type="button" class="layui-btn layui-btn-sm layui-btn-danger"
-                                            id="pauseUpload" v-show="demand_switch==1 && is_video">暂停
-                                    </button>
-                                    <button type="button" class="layui-btn layui-btn-sm layui-btn-danger" v-show="is_suspend"
-                                            id="resumeUpload">恢复上传
-                                    </button>
-                                </div>
-                                <div class="layui-form-mid layui-word-aux">输入链接将视为添加视频直接添加,请确保视频链接的正确性</div>
-                            </div>
-                            {else/}
-                            <div class="layui-form-item m-t-5">
-                                <label class="layui-form-label">插入音频</label>
-                                <div class="layui-input-block">
-                                    <input type="text" name="title" v-model="link" style="width:50%;display:inline-block;margin-right: 10px;" autocomplete="off" placeholder="请输入音频链接" class="layui-input">
-                                    <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" @click="confirmAdd()" v-show="is_upload==false">确认添加</button>
-                                    <label style="display: inline;" class="file" v-show="is_upload==false">
-                                        <input style="display: none;" id="ossupload" type="file" class="layui-btn layui-btn-sm layui-btn-normal" >上传音频
-                                    </label>
-                                    <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" v-show="is_upload" @click="delVideo()">删除</button>
-                                </div>
-                                <div class="layui-input-block" style="width: 50%;margin-top: 20px" v-show="is_video">
-                                    <div class="layui-progress" style="margin-bottom: 10px">
-                                        <div class="layui-progress-bar layui-bg-blue" :style="'width:'+videoWidth+'%'"></div>
-                                    </div>
-                                    <button type="button" class="layui-btn layui-btn-sm layui-btn-danger"
-                                            @click="cancelUpload" v-show="demand_switch==2 && is_video">取消
-                                    </button>
-                                    <button type="button" id="authUpload" class="layui-btn layui-btn-sm layui-btn-danger" v-show="demand_switch==1 && is_video">开始上传
-                                    </button>
-                                    <button type="button" class="layui-btn layui-btn-sm layui-btn-danger"
-                                            id="pauseUpload" v-show="demand_switch==1 && is_video">暂停
-                                    </button>
-                                    <button type="button" class="layui-btn layui-btn-sm layui-btn-danger" v-show="is_suspend"
-                                            id="resumeUpload">恢复上传
-                                    </button>
-                                </div>
-                                <div class="layui-form-mid layui-word-aux">输入链接将视为添加音频直接添加,请确保音频链接的正确性</div>
-                            </div>
-                            {/if}
-                            <div class="layui-form-item m-t-5" >
-                                <label class="layui-form-label">素材内容</label>
-                                <div class="layui-input-block">
-                                    <textarea id="myEditorContent"  style="width:100%;height: 500px">{{formData.content}}</textarea>
-                                </div>
-                            </div>
-                            <div class="layui-form-item m-t-5">
-                                <label class="layui-form-label">素材简介</label>
-                                <div class="layui-input-block">
-                                    <textarea id="myEditorDetail" style="width:100%;height: 500px">{{formData.detail}}</textarea>
-                                </div>
-                            </div>
-
-                        </div>
+    <form action="" class="layui-form" id="app" v-cloak>
+        <div class="layui-card" v-cloak="">
+            <div class="layui-card-header">基本信息</div>
+            <div class="layui-card-body" style="padding: 10px 150px;">
+                <div class="layui-form-item">
+                    <label class="layui-form-label" >素材名称：</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="title" v-model="formData.title" autocomplete="off" placeholder="请输入素材名称" class="layui-input">
                     </div>
                 </div>
-                <div class="layui-col-md12">
-                    <div class="layui-form-item submit" style="margin-bottom: 10px">
+                <div class="layui-form-item submit">
+                    <label class="layui-form-label">素材分类</label>
+                    <div class="layui-input-block">
+                        <select name="pid" v-model="formData.pid" lay-search="" lay-filter="pid" >
+                            <option v-for="item in cateList"  :value="item.id" >{{item.html}}{{item.title}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item m-t-5">
+                    <label class="layui-form-label">素材排序</label>
+                    <div class="layui-input-block">
+                        <input type="number" style="width: 20%" name="sort" v-model="formData.sort" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item m-t-5" v-cloak="">
+                    <label class="layui-form-label">
+                        <div>素材封面</div>
+                        <div>(710*400px)</div>
+                    </label>
+                    <div class="layui-input-block">
+                        <div class="upload-image-box" v-if="formData.image" @mouseenter="mask.image = true" @mouseleave="mask.image = false">
+                            <img :src="formData.image" alt="">
+                            <div class="mask" v-show="mask.image" style="display: block">
+                                <p><i class="fa fa-eye" @click="look(formData.image)"></i><i class="fa fa-trash-o" @click="delect('image')"></i></p>
+                            </div>
+                        </div>
+                        <div class="upload-image"  v-show="!formData.image" @click="upload('image')">
+                            <div class="fiexd"><i class="fa fa-plus"></i></div>
+                            <p>选择图片</p>
+                        </div>
+                    </div>
+                    {if condition="$special_type eq 3"}
+                    <div class="layui-form-item m-t-5" >
+                        <label class="layui-form-label">插入视频</label>
                         <div class="layui-input-block">
-                            <button class="layui-btn layui-btn-normal" style="margin-left: 10%;" type="button" @click="save">{$id ? '确认修改':'立即提交'}</button>
-                            <button class="layui-btn layui-btn-primary clone" type="button" @click="clone_form">取消</button>
+                            <input type="text" name="title" v-model="link" style="width:50%;display:inline-block;margin-right: 10px;" autocomplete="off" placeholder="请输入视频链接" class="layui-input">
+                            <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" @click="confirmAdd()" v-show="is_upload==false">确认添加</button>
+                            <label style="display: inline;" class="file" v-show="is_upload==false">
+                                <input style="display: none;" id="ossupload" type="file" class="layui-btn layui-btn-sm layui-btn-normal" >上传视频
+                            </label>
+                            <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" v-show="is_upload" @click="delVideo()">删除</button>
+                        </div>
+                        <div class="layui-input-block" style="width: 50%;margin-top: 20px" v-show="is_video">
+                            <div class="layui-progress" style="margin-bottom: 10px">
+                                <div class="layui-progress-bar layui-bg-blue" :style="'width:'+videoWidth+'%'"></div>
+                            </div>
+                            <button type="button" class="layui-btn layui-btn-sm layui-btn-danger"
+                                    @click="cancelUpload" v-show="demand_switch==2 && is_video">取消
+                            </button>
+                            <button type="button" id="authUpload" class="layui-btn layui-btn-sm layui-btn-danger" v-show="demand_switch==1 && is_video">开始上传
+                            </button>
+                            <button type="button" class="layui-btn layui-btn-sm layui-btn-danger"
+                                    id="pauseUpload" v-show="demand_switch==1 && is_video">暂停
+                            </button>
+                            <button type="button" class="layui-btn layui-btn-sm layui-btn-danger" v-show="is_suspend"
+                                    id="resumeUpload">恢复上传
+                            </button>
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">输入链接将视为添加视频直接添加,请确保视频链接的正确性</div>
+                    </div>
+                    {else/}
+                    <div class="layui-form-item m-t-5">
+                        <label class="layui-form-label">插入音频</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="title" v-model="link" style="width:50%;display:inline-block;margin-right: 10px;" autocomplete="off" placeholder="请输入音频链接" class="layui-input">
+                            <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" @click="confirmAdd()" v-show="is_upload==false">确认添加</button>
+                            <label style="display: inline;" class="file" v-show="is_upload==false">
+                                <input style="display: none;" id="ossupload" type="file" class="layui-btn layui-btn-sm layui-btn-normal" >上传音频
+                            </label>
+                            <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" v-show="is_upload" @click="delVideo()">删除</button>
+                        </div>
+                        <div class="layui-input-block" style="width: 50%;margin-top: 20px" v-show="is_video">
+                            <div class="layui-progress" style="margin-bottom: 10px">
+                                <div class="layui-progress-bar layui-bg-blue" :style="'width:'+videoWidth+'%'"></div>
+                            </div>
+                            <button type="button" class="layui-btn layui-btn-sm layui-btn-danger"
+                                    @click="cancelUpload" v-show="demand_switch==2 && is_video">取消
+                            </button>
+                            <button type="button" id="authUpload" class="layui-btn layui-btn-sm layui-btn-danger" v-show="demand_switch==1 && is_video">开始上传
+                            </button>
+                            <button type="button" class="layui-btn layui-btn-sm layui-btn-danger"
+                                    id="pauseUpload" v-show="demand_switch==1 && is_video">暂停
+                            </button>
+                            <button type="button" class="layui-btn layui-btn-sm layui-btn-danger" v-show="is_suspend"
+                                    id="resumeUpload">恢复上传
+                            </button>
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">输入链接将视为添加音频直接添加,请确保音频链接的正确性</div>
+                    </div>
+                    {/if}
+                    <div class="layui-form-item m-t-5" >
+                        <label class="layui-form-label">素材内容</label>
+                        <div class="layui-input-block">
+                            <textarea id="myEditorContent"  style="width:100%;height: 500px">{{formData.content}}</textarea>
                         </div>
                     </div>
+                    <div class="layui-form-item m-t-5">
+                        <label class="layui-form-label">素材简介</label>
+                        <div class="layui-input-block">
+                            <textarea id="myEditorDetail" style="width:100%;height: 500px">{{formData.detail}}</textarea>
+                        </div>
+                    </div>
+
                 </div>
-        </form>
-    </div>
+            </div>
+        </div>
+        <div class="layui-col-md12">
+            <div class="layui-form-item submit" style="margin-bottom: 10px">
+                <div class="layui-input-block">
+                    <button class="layui-btn layui-btn-normal" style="margin-left: 10%;" type="button" @click="save">{$id ? '确认修改':'立即提交'}</button>
+                    <button class="layui-btn layui-btn-primary clone" type="button" @click="clone_form">取消</button>
+                </div>
+            </div>
+        </div>
+    </form>
 </div>
 <script type="text/javascript" src="{__ADMIN_PATH}js/layuiList.js"></script>
 {/block}
