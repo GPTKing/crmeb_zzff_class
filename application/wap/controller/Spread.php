@@ -37,12 +37,12 @@ class Spread extends AuthController
     public function spread()
     {
         $data['income'] = UserBill::whereTime('add_time', 'today')->where('uid', $this->uid)->where('category', 'now_money')
-            ->where('type', 'in', ['rake_back', 'rake_back_one', 'brokerage','rake_back_two'])->sum('number');
+            ->where('type', 'in', ['rake_back', 'rake_back_one', 'brokerage', 'rake_back_two'])->sum('number');
         $return = UserBill::whereTime('add_time', 'today')->where('uid', $this->uid)->where('category', 'now_money')
             ->where('type', 'in', ['brokerage_return'])->sum('number');
-        $data['income'] =bcsub($data['income'],$return,2);
-        $orderIds = StoreOrder::whereTime('add_time', 'today')->where('refund_status', 0)->where('link_pay_uid', 'in', $this->uid)->where('pay_price','>', 0)->where('paid', 1)->field('order_id,pink_id')->select();
-        $orderids1 = StoreOrder::whereTime('add_time', 'today')->where('refund_status', 0)->where('spread_uid', 'in', $this->uid)->where('pay_price','>', 0)->where('paid', 1)->field('order_id,pink_id')->select();
+        $data['income'] = bcsub($data['income'], $return, 2);
+        $orderIds = StoreOrder::whereTime('add_time', 'today')->where('refund_status', 0)->where('link_pay_uid', 'in', $this->uid)->where('pay_price', '>', 0)->where('paid', 1)->field('order_id,pink_id')->select();
+        $orderids1 = StoreOrder::whereTime('add_time', 'today')->where('refund_status', 0)->where('spread_uid', 'in', $this->uid)->where('pay_price', '>', 0)->where('paid', 1)->field('order_id,pink_id')->select();
         $orderids = array_merge(count($orderIds) ? $orderIds->toArray() : [], count($orderids1) ? $orderids1->toArray() : []);
         $order_count = 0;
         foreach ($orderids as $item) {
@@ -171,14 +171,14 @@ class Spread extends AuthController
         } else {
             $data['order_count'] = 0;
         }
-        $isPromoter=0;
+        $isPromoter = 0;
         $storeBrokerageStatu = SystemConfigService::get('store_brokerage_statu') ?: 1;
-        if($storeBrokerageStatu==1){
-            if($this->userInfo['is_promoter']){
-                $isPromoter=1;
+        if ($storeBrokerageStatu == 1) {
+            if ($this->userInfo['is_promoter']) {
+                $isPromoter = 1;
             }
-        }else{
-            $isPromoter=1;
+        } else {
+            $isPromoter = 1;
         }
         $this->assign('isPromoter', $isPromoter);
         $this->assign('data', $data);
@@ -200,12 +200,12 @@ class Spread extends AuthController
                 ->join('store_order o', 'o.id = a.link_id')
                 ->whereIn('o.uid', $uids)->where('o.refund_status', 'eq', 0)
                 ->where('a.link_id', 'neq', 0)->sum('a.number');
-        if ($uids1) {
-            $data['spread_two'] = UserBill::where(['a.uid' => $this->uid, 'a.type' => 'brokerage', 'a.category' => 'now_money'])->alias('a')
-                ->join('store_order o', 'o.id = a.link_id')
-                ->whereIn('o.uid', $uids1)->where('o.refund_status', 'eq', 0)
-                ->where('a.link_id', 'neq', 0)->sum('a.number');
-         }
+            if ($uids1) {
+                $data['spread_two'] = UserBill::where(['a.uid' => $this->uid, 'a.type' => 'brokerage', 'a.category' => 'now_money'])->alias('a')
+                    ->join('store_order o', 'o.id = a.link_id')
+                    ->whereIn('o.uid', $uids1)->where('o.refund_status', 'eq', 0)
+                    ->where('a.link_id', 'neq', 0)->sum('a.number');
+            }
         }
         $data['sum_spread'] = bcadd($data['spread_one'], $data['spread_two'], 2);
         $this->assign('data', $data);
@@ -214,8 +214,8 @@ class Spread extends AuthController
 
     /**
      * 推广明细
-     *  @param $type int 明细类型
-     *  @return html
+     * @param $type int 明细类型
+     * @return html
      * */
     public function spread_detail($type = 0)
     {
@@ -249,7 +249,7 @@ class Spread extends AuthController
             $spread['title'] = $sign_info['sign_talk'];
             $uids = User::where('spread_uid', $this->uid)->group('uid')->column('uid');
             $spread['fake_sales'] = count($uids);
-            $filename = CanvasService::foundCode1($spread, $url, $spread_poster_url,'user_');
+            $filename = CanvasService::foundCode1($spread, $url, $spread_poster_url, 'user_');
         } catch (\Exception $e) {
             return $this->failed($e->getMessage());
         }
@@ -277,7 +277,7 @@ class Spread extends AuthController
         ], $this->request, true);
         if (!$phone || !$code) return $this->failed('请输入登录账号');
         if (!$code) return $this->failed('请输入验证码');
-        $code=md5('is_phone_code'.$code);
+        $code = md5('is_phone_code' . $code);
         if (!SmsCode::CheckCode($phone, $code)) return JsonService::fail('验证码验证失败');
         SmsCode::setCodeInvalid($phone, $code);
         if ($this->userInfo['spread_uid'] == $s_spread_uid && $this->userInfo['is_promoter']) return JsonService::fail('您已绑定此推广人,请勿重复绑定');
