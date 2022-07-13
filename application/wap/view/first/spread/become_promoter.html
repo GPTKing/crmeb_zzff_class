@@ -12,9 +12,9 @@
     </div>
     <div class="phone">
         <ul class="list">
-            <li class="item"><input type="text" placeholder="输入手机号" v-model="phone"></li>
+            <li class="item"><input type="text" placeholder="输入手机号" v-model.trim="phone"></li>
             <li class="item itemCode acea-row row-between-wrapper">
-                <input type="number" placeholder="输入验证码" v-model="code_num">
+                <input type="number" placeholder="输入验证码" v-model.trim="code_num">
                 <button class="code acea-row row-center-wrapper" :disabled="active" :class="active == true?'on':''" @click="code" v-text="timetext">获取验证码</button>
             </li>
         </ul>
