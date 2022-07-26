@@ -40,13 +40,6 @@ class Wechat
     {
         WechatService::handleNotify();
     }
-
-    public function text()
-    {
-        //dump(WechatService::userGroupService());
-    }
-
-
 }
 
 
