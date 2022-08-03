@@ -14,6 +14,7 @@ namespace app\wap\model\live;
 /**
  * 直播间礼物
  */
+
 use basic\ModelBasic;
 use traits\ModelTrait;
 
@@ -30,7 +31,7 @@ class LiveGift extends ModelBasic
      */
     public static function liveGiftList()
     {
-        $data=self::where('is_show',1)->order('sort DESC,id DESC')->select();
+        $data = self::where('is_show', 1)->order('sort DESC,id DESC')->select();
         $data = count($data) ? $data->toArray() : [];
         foreach ($data as &$item) {
             $item['live_gift_num'] = json_decode($item['live_gift_num']);
@@ -43,8 +44,8 @@ class LiveGift extends ModelBasic
      */
     public static function liveGiftOne($id)
     {
-         $gift=self::where('is_show',1)->where('id',$id)->find();
-         if($gift) return $gift;
-         else return [];
+        $gift = self::where('is_show', 1)->where('id', $id)->find();
+        if ($gift) return $gift;
+        else return [];
     }
 }
