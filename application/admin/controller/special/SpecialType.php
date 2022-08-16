@@ -16,7 +16,6 @@ use app\admin\model\live\LiveGoods;
 use app\admin\model\special\SpecialBarrage;
 use app\admin\model\system\SystemConfig;
 use app\admin\model\live\LiveStudio;
-use app\admin\model\store\StoreCategory;
 use app\admin\model\special\Special as SpecialModel;
 use app\admin\model\special\Special;
 use app\wap\model\special\SpecialBuy;

@@ -1357,6 +1357,7 @@ CREATE TABLE `eb_special_buy` (
   `uid` int(11) NOT NULL DEFAULT '0' COMMENT '用户id',
   `add_time` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
   `is_del` tinyint(1) DEFAULT '0' COMMENT '是否删除',
+  `is_update` tinyint(1) DEFAULT '0' COMMENT '是否需要更新',
   `type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '获得方式:0=支付获得,1=拼团获得,2=领取礼物获得,3=赠送'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='专题获得记录';
 

@@ -145,6 +145,7 @@ class Special extends AuthController
                 if ($liveInfo->is_del) return $this->failed('直播间已经删除！', Url::build('index/index'));
             }
         }
+        if ($isPay && $this->uid && $specialinfo['type'] == SPECIAL_COLUMN) SpecialBuy::update_column($id, $this->uid);
         $this->assign($special);
         $this->assign('pinkId', $pinkId);
         $this->assign('is_member', 0);
