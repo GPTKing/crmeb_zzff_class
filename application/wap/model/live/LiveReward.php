@@ -14,6 +14,7 @@ namespace app\wap\model\live;
 /**
  * 直播间礼物
  */
+
 use basic\ModelBasic;
 use service\SystemConfigService;
 use traits\ModelTrait;
@@ -25,12 +26,12 @@ class LiveReward extends ModelBasic
     use ModelTrait;
 
 
-    public static function getLiveRewardList($where,$page = 0,$limit = 10)
+    public static function getLiveRewardList($where, $page = 0, $limit = 10)
     {
-        $model = self::where('live_id',$where['live_id'])->where('is_show',1);
-        $list = $model->field('sum(total_price) as total_price,uid,gift_id,id,gift_price,gift_num')->group('uid')->order('total_price desc')->page($page,$limit)->select();
+        $model = self::where('live_id', $where['live_id'])->where('is_show', 1);
+        $list = $model->field('sum(total_price) as total_price,uid,gift_id,id,gift_price,gift_num')->group('uid')->order('total_price desc')->page($page, $limit)->select();
         $list = count($list) ? $list->toArray() : [];
-        $gold_info = SystemConfigService::more(['gold_name','gold_image']);
+        $gold_info = SystemConfigService::more(['gold_name', 'gold_image']);
         foreach ($list as &$item) {
             $userinfo = User::where('uid', $item['uid'])->field(['nickname', 'avatar'])->find();
             if ($userinfo) {
@@ -42,7 +43,7 @@ class LiveReward extends ModelBasic
             }
         }
         $page--;
-        return ['list'=>$list,'page'=> $page,'gold_info' => $gold_info];
+        return ['list' => $list, 'page' => $page, 'gold_info' => $gold_info];
     }
 
     /**插入打赏数据
