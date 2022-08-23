@@ -28,7 +28,7 @@ class Recommend extends ModelBasic
     public static function getRecommend()
     {
         return self::where(['is_fixed' => 1, 'is_show' => 1])->order('sort desc,add_time desc')
-            ->field(['title','icon','type','link','grade_id','id'])->select();
+            ->field(['title', 'icon', 'type', 'link', 'grade_id', 'id'])->select();
     }
 
     /**个人中心菜单
@@ -37,12 +37,13 @@ class Recommend extends ModelBasic
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public static function getPersonalCenterMenuList($is_statu){
-        $model=self::where(['is_fixed' => 2, 'is_show' => 1]);
-        if(!$is_statu){
-            $model=$model->where('is_promoter',0);
+    public static function getPersonalCenterMenuList($is_statu)
+    {
+        $model = self::where(['is_fixed' => 2, 'is_show' => 1]);
+        if (!$is_statu) {
+            $model = $model->where('is_promoter', 0);
         }
-        return $model->order('sort desc,add_time desc')->field(['title','icon','type','link','is_promoter','id'])->select();
+        return $model->order('sort desc,add_time desc')->field(['title', 'icon', 'type', 'link', 'is_promoter', 'id'])->select();
     }
 
     /**
@@ -105,7 +106,7 @@ class Recommend extends ModelBasic
         $ceilCount = ceil(count($list) / 3);
         $data = [];
         for ($i = 0; $i < $ceilCount; $i++) {
-            $data[] = ['value' => array_slice($list, $i * 3,3)];
+            $data[] = ['value' => array_slice($list, $i * 3, 3)];
         }
         return [$ceilCount, $data];
     }
