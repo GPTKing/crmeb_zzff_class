@@ -35,7 +35,6 @@
                         {if $live_id}
                         <button type="button" class="layui-btn layui-btn-sm" onclick="$eb.createModalFrame(this.innerText,'{:Url('add_course',['live_id'=>$live_id])}',{w:800,h:700})"><i class="layui-icon layui-icon-add-1"></i> 添加嘉宾</button>
                         <button class="layui-btn layui-btn-normal layui-btn-sm" onclick="window.location.reload()"><i class="layui-icon layui-icon-refresh"></i>  刷新</button>
-<!--                        <button class="layui-btn layui-btn-warm layui-btn-sm" onclick="window.location.href='{:Url('index')}';"><i class="layui-icon layui-icon-list"></i>  展示全部</button>-->
                         {/if}
                     </div>
                     <table class="layui-hide" id="List" lay-filter="List"></table>

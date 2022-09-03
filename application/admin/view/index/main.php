@@ -402,8 +402,6 @@
                     this.myChart[myChartname] = echarts.init(name, 'macarons');//初始化echart
                 }
             },
-            created: function () {
-            },
             mounted: function () {
                 var self = this;
                 this.setChart(self.$refs.order_echart, 'order_echart');//订单图表
