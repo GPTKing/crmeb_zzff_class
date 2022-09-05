@@ -229,9 +229,6 @@
             created: function () {
                 var ua = navigator.userAgent.toLowerCase();
                 this.isWechat = -1 != ua.indexOf('micromessenger');
-                // var versionArr = ua.match(/micromessenger\/(\d+\.\d+\.\d+)/) || ua.match(/micromessenger\/(\d+\.\d+)/);
-                // var version = versionArr ? versionArr[1] : '';
-                // this.wxOpenTag = version < '7.0.12';
 
                 if (this.isWechat) {
                     mapleWx($jssdk());
