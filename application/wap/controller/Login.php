@@ -16,6 +16,7 @@ namespace app\wap\controller;
 use app\wap\model\user\SmsCode;
 use app\wap\model\user\PhoneUser;
 use app\wap\model\user\User;
+use app\wap\model\user\WechatUser;
 use basic\WapBasic;
 use service\SystemConfigService;
 use service\UtilService;
@@ -27,19 +28,29 @@ use think\Url;
 
 class Login extends WapBasic
 {
-    public function index($ref = '', $spread_uid = 0)
+    public function index($spread_uid = 0)
+    {
+        $isWechat = UtilService::isWechatBrowser();
+        $appid = SystemConfigService::get('wechat_appid');
+        $this->assign(['appid' => $appid, 'spread_uid' => $spread_uid,'isWechat' => $isWechat, 'Auth_site_name' => SystemConfigService::get('site_name')]);
+        return $this->fetch();
+    }
+
+    /**微信登录操作
+     * @param $spread_uid
+     * @return void
+     */
+    public function weixin_check($spread_uid = 0, $code = '')
     {
         Cookie::set('is_bg', 1);
-        $ref && $ref = htmlspecialchars_decode(base64_decode($ref));
-        if (UtilService::isWechatBrowser()) {
-            $this->_logout();
-            $this->oauth($spread_uid);
+        $this->_logout();
+        $openid = $this->oauth($spread_uid, $code);
+        if ($openid) {
             Cookie::delete('_oen');
-            exit($this->redirect(empty($ref) ? Url::build('Index/index') : $ref));
+            return JsonService::successful('微信登录成功', $openid);
+        } else {
+            return JsonService::fail(WechatUser::getErrorInfo());
         }
-        $this->assign('ref', $ref);
-        $this->assign('Auth_site_name', SystemConfigService::get('site_name'));
-        return $this->fetch();
     }
 
     /**

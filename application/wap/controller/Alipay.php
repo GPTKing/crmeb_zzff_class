@@ -41,6 +41,7 @@ class Alipay extends WapBasic
         if (!$info) return $this->failed('缺少支付参数');
         $isWechat = UtilService::isWechatBrowser();
         if ($isWechat) {
+            $this->assign('isWechat', $isWechat);
             return $this->fetch();
         } else {
             AlipayTradeWapService::init()->AliPayWap($info['orderId'], $info['pay_price'], $info['orderName'], $params);
@@ -57,7 +58,11 @@ class Alipay extends WapBasic
         $result = $res['result'];
         if ($result) $is_pay = true;
         else $is_pay = false;
-        $this->assign('is_pay', $is_pay);
+        $isWechat = UtilService::isWechatBrowser();
+        $this->assign([
+            'isWechat' => $isWechat,
+            'is_pay' => $is_pay
+        ]);
         return $this->fetch();
     }
 

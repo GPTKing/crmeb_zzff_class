@@ -67,14 +67,6 @@ class AuthController extends WapBasic
             $uid = User::getActiveUid();
             if (!empty($uid)) {
                 $this->userInfo = User::getUserInfo($uid);
-                if ($this->isWechat) {
-                    if ($this->userInfo['nickname'] == '' && $this->userInfo['avatar'] == '' || $this->userInfo['nickname'] == '' && $this->userInfo['avatar'] == '/system/images/user_log.jpg') {
-                        $url = $this->request->url(true);
-                        if (!$this->request->isAjax()) {
-                            return $this->redirect(Url::build('Login/index', ['spread_uid' => $spread_uid]) . '?ref=' . base64_encode(htmlspecialchars($url)));
-                        }
-                    }
-                }
                 if ($spread_uid) $spreadUserInfo = User::getUserInfo($spread_uid);
                 $this->uid = $this->userInfo['uid'];
                 $this->phone = User::getLogPhone($uid);
@@ -99,14 +91,15 @@ class AuthController extends WapBasic
                 }
             }
         } catch (\Exception $e) {
-            Cookie::set('is_login', 0);
+            Cookie::delete('is_login');
+            Cookie::delete('__login_phone');
             Session::delete(['loginUid', 'loginOpenid']);
-            $url = $this->request->url(true);
             if (!$NoWechantVisitWhite) {
-                if ($this->request->isAjax())
-                    return JsonService::fail('请登录在进行访问');
-                else
-                    return $this->redirect(Url::build('Login/index', ['spread_uid' => $spread_uid]) . '?ref=' . base64_encode(htmlspecialchars($url)));
+                if ($this->request->isAjax()) {
+                    return JsonService::fail('请登录再进行访问');
+                } else {
+                    return $this->redirect(Url::build('wap/index/index'));
+                }
             }
         }
         if (Cache::has('__SYSTEM__')) {

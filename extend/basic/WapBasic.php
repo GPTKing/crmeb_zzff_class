@@ -97,33 +97,25 @@ class WapBasic extends Controller
         }
     }
 
-    protected function oauth($spread_uid=0)
+    protected function oauth($spread_uid=0, $code = '')
     {
         $openid = Session::get('loginOpenid','wap');
         if($openid) return $openid;
         if(!UtilService::isWechatBrowser()) exit($this->failed('请在微信客户端打开链接'));
-        if($this->request->isAjax()) exit($this->failed('请登陆!'));
         $errorNum = (int)Cookie::get('_oen');
         if($errorNum && $errorNum > 3) exit($this->failed('微信用户信息获取失败!!'));
         try{
-            $original=WechatService::oauthService()->getAccessToken($this->request->get('code'));
-            if (!WechatUser::be(['openid' => $original->openid]) && $original->scope === 'snsapi_base'){
-                exit(WechatService::oauthService()->scopes(['snsapi_userinfo'])
-                    ->redirect($this->request->url(true))->send());
+            $original = WechatService::oauthService()->getAccessToken($code);
+            if(!isset($original['access_token']) || $original['access_token']=='' || !isset($original['openid']) || $original['openid']==''){
+                return WechatUser::setErrorInfo('获取参数失败!!');
             }
-            $wechatInfo=WechatSubscribe::baseParseGet($original->access_token,$original->openid);//获取单个用户信息
-            if(isset($wechatInfo['errcode']) && $wechatInfo['errcode']==48001){
-                exit(WechatService::oauthService()->scopes(['snsapi_userinfo'])
-                    ->redirect($this->request->url(true))->send());
+            $wechatInfo = WechatSubscribe::baseParseGet($original->access_token, $original->openid);//获取单个用户信息
+            if (isset($wechatInfo['errcode']) && $wechatInfo['errcode'] == 48001) {
+                return WechatUser::setErrorInfo('微信用户信息获取失败!!');
             }
         }catch (\Exception $e){
-            Cookie::set('_oen',++$errorNum,900);
-            exit(WechatService::oauthService()->scopes(['snsapi_base'])
-                ->redirect($this->request->url(true))->send());
-        }
-        if(!isset($wechatInfo['nickname']) || $wechatInfo['nickname']==''){
-            exit(WechatService::oauthService()->scopes(['snsapi_userinfo'])
-                ->redirect($this->request->url(true))->send());
+            Cookie::set('_oen', ++$errorNum, 900);
+            return WechatUser::setErrorInfo('微信用户信息获取失败!!');
         }
         if(isset($wechatInfo['openid']) && $wechatInfo['openid']){
             $wechatInfoData = WechatService::getUserInfo($wechatInfo['openid']);
