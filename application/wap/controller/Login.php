@@ -110,7 +110,9 @@ class Login extends WapBasic
     private function _logout()
     {
         Session::clear('wap');
+        Cookie::delete('is_bg');
         Cookie::delete('is_login');
+        Cookie::delete('__login_phone');
     }
 
 }

@@ -56,6 +56,8 @@ class My extends AuthController
      */
     public function logout()
     {
+        Cookie::delete('is_bg');
+        Cookie::delete('is_login');
         Cookie::delete('__login_phone');
         Session::delete('__login_phone_num' . $this->uid, 'wap');
         Session::delete('loginUid', 'wap');
