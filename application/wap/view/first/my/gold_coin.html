@@ -40,17 +40,8 @@
             <div class="handle">
                 <button class="btn" type="button" @click="callPay">立即充值</button>
             </div>
-            <payment
-                :payment="payHide"
-                :money="moneyPay"
-                :now_money="now_money"
-                :special_id="moneyPay"
-                :pay_type_num="payTypeNum"
-                :is-Wechat="isWechat"
-                :is-alipay="is_alipay"
-                :is-balance="is_yue"
-                @change="changeVal"
-            ></payment>
+            <payment :payment="payHide" :money="moneyPay" :now_money="now_money" :special_id="moneyPay" :pay_type_num="payTypeNum" :is-Wechat="isWechat" :is-alipay="is_alipay"
+                     :is-balance="is_yue" @change="changeVal"></payment>
             <enter :appear="loginHide" :url="loginUrl" :site-name="siteName" @change="closeLogin"></enter>
         </div>
     </div>
@@ -62,9 +53,9 @@
     var recharge_price_list = {$recharge_price_list};
     var gold_info = {$gold_info};
     var user_gold_num = {$user_gold_num};
-    var is_yue={$is_yue ? 'true' : 'false'};
-    var now_money={$now_money};
-    var is_alipay={$is_alipay ? 'true' : 'false'};
+    var is_yue = {$is_yue? 'true': 'false'};
+    var now_money = {$now_money};
+    var is_alipay = {$is_alipay? 'true': 'false'};
     require(['vue', 'store', 'payment', '{__WAP_PATH}zsff/js/enter.js', 'quick'], function (Vue, store) {
         var app = new Vue({
             el: '#app',
@@ -74,7 +65,7 @@
                 gold_image: gold_info.gold_image,
                 amount: user_gold_num ? user_gold_num : 0,
                 // 换算率
-                rate:gold_info.gold_rate ? gold_info.gold_rate : 10,
+                rate: gold_info.gold_rate ? gold_info.gold_rate : 10,
                 // 金币选项
                 options: recharge_price_list,
                 // 选中金额
@@ -89,9 +80,9 @@
                 loginHide: true,
                 loginUrl: '',
                 siteName: '',
-                payTypeNum:30,//金币充值
-                is_alipay:is_alipay, //支付宝是否开启
-                is_yue:is_yue, //余额是否开启
+                payTypeNum: 30,//金币充值
+                is_alipay: is_alipay, //支付宝是否开启
+                is_yue: is_yue, //余额是否开启
                 now_money: now_money, //余额
                 urlStr: '',
                 from: from,
@@ -154,13 +145,29 @@
                             return $h.pushMsgOnce('请输入整数');
                         }
                     }
-                    store.baseGet($h.U({ c: 'index', a: 'user_login' }), function () { that.payHide = false; }, function () {
-                        that.loginHide = false;
+                    store.baseGet("{:url('index/login_user')}", function () {
+                        app.baseGet("{:url('index/user_login')}", function () {
+                            that.payHide = false;
+                        }, function () {
+                            if (isWechat) {
+                                localStorage.setItem('wx_login_url', window.location.href);
+                                window.location.assign("{:url('login/index')}");
+                            } else {
+                                that.loginHide = false;
+                            }
+                        });
+                    }, function () {
+                        if (isWechat) {
+                            localStorage.setItem('wx_login_url', window.location.href);
+                            window.location.assign("{:url('login/index')}");
+                        } else {
+                            that.loginHide = false;
+                        }
                     });
                 },
                 //关闭支付
-                payClose:function(value){
-                    this.payHide=value;
+                payClose: function (value) {
+                    this.payHide = value;
                 },
                 closeLogin: function (params) {
                     if (typeof params !== 'object') {
@@ -177,10 +184,10 @@
                     }
                 },
                 //所有插件回调处理事件
-                changeVal:function (opt){
-                    if(typeof opt !='object') opt={};
-                    var action=opt.action || '';
-                    var value=opt.value || '';
+                changeVal: function (opt) {
+                    if (typeof opt != 'object') opt = {};
+                    var action = opt.action || '';
+                    var value = opt.value || '';
                     this[action] && this[action](value);
                 },
                 pay_order: function (data) {
@@ -196,18 +203,18 @@
                             this.successOrder(data);
                             break;
                         case 'ZHIFUBAO_PAY':
-                            window.location.href = $h.U({ c: 'Alipay', a: 'index', q: { info: data.result, params: 'recharge' } });
+                            window.location.href = $h.U({c: 'Alipay', a: 'index', q: {info: data.result, params: 'recharge'}});
                             break;
                     }
                 },
-                wechatPay:function(config){
+                wechatPay: function (config) {
                     var that = this;
-                    mapleWx($jssdk(),function(){
-                        this.chooseWXPay(config,function(){
+                    mapleWx($jssdk(), function () {
+                        this.chooseWXPay(config, function () {
                             that.successOrder();
-                        },{
-                            fail:that.extendOrder,
-                            cancel:that.extendOrder
+                        }, {
+                            fail: that.extendOrder,
+                            cancel: that.extendOrder
                         });
                     });
                 },
@@ -224,20 +231,20 @@
                             icon: 'success',
                             success: function () {
                                 that.amount += result.price * result.rate;
-                                window.location.href = that.from === 'live' ? $h.U({ c: 'live', a: 'index', q: { stream_name: that.streamName, record_id: that.RecordId } }) : $h.U({ c: 'special', a: 'recharge_index' });
+                                window.location.href = that.from === 'live' ? $h.U({c: 'live', a: 'index', q: {stream_name: that.streamName, record_id: that.RecordId}}) : $h.U({c: 'special', a: 'recharge_index'});
                             }
                         });
                     } else {
                         window.location.reload();
                     }
                 },
-                extendOrder:function(msg){
-                    var that=this;
-                    var msg=msg ? msg :'支付失败';
+                extendOrder: function (msg) {
+                    var that = this;
+                    var msg = msg ? msg : '支付失败';
                     $h.showMsg({
-                        title:typeof msg=='object' ? '支付失败' :msg,
-                        success:function () {
-                            window.location.href=$h.U({c:'special',a:'recharge_index'});
+                        title: typeof msg == 'object' ? '支付失败' : msg,
+                        success: function () {
+                            window.location.href = $h.U({c: 'special', a: 'recharge_index'});
                         }
                     })
                 },

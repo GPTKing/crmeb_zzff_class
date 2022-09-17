@@ -98,8 +98,8 @@
     <quick-menu></quick-menu>
 </div>
 <script>
-    var id={$id};
-    require(['vue', 'helper', 'store', 'quick'], function(Vue, $h, api) {
+    var id = {$id};
+    require(['vue', 'helper', 'store', 'quick'], function (Vue, $h, api) {
         var vm = new Vue({
             el: '#app',
             filters: {
@@ -143,7 +143,7 @@
                 this.getSourceDetail();
                 this.getRelateCourse();
             },
-            mounted: function() {
+            mounted: function () {
                 var that = this;
                 that.$nextTick(function () {
                     var clientWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
@@ -154,24 +154,28 @@
                 this.aliplayer.dispose();
             },
             methods: {
-                relatedCourses:function()
-                {
-                    var that=this;
-                    if(that.course.length>0){
+                relatedCourses: function () {
+                    var that = this;
+                    if (that.course.length > 0) {
                         that.dialog = true;
-                    }else{
-                        window.location.href = $h.U({ c: 'special', a: 'special_cate' });
+                    } else {
+                        window.location.href = $h.U({c: 'special', a: 'special_cate'});
                     }
                 },
                 // 联系客服
-                customerService: function (){
+                customerService: function () {
                     api.baseGet($h.U({
                         c: 'index',
-                        a: 'user_login'
-                    }), function (res) {
-                        window.location.href = $h.U({ c: 'service', a: 'service_list' });
-                    }.bind(this), function (res) {
-                        this.appear = false;
+                        a: 'login_user'
+                    }), function () {
+                        window.location.href = $h.U({c: 'service', a: 'service_list'});
+                    }.bind(this), function () {
+                        if (isWechat) {
+                            localStorage.setItem('wx_login_url', window.location.href);
+                            window.location.assign("{:url('login/index')}");
+                        } else {
+                            this.appear = false;
+                        }
                     }.bind(this));
                 },
                 // 获取素材
@@ -274,24 +278,24 @@
                                                     playsinline: true,
                                                     x5_type: 'h5',
                                                     skinLayout: [
-                                                        { name: "bigPlayButton", align: "cc" },
+                                                        {name: "bigPlayButton", align: "cc"},
                                                         {
                                                             name: "H5Loading", align: "cc"
                                                         },
-                                                        { name: "errorDisplay", align: "tlabs", x: 0, y: 0 },
-                                                        { name: "infoDisplay" },
-                                                        { name: "tooltip", align: "blabs", x: 0, y: 56 },
-                                                        { name: "thumbnail" },
+                                                        {name: "errorDisplay", align: "tlabs", x: 0, y: 0},
+                                                        {name: "infoDisplay"},
+                                                        {name: "tooltip", align: "blabs", x: 0, y: 56},
+                                                        {name: "thumbnail"},
                                                         {
                                                             name: "controlBar", align: "blabs", x: 0, y: 0,
                                                             children: [
-                                                                { name: "progress", align: "blabs", x: 0, y: 44 },
-                                                                { name: "playButton", align: "tl", x: 15, y: 12 },
-                                                                { name: "timeDisplay", align: "tl", x: 10, y: 7 },
-                                                                { name: "fullScreenButton", align: "tr", x: 10, y: 12 },
-                                                                { name: "subtitle", align: "tr", x: 15, y: 12 },
-                                                                { name: "setting", align: "tr", x: 15, y: 12 },
-                                                                { name: "volume", align: "tr", x: 5, y: 10 }
+                                                                {name: "progress", align: "blabs", x: 0, y: 44},
+                                                                {name: "playButton", align: "tl", x: 15, y: 12},
+                                                                {name: "timeDisplay", align: "tl", x: 10, y: 7},
+                                                                {name: "fullScreenButton", align: "tr", x: 10, y: 12},
+                                                                {name: "subtitle", align: "tr", x: 15, y: 12},
+                                                                {name: "setting", align: "tr", x: 15, y: 12},
+                                                                {name: "volume", align: "tr", x: 5, y: 10}
                                                             ]
                                                         }
                                                     ]
@@ -317,24 +321,24 @@
                                         playsinline: true,
                                         x5_type: 'h5',
                                         skinLayout: [
-                                            { name: "bigPlayButton", align: "cc" },
+                                            {name: "bigPlayButton", align: "cc"},
                                             {
                                                 name: "H5Loading", align: "cc"
                                             },
-                                            { name: "errorDisplay", align: "tlabs", x: 0, y: 0 },
-                                            { name: "infoDisplay" },
-                                            { name: "tooltip", align: "blabs", x: 0, y: 56 },
-                                            { name: "thumbnail" },
+                                            {name: "errorDisplay", align: "tlabs", x: 0, y: 0},
+                                            {name: "infoDisplay"},
+                                            {name: "tooltip", align: "blabs", x: 0, y: 56},
+                                            {name: "thumbnail"},
                                             {
                                                 name: "controlBar", align: "blabs", x: 0, y: 0,
                                                 children: [
-                                                    { name: "progress", align: "blabs", x: 0, y: 44 },
-                                                    { name: "playButton", align: "tl", x: 15, y: 12 },
-                                                    { name: "timeDisplay", align: "tl", x: 10, y: 7 },
-                                                    { name: "fullScreenButton", align: "tr", x: 10, y: 12 },
-                                                    { name: "subtitle", align: "tr", x: 15, y: 12 },
-                                                    { name: "setting", align: "tr", x: 15, y: 12 },
-                                                    { name: "volume", align: "tr", x: 5, y: 10 }
+                                                    {name: "progress", align: "blabs", x: 0, y: 44},
+                                                    {name: "playButton", align: "tl", x: 15, y: 12},
+                                                    {name: "timeDisplay", align: "tl", x: 10, y: 7},
+                                                    {name: "fullScreenButton", align: "tr", x: 10, y: 12},
+                                                    {name: "subtitle", align: "tr", x: 15, y: 12},
+                                                    {name: "setting", align: "tr", x: 15, y: 12},
+                                                    {name: "volume", align: "tr", x: 5, y: 10}
                                                 ]
                                             }
                                         ]
@@ -395,7 +399,7 @@
                 // 音频正在播放
                 onTimeUpdate: function (event) {
                     var target = event.target,
-                    currentTime = target.currentTime;
+                        currentTime = target.currentTime;
                     this.currentTime = currentTime;
                     this.width = Math.floor(currentTime / target.duration * 100);
                 },
@@ -414,7 +418,7 @@
                         this.aliplayer.play();
                     } else {
                         var width = event.offsetX / this.track.offsetWidth,
-                        currentTime = this.duration * width;
+                            currentTime = this.duration * width;
                         this.width = width * 100;
                         this.audio.currentTime = currentTime;
                         this.paused ? this.audio.pause() : this.audio.play();

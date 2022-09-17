@@ -1,44 +1,187 @@
 {extend name="public/container"}
 {block name="title"}{$title}{/block}
 {block name="head_top"}
-<link rel="stylesheet" type="text/css" href="{__WAP_PATH}zsff/css/video-js.min.css"/>
+<link rel="stylesheet" type="text/css" href="{__WAP_PATH}zsff/css/video-js.min.css" />
 <script src="{__WAP_PATH}zsff/js/video.min.js"></script>
 <script src="{__WAP_PATH}zsff/js/zh-CN.js"></script>
 <style>
-    body{padding-bottom:1rem;}
-    .thematic-details{background-color:#f5f5f5;}
-    .video-js .vjs-big-play-button{top: 50%;left: 50%;transform: translate(-50%,-50%);}
-    .layui-layer-shade{background-image: url("/wap/first/zsff/images/close.png")!important;background-repeat: no-repeat!important;background-size: 0.8rem 0.8rem;background-position: 50% 88%;}
-    .navCon{position: relative;padding: 0 0.3rem;}
-    .swiper-details .swiper-nav .free{position:absolute;font-size: 0.2rem;color: #fff;left:67%;top: 0;margin-top: -0.5rem;animation: stone linear 1s infinite alternate;-webkit-animation: free linear 1s infinite alternate;}
-    .swiper-details .swiper-nav .free .freeCon{width:1.1rem;height:0.4rem;border-radius:0.05rem;background-color:#ea2f2f;position:relative;left:0.5rem}
-    .swiper-details .swiper-nav .free .freeCon:after{content: "";width: 0;height: 0;border-left: 0.1rem solid transparent;border-right: 0.1rem solid transparent;border-top: 0.13rem solid #ea2f2f;position:absolute;bottom: -0.1rem;left: 50%;margin-left: -0.1rem;}
-    @keyframes free
-    {
-        from {transform:scale(1);}
-        to {transform:scale(0.9);}
+    body {
+        padding-bottom: 1rem;
     }
-    @-webkit-keyframes stone
-    {
-        from {transform:scale(1);}
-        to {transform:scale(0.9);}
+
+    .thematic-details {
+        background-color: #f5f5f5;
     }
+
+    .video-js .vjs-big-play-button {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .layui-layer-shade {
+        background-image: url("/wap/first/zsff/images/close.png") !important;
+        background-repeat: no-repeat !important;
+        background-size: 0.8rem 0.8rem;
+        background-position: 50% 88%;
+    }
+
+    .navCon {
+        position: relative;
+        padding: 0 0.3rem;
+    }
+
+    .swiper-details .swiper-nav .free {
+        position: absolute;
+        font-size: 0.2rem;
+        color: #fff;
+        left: 67%;
+        top: 0;
+        margin-top: -0.5rem;
+        animation: stone linear 1s infinite alternate;
+        -webkit-animation: free linear 1s infinite alternate;
+    }
+
+    .swiper-details .swiper-nav .free .freeCon {
+        width: 1.1rem;
+        height: 0.4rem;
+        border-radius: 0.05rem;
+        background-color: #ea2f2f;
+        position: relative;
+        left: 0.5rem
+    }
+
+    .swiper-details .swiper-nav .free .freeCon:after {
+        content: "";
+        width: 0;
+        height: 0;
+        border-left: 0.1rem solid transparent;
+        border-right: 0.1rem solid transparent;
+        border-top: 0.13rem solid #ea2f2f;
+        position: absolute;
+        bottom: -0.1rem;
+        left: 50%;
+        margin-left: -0.1rem;
+    }
+
+    @keyframes free {
+        from {
+            transform: scale(1);
+        }
+
+        to {
+            transform: scale(0.9);
+        }
+    }
+
+    @-webkit-keyframes stone {
+        from {
+            transform: scale(1);
+        }
+
+        to {
+            transform: scale(0.9);
+        }
+    }
+
     /*这里开始*/
-    .video_footer_img{width:0.4rem;height:0.4rem;margin-right:auto;margin-left:auto;}
-    .video_footer_img img{width: 100%;height: 100%;display: block;}
-    .video_footer_img2{width:0.4rem;height:0.4rem;margin-right:auto;margin-left:auto;}
-    .video_footer_img2 img{width: 100%;height: 100%;display: block;}
-    .video_footer_tit{font-weight:400;font-size: 0.18rem;line-height:.36rem;color: #666;}
-    .video_footer_left{width:.9rem;height:1rem;line-height:1rem;text-align:center;}
-    .video_footer_left .cont{display:inline-block;vertical-align:middle;font-weight:400;font-size:.18rem;line-height:.36rem;color:#666;}
-    .video_footer_btn{-webkit-flex:1;flex:1;height: 0.76rem;border-radius:37px;}
-    .video_footer_btn_left{width: 50%;height: 100%;border-radius:37px 0px 0px 37px;background:#FF6B00;}
-    .video_footer_btn_right{width: 50%;height: 100%;border-radius:0px 37px 37px 0px;background:linear-gradient(90deg,rgba(64,157,255,1) 0%,rgba(30,133,251,1) 100%);}
-    .video_footer_btn_left_pic{font-size: 0.28rem;line-height:.22rem; color: #fff;text-align: center;}
-    .video_footer_btn_left_num{font-size: 0.2rem;line-height:.2rem; color: #fff;text-align: center;}
-    .video_footer_btn_left_pic + .video_footer_btn_left_num{margin-top:.09rem;}
-    footer .video_footer_btn .on{width: 100% !important;border-radius: 37px !important;}
-    video{width: 100%}
+    .video_footer_img {
+        width: 0.4rem;
+        height: 0.4rem;
+        margin-right: auto;
+        margin-left: auto;
+    }
+
+    .video_footer_img img {
+        width: 100%;
+        height: 100%;
+        display: block;
+    }
+
+    .video_footer_img2 {
+        width: 0.4rem;
+        height: 0.4rem;
+        margin-right: auto;
+        margin-left: auto;
+    }
+
+    .video_footer_img2 img {
+        width: 100%;
+        height: 100%;
+        display: block;
+    }
+
+    .video_footer_tit {
+        font-weight: 400;
+        font-size: 0.18rem;
+        line-height: .36rem;
+        color: #666;
+    }
+
+    .video_footer_left {
+        width: .9rem;
+        height: 1rem;
+        line-height: 1rem;
+        text-align: center;
+    }
+
+    .video_footer_left .cont {
+        display: inline-block;
+        vertical-align: middle;
+        font-weight: 400;
+        font-size: .18rem;
+        line-height: .36rem;
+        color: #666;
+    }
+
+    .video_footer_btn {
+        -webkit-flex: 1;
+        flex: 1;
+        height: 0.76rem;
+        border-radius: 37px;
+    }
+
+    .video_footer_btn_left {
+        width: 50%;
+        height: 100%;
+        border-radius: 37px 0px 0px 37px;
+        background: #FF6B00;
+    }
+
+    .video_footer_btn_right {
+        width: 50%;
+        height: 100%;
+        border-radius: 0px 37px 37px 0px;
+        background: linear-gradient(90deg, rgba(64, 157, 255, 1) 0%, rgba(30, 133, 251, 1) 100%);
+    }
+
+    .video_footer_btn_left_pic {
+        font-size: 0.28rem;
+        line-height: .22rem;
+        color: #fff;
+        text-align: center;
+    }
+
+    .video_footer_btn_left_num {
+        font-size: 0.2rem;
+        line-height: .2rem;
+        color: #fff;
+        text-align: center;
+    }
+
+    .video_footer_btn_left_pic+.video_footer_btn_left_num {
+        margin-top: .09rem;
+    }
+
+    footer .video_footer_btn .on {
+        width: 100% !important;
+        border-radius: 37px !important;
+    }
+
+    video {
+        width: 100%
+    }
+
     .labelItem {
         font-size: 0.24rem;
         color: #999;
@@ -48,19 +191,100 @@
         border-radius: 0.06rem;
         color: #2C8EFF;
     }
-    .catalogue{background-color:#fff;}
-    .video-listn{background-color:#fff;}
-    .teacher{margin-top:.16rem;background-color:#fff;}
-    .teacher .teacher-hd{padding:.2rem .3rem 0;font-weight:bold;font-size:.3rem;line-height:.42rem;color:#333;}
-    .teacher .teacher-bd{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-align:center;-webkit-align-items:center;align-items:center;padding:.28rem .3rem .3rem;}
-    .teacher .teacher-bd .img{width:1.1rem;height:1.1rem;border-radius:50%;object-fit:cover;}
-    .teacher .teacher-bd .text{-webkit-box-flex:1;-webkit-flex:1;flex:1;min-width:0;margin-right:.08rem;margin-left:.2rem;}
-    .teacher .teacher-bd .name{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-weight:bold;font-size:.3rem;line-height:.42rem;color:#282828;}
-    .teacher .teacher-bd .label{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-align:center;-webkit-align-items:center;align-items:center;margin-top:.06rem;}
-    .teacher .teacher-bd .label .cell{height:.34rem;padding:0 .12rem;border-radius:.04rem;background-color:#fff7e6;font-size:.22rem;line-height:.34rem;color:#feb720;}
-    .teacher .teacher-bd .label .cell ~ .cell{margin-left:.1rem;}
-    .teacher .teacher-bd .attr{margin-top:.09rem;font-size:.22rem;line-height:.37rem;color:#385270;}
-    .teacher .teacher-bd .iconfont{font-size:.2rem;color:#999;}
+
+    .catalogue {
+        background-color: #fff;
+    }
+
+    .video-listn {
+        background-color: #fff;
+    }
+
+    .teacher {
+        margin-top: .16rem;
+        background-color: #fff;
+    }
+
+    .teacher .teacher-hd {
+        padding: .2rem .3rem 0;
+        font-weight: bold;
+        font-size: .3rem;
+        line-height: .42rem;
+        color: #333;
+    }
+
+    .teacher .teacher-bd {
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: flex;
+        -webkit-box-align: center;
+        -webkit-align-items: center;
+        align-items: center;
+        padding: .28rem .3rem .3rem;
+    }
+
+    .teacher .teacher-bd .img {
+        width: 1.1rem;
+        height: 1.1rem;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .teacher .teacher-bd .text {
+        -webkit-box-flex: 1;
+        -webkit-flex: 1;
+        flex: 1;
+        min-width: 0;
+        margin-right: .08rem;
+        margin-left: .2rem;
+    }
+
+    .teacher .teacher-bd .name {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        font-weight: bold;
+        font-size: .3rem;
+        line-height: .42rem;
+        color: #282828;
+    }
+
+    .teacher .teacher-bd .label {
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: flex;
+        -webkit-box-align: center;
+        -webkit-align-items: center;
+        align-items: center;
+        margin-top: .06rem;
+    }
+
+    .teacher .teacher-bd .label .cell {
+        height: .34rem;
+        padding: 0 .12rem;
+        border-radius: .04rem;
+        background-color: #fff7e6;
+        font-size: .22rem;
+        line-height: .34rem;
+        color: #feb720;
+    }
+
+    .teacher .teacher-bd .label .cell~.cell {
+        margin-left: .1rem;
+    }
+
+    .teacher .teacher-bd .attr {
+        margin-top: .09rem;
+        font-size: .22rem;
+        line-height: .37rem;
+        color: #385270;
+    }
+
+    .teacher .teacher-bd .iconfont {
+        font-size: .2rem;
+        color: #999;
+    }
+
     .teacher-section {
         margin-top: 0.14rem;
         background-color: #fff;
@@ -112,7 +336,7 @@
         font-size: .28rem;
     }
 
-    .teacher-table >div:last-child > div:first-child {
+    .teacher-table>div:last-child>div:first-child {
         margin-bottom: 0.06rem;
     }
 
@@ -282,7 +506,7 @@
         padding-right: 0 !important;
     }
 
-    .process-section .list .item ~ .item {
+    .process-section .list .item~.item {
         padding-left: .67rem;
         border: none !important;
         background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADgAAAAoCAYAAACrUDmFAAAGKklEQVRoQ91a3W8U1xX/nXvvrGcnXhwEdgIlKSp22sSO8ceWGKsJS1pBhKhUVeC3PvSp/TP2L8hLnvoQ5SlShJGiSCiv3lAFTDS7yDYmFnaiQojs2vhz2a/ZmXuqY60j4jhpsBdp4nncPXPv/Z3f+b5DiNFz586dRLVaPeC6rtFa16Moqi0tLVXPnj0b7vaYtNsXm/ne2NiYOXLkSLJYLLYrpY4rpVJhGAaO4ywHQfDA87yVq1evhtls1j7tvrEAODMzkyqVSseIqI+ZzzHzrwGUieiutfZTIrrjuu5GT09P8IsEODEx0QGgJ4qiM8z8VwCdAKoA7jLzNQDjxph7xpilp2UyFgz6vv8yEb0J4AyAtwEcBxAx8woRfc3M4wAE6NTTMhkLgIVC4ai19pRS6g8A/sjMXQBaAIjPlffCZCwATkxMPBcEwQtKqd8DuAwgDeAwgCSAcC9MxgIgM6tcLpfwPO+3xpjzzDxMRN0AjuyVyVgAlMgoIG/evPm81volx3HS1to/S1TdK5OxAbgFstlMxgrgs2AydgCbzWQsATaTydgCbBaTsQbYDCYFIGWzWbp48aIuFoucyWQiIuKdilpmpnw+b+S/a9euRT9W3YtcLpfTIpfJZKQa4Z9YU42OjtLly5cxOjqKkZGRTfkn999tniyXyyt05coV3draajo6OtwwDLlSqZR/rP/yfd8B4MnmrutWuru76zsdXNqf9vZ21xhD8/PzdalGdlKcHHxubs5ZX1/XjuNQqVSyDx8+DEZGRqLtCt5NngyC4J4wMmitdYlIkmzAzN8CWFpYWNi4cOFCTTYaGxtzU6nUQSJql+rCWivsPLLWLq2trS2eP3++1DAnMzc351UqlcNRFL0cRdFzjbZnWSn1oK+vb10Uks1m1aVLlwwzH6zVasdlb7EkIloHcD+VSi13dnaK8r7X//1cJoloWowsiqJZAfgegFZmPkpEa9KaWGtva62nBwYGluTgvu8LqLRSqr9RXSSY+WsiKgRBkDt9+vR/RG52dvZAuVwWYP3W2j8R0a8AbACYAPDxxsbGXWFyenraIaLWIAh6rbV/AfAqESlmvsfMn4RhOHHo0KG1rq6uTQVvN9f/V/EAWAYwB2CVfN8vyGYAXiSiR0IYgByA6wMDA/dl8Xw+30lEF5g5A+CUWCgzywIi92E6nZ4SOenroih6Xdoea630dSeI6DGAfzPze8Vi8WYmkwny+bwrJZjW+k1r7T8axbUweBvA+0R03XGc+Z6eHnn3Bw8z68nJSXGpAQB/AyBdiCjzQMOSqg2yasLgQwCJxp8C8AsiyjHzp4ODgwIChULhNQCXGgC7mVmq/HkAnxHRvwYHB/MiNz4+fkxrPaSUkr5OiubfAKgz8+cA3k0mk9dlxpJMJsWPjxljziil/m6tHSDaDOiTRPShrGuM+aq3t3e1GQCvM7P0Xm1KqRVmvk1E0mB+x6Dv+8LEOwCGAPxOGASwII2oMeajvr4+sXlMTU29EASBjB3eICIB+RIzB0opH8AHWmu/t7e3msvlki0tLS8mEolTRCSK6xb6AMwQ0Sda61ue5z3o6uoS896biRYKhX8y8wFmPqaUEpPIh2E4Y639ZmhoaHODycnJg2EYnmBmAdcLQKLpV0T0pdZ66uTJk4sid+PGjaQx5rAx5hVr7TAAGSKJX89GUfR5Op0Wk7eNFOJ6nndCa/2WdPBEpInogSi2ra1tdnV1tZxOpyUCf/fsKsj4vv+6Ukp88GhD2zOlUmmhXq9XttKFjPPET2u1mvhpVyOK3q/VagsAVoaHhytyiq3oGEVRR71ef03ekciotf7vTozcunXrkOM4rzDzYfErIlomopn+/v5H29PPrtOE7/ttURSZlpYWcVrrum5R/OTJvLV18MePH7uJRKJVKUXFYrGsta5uz1sie+7cuRal1OZ8k4jqnudVOzs7ZUr2vfmmKK5UKqW01glZ01obLC4uFrfS0xZ1P5e57aONzUS/kxPH6bfdMPfkcCrWAHfL3JPjxdgC3CtzW1YYS4DNYC62AJvFXCwBNpO52AFsNnOxAvgsmIsVwH0/ut/3ly/7/vps31+A7vsr7H3/EcJWSH8Wn5H8D2fpbyp9zLJtAAAAAElFTkSuQmCC") left center/.28rem .2rem no-repeat;
@@ -331,7 +555,9 @@
             <div class="swiper-pagination"></div>
         </div>
         <div class="swiper">
-            <div class="name" v-text="special.title" style="padding:0.25rem 0.3rem 0;font-size:0.32rem;line-height:0.5rem;color:#333333;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;">加载中</div>
+            <div class="name" v-text="special.title"
+                 style="padding:0.25rem 0.3rem 0;font-size:0.32rem;line-height:0.5rem;color:#333333;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;">
+                加载中</div>
             <div class="swiper-int">
                 <div class="swiper-int-top">
                     <div class="swiper-int-top-left">
@@ -390,7 +616,6 @@
                 </a>
             </div>
         </div>
-
         <div class="swiper-nav" ref="list">
             <div class="navCon acea-row row-middle">
                 <div v-if="special.type == 5" class="item" :class="active==index?'on':''" v-for="(nav,index) in cloumnNavlist" @click=" active = index">
@@ -487,8 +712,8 @@
                                 <template v-if="special.pay_type">
                                     <template v-if="vo.pay_status">
                                         <div class="price">￥<span>{{vo.money}}</span></div>
-                                        </template>
-                                     <div v-else class="free">去学习</div>
+                                    </template>
+                                    <div v-else class="free">去学习</div>
                                 </template>
                                 <div v-else class="free">去学习</div>
                             </div>
@@ -514,8 +739,7 @@
                 <div>客服</div>
             </div>
         </a>
-        <a v-if="(special.pay_type == 1 && special.type == 4) || special.money > 0" class="link" href="javascript:;"
-            @click="OpenPay(1)">
+        <a v-if="(special.pay_type == 1 && special.type == 4) || special.money > 0" class="link" href="javascript:;" @click="OpenPay(1)">
             <div class="cont">
                 <img src="{__WAP_PATH}zsff/images/special03.png">
                 <div>送朋友</div>
@@ -593,20 +817,8 @@
         <img :src="wechat_qrcode" alt="" style="width: 5rem;height: 5rem;margin: 0 auto;">
     </div>
     <div class="mask" @touchmove.prevent :hidden="open" @click="open=true"></div>
-    <payment
-        :payment="payment"
-        :money="money"
-        :now_money="now_money"
-        :special_id="special.id"
-        :link_pay_uid="link_pay_uid"
-        :pay_type_num="pay_type_num"
-        :pink-id="pinkId"
-        :is-wechat="isWechat"
-        :is-alipay="is_alipay"
-        :is-balance="is_yue"
-        :template-id="templateId"
-        @change="changeVal"
-    ></payment>
+    <payment :payment="payment" :money="money" :now_money="now_money" :special_id="special.id" :link_pay_uid="link_pay_uid" :pay_type_num="pay_type_num" :pink-id="pinkId"
+             :is-wechat="isWechat" :is-alipay="is_alipay" :is-balance="is_yue" :template-id="templateId" @change="changeVal"></payment>
     <enter :appear="appear" @change="changeVal" :url="url" :site_name="site_name"></enter>
     <div class="password" :class="password?'on':''">
         <div class="title">请输入密码</div>
@@ -619,622 +831,628 @@
 {/block}
 {block name='foot'}
 <script type="text/javascript">
-    var swiperlist={$swiperlist},special={$special},pinkId={$pinkId},
-        orderId='{$orderId ? $orderId : ""}',link_pay_uid={$link_pay_uid},wechat_qrcode='{$code_url}',is_yue={$is_yue ? 'true' : 'false'},is_alipay={$is_alipay ? 'true' : 'false'},
-        isWechat={$isWechat ? 'true' : 'false'},isPay={$isPay ? 'true':'false'},gift={$gift},now_money={$now_money},
-        link_pay={$link_pay},isPink={$isPink ? 'true':'false'},BarrageShowTime={$BarrageShowTime ? $BarrageShowTime : 5},
-        barrage_index={$barrage_index ? $barrage_index : 0},uid={$userInfo['uid'] ? $userInfo['uid']:0},liveInfo={$liveInfo},site_name = '{$Auth_site_name}',isMember={$is_member};
+    var swiperlist = {$swiperlist}, special = {$special}, pinkId = {$pinkId},
+        orderId = '{$orderId ? $orderId : ""}', link_pay_uid = {$link_pay_uid}, wechat_qrcode = '{$code_url}', is_yue = {$is_yue? 'true': 'false'}, is_alipay = {$is_alipay? 'true': 'false'},
+        isWechat = {$isWechat? 'true': 'false'}, isPay = {$isPay? 'true': 'false'}, gift = {$gift}, now_money = {$now_money},
+        link_pay = {$link_pay}, isPink = {$isPink? 'true': 'false'}, BarrageShowTime = {$BarrageShowTime? $BarrageShowTime: 5},
+        barrage_index = {$barrage_index? $barrage_index: 0}, uid = {$userInfo['uid']? $userInfo['uid']: 0}, liveInfo = {$liveInfo}, site_name = '{$Auth_site_name}', isMember = {$is_member};
     window.overallShare = false;
-        require(['vue', 'helper', 'store', 'special-type', 'reg-verify', 'payment', '{__WAP_PATH}zsff/js/enter.js', 'quick'], function (Vue, $h, app, specialType) {
-            new Vue({
-                el: '#app',
-                filters: {
-                    serial: function (value) {
-                        return value < 9 ? '0' + (value + 1) : value + 1;
+    require(['vue', 'helper', 'store', 'special-type', 'reg-verify', 'payment', '{__WAP_PATH}zsff/js/enter.js', 'quick'], function (Vue, $h, app, specialType) {
+        new Vue({
+            el: '#app',
+            filters: {
+                serial: function (value) {
+                    return value < 9 ? '0' + (value + 1) : value + 1;
+                }
+            },
+            data: {
+                parentActive: 0,
+                site_name: site_name,
+                RecordId: '',
+                count: 0,
+                special: special,
+                swiperlist: swiperlist,
+                pinkIngList: [],
+                otherTaskList: [],
+                columnTaskList: [],
+                liveTaskList: [],
+                cloumnNavlist: [{'title': '详情'}, {'title': '目录'}, {'title': '套餐'}],
+                otherNavlist: [{'title': '详情'}, {'title': '目录'}],
+                liveNavlist: [{'title': '直播介绍'}, {'title': '回放目录'}],
+                active: 0,
+                open: true,
+                payment: true,
+                appear: true,
+                is_pay: isPay,
+                isMember: isMember,
+                otherLoading: false,
+                columnLoading: false,
+                liveLoading: false,
+                otherLoadend: false,
+                columnLoadend: false,
+                liveLoadend: false,
+                otherLoaded: false,
+                columnLoaded: false,
+                liveLoaded: false,
+                pay_type_num: -1,
+                pinkId: pinkId || 0,
+                pinkInfo: {
+                    pinkT: {
+                        difftime: {hour: "00", minute: "00", second: "00"}
                     }
                 },
-                data: {
-                    parentActive: 0,
-                    site_name: site_name,
-                    RecordId: '',
-                    count: 0,
-                    special: special,
-                    swiperlist: swiperlist,
-                    pinkIngList: [],
-                    otherTaskList: [],
-                    columnTaskList: [],
-                    liveTaskList: [],
-                    cloumnNavlist: [{ 'title': '详情' }, { 'title': '目录' }, { 'title': '套餐' }],
-                    otherNavlist: [{ 'title': '详情' }, { 'title': '目录' }],
-                    liveNavlist: [{ 'title': '直播介绍' }, { 'title': '回放目录' }],
-                    active: 0,
-                    open: true,
-                    payment: true,
-                    appear: true,
-                    is_pay: isPay,
-                    isMember: isMember,
-                    otherLoading: false,
-                    columnLoading: false,
-                    liveLoading: false,
-                    otherLoadend: false,
-                    columnLoadend: false,
-                    liveLoadend: false,
-                    otherLoaded:false,
-                    columnLoaded:false,
-                    liveLoaded:false,
-                    pay_type_num: -1,
-                    pinkId: pinkId || 0,
-                    pinkInfo: {
-                        pinkT: {
-                            difftime: { hour: "00", minute: "00", second: "00" }
-                        }
-                    },
-                    Barragelist: [],
-                    otherLoadTitle: '上拉加载更多',
-                    columnLoadTitle: '上拉加载更多',
-                    liveLoadTitle: '上拉加载更多',
-                    money: special.money,
-                    where: {
-                        page: 1,
-                        limit: 10,
-                        special_id: special.id || 0,
-                        source_id: 0,
-                    },
-                    orderId: null,
-                    is_gift: false,
-                    paid: isPay,
-                    link_pay_uid: 0,
-                    uid: uid,
-                    wechat_qrcode: wechat_qrcode,
-                    is_code: false,
-                    isWechat: isWechat,
-                    is_live: special.is_live,
-                    url: isWechat ? $h.U({ c: 'index', a: 'login' }) : $h.U({ c: 'login', a: 'phone_check' }),
-                    isPink: isPink,
-                    barrageStatus: true,
-                    num: barrage_index,
-                    stream_name: liveInfo.stream_name || '',
-                    password: false,
-                    liveInfo: liveInfo,
-                    qr_password: '',
-                    studio_pwd: liveInfo.studio_pwd,
-                    is_alipay: is_alipay, //支付宝是否开启
-                    is_yue: is_yue, //余额是否开启
-                    now_money: now_money, //余额
-                    lecturer: null,
-                    specialType: specialType,
-                    topFocus: true,
-                    record: [],
-                    templateId: ''
+                Barragelist: [],
+                otherLoadTitle: '上拉加载更多',
+                columnLoadTitle: '上拉加载更多',
+                liveLoadTitle: '上拉加载更多',
+                money: special.money,
+                where: {
+                    page: 1,
+                    limit: 10,
+                    special_id: special.id || 0,
+                    source_id: 0,
                 },
-                watch: {
-                    active: function (n) {
-                        var that = this;
-                        if (n == 1 && that.special.type != 4 && that.special.type != 5) {
-                            this.getCourseList();
-                        }
-                        if (n == 1 && that.special.type == 4) {
-                            this.getLiveTask();
-                        }
-                    },
-                    pay_type_num: function () {
-                        this.subscribeTemplate();
-                    }
-                },
-                mounted: function () {
+                orderId: null,
+                is_gift: false,
+                paid: isPay,
+                link_pay_uid: 0,
+                uid: uid,
+                wechat_qrcode: wechat_qrcode,
+                is_code: false,
+                isWechat: isWechat,
+                is_live: special.is_live,
+                url: isWechat ? $h.U({c: 'index', a: 'login'}) : $h.U({c: 'login', a: 'phone_check'}),
+                isPink: isPink,
+                barrageStatus: true,
+                num: barrage_index,
+                stream_name: liveInfo.stream_name || '',
+                password: false,
+                liveInfo: liveInfo,
+                qr_password: '',
+                studio_pwd: liveInfo.studio_pwd,
+                is_alipay: is_alipay, //支付宝是否开启
+                is_yue: is_yue, //余额是否开启
+                now_money: now_money, //余额
+                lecturer: null,
+                specialType: specialType,
+                topFocus: true,
+                record: [],
+                templateId: ''
+            },
+            watch: {
+                active: function (n) {
                     var that = this;
-                    this.$nextTick(function () {
-                        that.addLearningRecords();
-                        that.getNumberCourses();
-                        that.subscribeTemplate();
-                        $h.EventUtil.listenTouchDirection(document, function () {
-                            if (this.active == 1) {
-                                if (this.special.type == 4) {
-                                    this.getLiveTask();
-                                } else if (this.special.type == 5) {
-                                    this.getCourseList();
-                                }
-                            } else if (this.active == 2) {
+                    if (n == 1 && that.special.type != 4 && that.special.type != 5) {
+                        this.getCourseList();
+                    }
+                    if (n == 1 && that.special.type == 4) {
+                        this.getLiveTask();
+                    }
+                },
+                pay_type_num: function () {
+                    this.subscribeTemplate();
+                }
+            },
+            mounted: function () {
+                var that = this;
+                this.$nextTick(function () {
+                    that.addLearningRecords();
+                    that.getNumberCourses();
+                    that.subscribeTemplate();
+                    $h.EventUtil.listenTouchDirection(document, function () {
+                        if (this.active == 1) {
+                            if (this.special.type == 4) {
+                                this.getLiveTask();
+                            } else if (this.special.type == 5) {
                                 this.getCourseList();
                             }
-                        }.bind(this));
-                        mapleWx($jssdk(), function () {
-                            this.onMenuShareAll({
-                                title: that.special.title,
-                                desc: that.special.abstract,
-                                imgUrl: that.special.image,
-                                link: location.href.indexOf('?') == -1 ? location.href + '?spread_uid=' + uid : location.href + '&spread_uid=' + uid,
-                            });
-                        });
-                        $('.swiper-conter').append('<div style="height:1.5rem"></div>');
-                        setTimeout(function () {
-                            new Swiper('.banner', {
-                                pagination: '.swiper-pagination',
-                                paginationClickable: false,
-                                autoplay: 2500,
-                                speed: 1000,
-                                autoplayDisableOnInteraction: false,
-                                observer: true,
-                                observeParents: true,
-                            });
-                        }, 500);
-                        switch (location.hash) {
-                            case '#tash':
-                                if (that.special.type != 4) that.active = 1;
-                                $('body,html').animate({ scrollTop: $(that.$refs.list).offset().top }, 800);
-                                break;
-                            case '#act1':
-                                that.active = 0;
-                                $('body,html').animate({ scrollTop: $(that.$refs.list).offset().top }, 800);
-                                break;
-                            case '#act2':
-                                if (that.special.type != 4) that.active = 1;
-                                $('body,html').animate({ scrollTop: $(that.$refs.list).offset().top }, 800);
-                                break;
-                            case '#gift':
-                                that.is_gift = true;
-                                break;
-                            case '#link_pay':
-                                that.link_pay_uid = link_pay_uid;
-                                break;
+                        } else if (this.active == 2) {
+                            this.getCourseList();
                         }
-                        if (gift) that.is_gift = true;
-                        if (link_pay) that.link_pay_uid = link_pay_uid;
+                    }.bind(this));
+                    mapleWx($jssdk(), function () {
+                        this.onMenuShareAll({
+                            title: that.special.title,
+                            desc: that.special.abstract,
+                            imgUrl: that.special.image,
+                            link: location.href.indexOf('?') == -1 ? location.href + '?spread_uid=' + uid : location.href + '&spread_uid=' + uid,
+                        });
                     });
-                    switch (this.special.type) {
-                        case 5:
-                            this.getCourseList();
-                            this.getCloumnTask();
+                    $('.swiper-conter').append('<div style="height:1.5rem"></div>');
+                    setTimeout(function () {
+                        new Swiper('.banner', {
+                            pagination: '.swiper-pagination',
+                            paginationClickable: false,
+                            autoplay: 2500,
+                            speed: 1000,
+                            autoplayDisableOnInteraction: false,
+                            observer: true,
+                            observeParents: true,
+                        });
+                    }, 500);
+                    switch (location.hash) {
+                        case '#tash':
+                            if (that.special.type != 4) that.active = 1;
+                            $('body,html').animate({scrollTop: $(that.$refs.list).offset().top}, 800);
                             break;
-                        case 4:
-                            this.getLiveTask();
+                        case '#act1':
+                            that.active = 0;
+                            $('body,html').animate({scrollTop: $(that.$refs.list).offset().top}, 800);
                             break;
-                        case 1:
-                        case 2:
-                        case 3:
-                        case 6:
-                            this.getCourseList();
+                        case '#act2':
+                            if (that.special.type != 4) that.active = 1;
+                            $('body,html').animate({scrollTop: $(that.$refs.list).offset().top}, 800);
+                            break;
+                        case '#gift':
+                            that.is_gift = true;
+                            break;
+                        case '#link_pay':
+                            that.link_pay_uid = link_pay_uid;
                             break;
                     }
-                    var width = $('.swiper-conter').width();
-                    $('.video-ue').each(function (index) {
-                        var id = "video-ue-" + index, videoUrl = $(this).attr('src');
-                        $(this).attr('id', id);
-                        $(this).children('video').attr('src', videoUrl);
-                        $(this).append("<source src='" + videoUrl + "' type='video/mp4' />")
-                        $(this).addClass("video-js");
-                        videojs(id, {}, function () {
-                            this.width(width);
-                            this.src(videoUrl);
+                    if (gift) that.is_gift = true;
+                    if (link_pay) that.link_pay_uid = link_pay_uid;
+                });
+                switch (this.special.type) {
+                    case 5:
+                        this.getCourseList();
+                        this.getCloumnTask();
+                        break;
+                    case 4:
+                        this.getLiveTask();
+                        break;
+                    case 1:
+                    case 2:
+                    case 3:
+                    case 6:
+                        this.getCourseList();
+                        break;
+                }
+                var width = $('.swiper-conter').width();
+                $('.video-ue').each(function (index) {
+                    var id = "video-ue-" + index, videoUrl = $(this).attr('src');
+                    $(this).attr('id', id);
+                    $(this).children('video').attr('src', videoUrl);
+                    $(this).append("<source src='" + videoUrl + "' type='video/mp4' />")
+                    $(this).addClass("video-js");
+                    videojs(id, {}, function () {
+                        this.width(width);
+                        this.src(videoUrl);
+                    });
+                });
+            },
+            methods: {
+                subscribeTemplate: function () {
+                    app.baseGet($h.U({
+                        c: 'special',
+                        a: 'getTemplateIds',
+                        q: {
+                            pay_type_num: this.pay_type_num,
+                            special_id: this.special.id
+                        }
+                    }), function (res) {
+                        this.templateId = res.data.msg;
+                    }.bind(this));
+                },
+                show: function (item) {
+                    item.active = !item.active
+                },
+                // 获取浏览人数
+                getLearningRecords: function () {
+                    var that = this;
+                    $h.loadFFF();
+                    app.baseGet($h.U({
+                        c: 'Special', a: 'learningRecords', q: {id: that.special.id}
+                    }), function (res) {
+                        var obj = res.data.data;
+                        $h.loadClear();
+                        that.record = obj;
+                    });
+                },
+                // 记录浏览人数
+                addLearningRecords: function () {
+                    var that = this;
+                    $h.loadFFF();
+                    app.baseGet($h.U({
+                        c: 'Special', a: 'addLearningRecords', q: {id: that.special.id}
+                    }), function (res) {
+                        $h.loadClear();
+                        that.getLearningRecords();
+                    });
+                },
+                //  专题下章节数量
+                getNumberCourses: function () {
+                    var that = this;
+                    $h.loadFFF();
+                    app.baseGet($h.U({
+                        c: 'Special', a: 'numberCourses', q: {id: that.special.id}
+                    }), function (res) {
+                        that.count = res.data.data;
+                        $h.loadClear();
+                    });
+                },
+                goLive: function () {
+                    if (!this.qr_password) return $h.showMsg('请输入密码');
+                    if (this.qr_password != this.studio_pwd) return $h.showMsg('密码不正确');
+                    document.cookie = this.stream_name + "studio_pwd" + "=" + this.studio_pwd + ";expires=7200" + ";path=/";
+                    window.location.href = $h.U({c: 'live', a: 'index', q: {stream_name: this.stream_name}});
+                },
+                goPink: function (pink_id, uid) {
+                    if (uid == this.uid && isPink) {
+                        window.location.href = $h.U({c: 'special', a: 'pink', q: {pink_id: pinkId, special_id: this.special.id, is_help: 0}});
+                    } else {
+                        window.location.href = $h.U({c: 'special', a: 'pink', q: {pink_id: pink_id > 0 ? pink_id : pinkId, special_id: this.special.id, is_help: 1}});
+                    }
+                },
+                follow: function () {
+                    return $h.openImage(wechat_qrcode);
+                },
+                getPartakePinkUrl: function () {
+                    return $h.U({c: 'special', a: 'details', q: {id: this.special.id}});
+                },
+                pay_order: function (data) {
+                    this.orderId = data.result.orderId || '';
+                    switch (data.status) {
+                        case "PAY_ERROR": case 'ORDER_EXIST': case 'ORDER_ERROR':
+                            this.extendOrder(data.msg);
+                            break;
+                        case 'WECHAT_PAY':
+                            this.wechatPay(data.result.jsConfig);
+                            break;
+                        case 'SUCCESS':
+                            this.successOrder(data.msg);
+                            break;
+                        case 'ZHIFUBAO_PAY':
+                            window.location.href = $h.U({c: 'Alipay', a: 'index', q: {info: data.result, params: 'special'}});
+                            break;
+                    }
+                },
+                wechatPay: function (config) {
+                    var that = this;
+                    mapleWx($jssdk(), function () {
+                        this.chooseWXPay(config, function () {
+                            that.successOrder();
+                        }, {
+                            fail: that.extendOrder,
+                            cancel: that.extendOrder
                         });
                     });
                 },
-                methods: {
-                    subscribeTemplate: function () {
-                        app.baseGet($h.U({
-                            c: 'special',
-                            a: 'getTemplateIds',
-                            q: {
-                                pay_type_num: this.pay_type_num,
-                                special_id: this.special.id
-                            }
-                        }), function (res) {
-                            this.templateId = res.data.msg;
-                        }.bind(this));
-                    },
-                    show: function(item) {
-                        item.active = !item.active
-                    },
-                    // 获取浏览人数
-                    getLearningRecords: function () {
-                        var that = this;
-                        $h.loadFFF();
-                        app.baseGet($h.U({c: 'Special', a: 'learningRecords', q: {id: that.special.id}
-                        }), function (res) {
-                            var obj = res.data.data;
-                            $h.loadClear();
-                            that.record = obj;
-                        });
-                    },
-                    // 记录浏览人数
-                    addLearningRecords: function () {
-                        var that = this;
-                        $h.loadFFF();
-                        app.baseGet($h.U({c: 'Special', a: 'addLearningRecords', q: {id: that.special.id}
-                        }), function (res) {
-                            $h.loadClear();
-                            that.getLearningRecords();
-                        });
-                    },
-                    //  专题下章节数量
-                    getNumberCourses: function () {
-                        var that = this;
-                        $h.loadFFF();
-                        app.baseGet($h.U({c: 'Special', a: 'numberCourses', q: {id: that.special.id}
-                        }), function (res) {
-                            that.count = res.data.data;
-                            $h.loadClear();
-                        });
-                    },
-                    goLive: function () {
-                        if (!this.qr_password) return $h.showMsg('请输入密码');
-                        if (this.qr_password != this.studio_pwd) return $h.showMsg('密码不正确');
-                        document.cookie = this.stream_name + "studio_pwd" + "=" + this.studio_pwd + ";expires=7200" + ";path=/";
-                        window.location.href = $h.U({ c: 'live', a: 'index', q: { stream_name: this.stream_name } });
-                    },
-                    goPink: function (pink_id,uid) {
-                        if(uid==this.uid && isPink){
-                            window.location.href=$h.U({ c: 'special', a: 'pink', q: { pink_id:pinkId ,special_id:this.special.id,is_help:0} });
-                        }else{
-                            window.location.href=$h.U({ c: 'special', a: 'pink', q: { pink_id:pink_id >0 ? pink_id : pinkId ,special_id:this.special.id,is_help:1} });
-                        }
-                    },
-                    follow: function () {
-                        return $h.openImage(wechat_qrcode);
-                    },
-                    getPartakePinkUrl: function () {
-                        return $h.U({ c: 'special', a: 'details', q: { id: this.special.id } });
-                    },
-                    pay_order: function (data) {
-                        this.orderId = data.result.orderId || '';
-                        switch (data.status) {
-                            case "PAY_ERROR": case 'ORDER_EXIST': case 'ORDER_ERROR':
-                                this.extendOrder(data.msg);
-                                break;
-                            case 'WECHAT_PAY':
-                                this.wechatPay(data.result.jsConfig);
-                                break;
-                            case 'SUCCESS':
-                                this.successOrder(data.msg);
-                                break;
-                            case 'ZHIFUBAO_PAY':
-                                window.location.href = $h.U({ c: 'Alipay', a: 'index', q: { info: data.result, params: 'special' } });
-                                break;
-                        }
-                    },
-                    wechatPay: function (config) {
-                        var that = this;
-                        mapleWx($jssdk(), function () {
-                            this.chooseWXPay(config, function () {
-                                that.successOrder();
-                            }, {
-                                fail: that.extendOrder,
-                                cancel: that.extendOrder
-                            });
-                        });
-                    },
-                    successOrder: function (msg) {
-                        var that = this;
-                        $h.showMsg({
-                            title: msg ? msg : '支付成功',
-                            icon: 'success',
-                            success: function () {
-                                switch (parseInt(that.pay_type_num)) {
-                                    case 1:
-                                        window.location.href = $h.U({ c: 'special', a: 'gift_special', q: { orderId: that.orderId } });
-                                        break;
-                                    case 2:
-                                        that.paid = true;
-                                        that.is_pay = true;
-                                        that.payment = true;
-                                        that.updateMaterialStatus();
-                                        break;
-                                    case 3:
-                                        window.location.href = $h.U({ c: 'special', a: 'pink', q: { orderId: that.orderId } });
-                                        break;
-                                }
-                            }
-                        });
-                    },
-                    updateMaterialStatus:function(){
-                        var that=this;
-                        that.otherLoading=false;
-                        that.otherLoaded=false;
-                        that.where.page=1;
-                        that.$set(that, 'otherTaskList', []);
-                        that.getCourseList();
-                    },
-                    extendOrder: function (msg) {
-                        var that = this;
-                        var msg = msg ? msg : '支付失败';
-                        $h.showMsg({
-                            title: typeof msg == 'object' ? '支付失败' : msg,
-                            success: function () {
-                                if (that.orderId) app.baseGet($h.U({ c: 'special', a: 'del_order', q: { orderId: that.orderId } }));
-                            }
-                        })
-                    },
-                    setMeal:function(item){
-                        var that = this;
-                        if (that.special.type == 5) {
-                            location.href = $h.U({ c: "special", a: "details", q: { id: item.id } });
-                        }
-                    },
-                    play: function (item) {
-                        if (item.pay_status == 1 && this.is_pay == false) return $h.showMsg('请先购买~');
-                        if (item.is_pay == 2) {
-                            this.password = true;
-                            this.studio_pwd = item.studio_pwd;
-                            this.stream_name = item.stream_name;
-                            return;
-                        }
-                        var that = this;
-                        if (that.special.type == 5) {
-                            switch (that.active) {
+                successOrder: function (msg) {
+                    var that = this;
+                    $h.showMsg({
+                        title: msg ? msg : '支付成功',
+                        icon: 'success',
+                        success: function () {
+                            switch (parseInt(that.pay_type_num)) {
                                 case 1:
-                                    this.goPlayTsak(item);
+                                    window.location.href = $h.U({c: 'special', a: 'gift_special', q: {orderId: that.orderId}});
                                     break;
                                 case 2:
-                                    location.href = $h.U({ c: "special", a: "details", q: { id: item.id } });
-                                    break;
-                            }
-                        } else {
-                            this.goPlayTsak(item);
-                        }
-                    },
-                    //获取课程列表
-                    getCourseList: function () {
-                        var that = this;
-                        if (this.otherLoading) return;
-                        if (this.otherLoaded) return;
-                        this.otherLoadTitle = '';
-                        this.otherLoading = true;
-                        app.baseGet($h.U({ c: 'special', a: 'get_course_list', q: this.where }), function (res) {
-                            var data = res.data.data,
-                                list = data.list || [],
-                                taskList = [];
-                            list.forEach(function (item, index) {
-                                item.active = index ? false : true;
-                            });
-                            taskList = $h.SplitArray(list, that.otherTaskList);
-                            that.where.page = data.page;
-                            that.otherLoaded = list.length < that.where.limit;
-                            that.otherLoadTitle = that.otherLoaded ? '我也是有底线的' : '上拉加载更多';
-                            that.otherLoading = false;
-                            that.$set(that, 'otherTaskList', taskList);
-                            that.$nextTick(function () {
-                                that.bScrollInit();
-                            });
-                        }, function (res) {
-                            that.otherLoading = false;
-                            that.otherLoadTitle = '加载更多';
-                        });
-                    },
-                    //获取专栏专题素材列表
-                    getCloumnTask: function () {
-                        var that = this;
-                        if (this.columnLoading) return;
-                        if (this.columnLoaded) return;
-                        this.columnLoadTitle = '';
-                        this.columnLoading = true;
-                        app.baseGet($h.U({ c: 'special', a: 'get_cloumn_task', q: this.where }), function (res) {
-                            var data = res.data.data;
-                            var list = data.list || [];
-                            var taskList = $h.SplitArray(list, that.columnTaskList);
-                            that.where.page = data.page;
-                            that.columnLoaded = list.length < that.where.limit;
-                            that.columnLoadTitle = that.columnLoaded ? '我也是有底线的' : '上拉加载更多';
-                            that.columnLoading = false;
-                            that.$set(that, 'columnTaskList', taskList);
-                            that.$nextTick(function () {
-                                that.bScrollInit();
-                            });
-                        }, function (res) {
-                            that.columnLoading = false;
-                            that.columnLoadTitle = '加载更多';
-                        });
-                    },
-                    //获取直播回放
-                    getLiveTask: function () {
-                        var that = this;
-                        if (this.liveLoading) return;
-                        if (this.liveLoaded) return;
-                        this.liveLoadTitle = '';
-                        this.liveLoading = true;
-                        app.baseGet($h.U({ c: 'live', a: 'get_live_record_list', q: { special_id: that.special.id,page:that.where.page,limit:that.where.limit } }), function (res) {
-                            var data = res.data.data.data;
-                            var list = data || [];
-                            var taskList = $h.SplitArray(list, that.liveTaskList);
-                            that.where.page = that.where.page + 1;
-                            that.liveLoaded = list.length < that.where.limit;
-                            that.liveLoadTitle = that.liveLoaded ? '我也是有底线的' : '上拉加载更多';
-                            that.liveLoading = false;
-                            that.$set(that, 'liveTaskList', taskList);
-                            that.$nextTick(function () {
-                                that.bScrollInit();
-                            });
-                        }, function (res) {
-                            that.liveLoading = false;
-                            that.liveLoadTitle = '加载更多';
-                        });
-                    },
-                    //播放素材
-                    goPlayTsak: function (item) {
-                        var that = this;
-                        app.baseGet($h.U({ c: 'special', a: 'get_task_link', q: { task_id: item.id, special_id: item.special_id } }), function (res) {
-                            if (that.special.type == 4) {
-                                window.location.href = $h.U({ c: 'live', a: 'index', q: { stream_name: item.stream_name, special_id: item.special_id, live_id: item.live_id } });
-                            } else {
-                                app.baseGet($h.U({ c: 'special', a: 'play_num', q: { task_id: item.id, special_id: item.special_id } }),function (res) {
-                                  if(res.data.code==200){
-                                     if (that.special.type == 1 || item.type==1) {
-                                        window.location.href = $h.U({ c: "special", a: "task_text_info", q: { id: item.id, specialId: item.special_id } });
-                                      } else {
-                                        window.location.href = $h.U({ c: "special", a: "task_info", q: { id: item.id, specialId: item.special_id } });
-                                      }
-                                  }else{
-                                      return $h.showMsg('更新数据有误！');
-                                  }
-                                });
-                            }
-                        }, function (err) {
-                            return $h.pushMsgOnce(err);
-                        })
-                    },
-                    //滑动底部加载
-                    bScrollInit: function () {
-                        var that = this;
-                        $h.EventUtil.listenTouchDirection(document, function () {
-                            if (that.special.type == 5) {
-                                that.columnLoading == false && that.getCloumnTask();
-                            } else {
-                                that.otherLoading == false && that.getCourseList();
-                            }
-                        }, false);
-                    },
-                    //收藏和取消收藏
-                    collect: function () {
-                        app.baseGet($h.U({ c: 'special', a: 'collect', q: { id: this.special.id } }), function (res) {
-                            if (this.special.collect)
-                                $h.pushMsgOnce('取消收藏成功');
-                            else
-                                $h.pushMsgOnce('收藏成功');
-                            this.special.collect = this.special.collect ? false : 1;
-                        }.bind(this));
-                    },
-                    customerService:function(){
-                        app.baseGet($h.U({ c: 'index', a: 'user_login' }), function (res) {
-                            window.location.href = $h.U({ c: 'service', a: 'service_list' });
-                        }.bind(this), function (res) {
-                            this.appear = false;
-                        }.bind(this));
-                    },
-                    //打开支付插件,并检测登录状态,没有登录,打开登录插件
-                    OpenPay: function (is_pink) {
-                        this.pay_type_num = is_pink;
-                        app.baseGet($h.U({ c: 'index', a: 'user_login' }), function (res) {
-                            switch (is_pink) {
-                                case 1:
-                                    this.money = this.special.money;
-                                    this.payment = false;
-                                    break;
-                                case 2:
-                                    this.money = this.special.money;
-                                    this.payment = false;
-                                    break;
-                                case 4:
-                                    this.payment = true;
-                                    app.baseGet($h.U({ c: 'special', a: 'receive_gift', q: { orderId: orderId } }), function (res) {
-                                        $h.showMsg({
-                                            title: res.data.msg,
-                                            icon: 'success',
-                                            success: function () {
-                                                window.location.href = $h.U({ c: 'special', a: 'grade_list' });
-                                            }
-                                        })
-                                    });
-                                    break;
-                                case 5:
-                                    location.hash = '#tash';
-                                    $('body,html').animate({ scrollTop: $(this.$refs.list).offset().top }, 800);
-                                    this.is_pay = true;
-                                    this.paid = false;
-                                    this.active = 1;
-                                    break;
-                                case 6:
-                                    if (this.liveInfo.studio_pwd && this.special.pay_type == 2) {
-                                        this.password = true;
-                                    } else {
-                                        window.location.href = $h.U({
-                                            c: 'live',
-                                            a: 'index',
-                                            q: { stream_name: this.stream_name, record_id: this.RecordId }
-                                        });
-                                    }
-                                    break;
-                            }
-                        }.bind(this), function (res) {
-                            this.appear = false;
-                        }.bind(this));
-                    },
-                    ReceiveGift: function () {
-                        var that = this;
-                        if (!orderId) return;
-                        app.baseGet($h.U({ c: 'special', a: 'receive_gift', q: { orderId: orderId } }), function (res) {
-                            $h.showMsg({
-                                title: res.data.msg,
-                                icon: 'success',
-                                success: function () {
-                                    window.location.href = $h.U({ c: 'index', a: 'index' });
-                                }
-                            })
-                        });
-                    },
-                    //关闭登录
-                    loginClose: function (value) {
-                        this.appear = value;
-                    },
-                    //关闭支付
-                    payClose: function (value) {
-                        this.payment = value;
-                    },
-                    //登录完成回调事件
-                    logComplete: function () {
-                        var that=this;
-                        that.appear = true;
-                        app.baseGet($h.U({ c: 'special', a: 'isMember' }), function (res) {
-                            that.now_money=res.data.data.now_money;
-                            switch (that.pay_type_num) {
-                                case 1:
-                                    that.money = that.special.money;
+                                    that.paid = true;
+                                    that.is_pay = true;
+                                    that.payment = true;
+                                    that.updateMaterialStatus();
                                     break;
                                 case 3:
-                                    that.money = that.special.pink_money;
+                                    window.location.href = $h.U({c: 'special', a: 'pink', q: {orderId: that.orderId}});
                                     break;
                             }
-                        });
-                        if (that.pay_type_num != 4) that.payment = false;
-                        if (that.pay_type_num == 6) that.payment = true;
-                    },
-                    //所有插件回调处理事件
-                    changeVal: function (opt) {
-                        if (typeof opt != 'object') opt = {};
-                        var action = opt.action || '';
-                        var value = opt.value || '';
-                        this[action] && this[action](value);
-                    },
-                    CountDown: function (opt, that) {
-                        if (typeof opt != 'object') opt = {};
-                        var name = opt.name || '', value = null, that = that ? that : this;
-                        if (name.indexOf('.') === -1)
-                            value = that[name];
-                        else {
-                            var nameArray = name.split('.');
-                            value = that[nameArray[0]][nameArray[1]];
                         }
-                        var tiem = opt.time || 1000, timeName = opt.time_name || 'datatime', strName = { hour: "00", minute: "00", second: "00" },
-                            outputName = opt.output || 'difftime';
-                        if (!name) return false;
-                        if (value === undefined) return false;
-                        opt.nowTime = function () {
-                            if (Array.isArray(value)) {
-                                for (var i = 0; i < value.length; i++) {
-                                    var intDiff = value[i][timeName] - Date.parse(new Date()) / 1000;//获取数据中的时间戳的时间差；
-                                    var days = 0, hour = 0, minute = 0, second = 0;
-                                    if (intDiff > 0) {
-                                        hour = Math.floor(intDiff / (60 * 60)) - (days * 24);
-                                        minute = Math.floor(intDiff / 60) - (hour * 60);
-                                        second = Math.floor(intDiff) - (hour * 60 * 60) - (minute * 60);
-                                        if (hour <= 9) hour = '0' + hour;
-                                        if (minute <= 9) minute = '0' + minute;
-                                        if (second <= 9) second = '0' + second;
-                                        strName = {
-                                            hour: hour,
-                                            minute: minute,
-                                            second: second
-                                        };
+                    });
+                },
+                updateMaterialStatus: function () {
+                    var that = this;
+                    that.otherLoading = false;
+                    that.otherLoaded = false;
+                    that.where.page = 1;
+                    that.$set(that, 'otherTaskList', []);
+                    that.getCourseList();
+                },
+                extendOrder: function (msg) {
+                    var that = this;
+                    var msg = msg ? msg : '支付失败';
+                    $h.showMsg({
+                        title: typeof msg == 'object' ? '支付失败' : msg,
+                        success: function () {
+                            if (that.orderId) app.baseGet($h.U({c: 'special', a: 'del_order', q: {orderId: that.orderId}}));
+                        }
+                    })
+                },
+                setMeal: function (item) {
+                    var that = this;
+                    if (that.special.type == 5) {
+                        location.href = $h.U({c: "special", a: "details", q: {id: item.id}});
+                    }
+                },
+                play: function (item) {
+                    if (item.pay_status == 1 && this.is_pay == false) return $h.showMsg('请先购买~');
+                    if (item.is_pay == 2) {
+                        this.password = true;
+                        this.studio_pwd = item.studio_pwd;
+                        this.stream_name = item.stream_name;
+                        return;
+                    }
+                    var that = this;
+                    if (that.special.type == 5) {
+                        switch (that.active) {
+                            case 1:
+                                this.goPlayTsak(item);
+                                break;
+                            case 2:
+                                location.href = $h.U({c: "special", a: "details", q: {id: item.id}});
+                                break;
+                        }
+                    } else {
+                        this.goPlayTsak(item);
+                    }
+                },
+                //获取课程列表
+                getCourseList: function () {
+                    var that = this;
+                    if (this.otherLoading) return;
+                    if (this.otherLoaded) return;
+                    this.otherLoadTitle = '';
+                    this.otherLoading = true;
+                    app.baseGet($h.U({c: 'special', a: 'get_course_list', q: this.where}), function (res) {
+                        var data = res.data.data,
+                            list = data.list || [],
+                            taskList = [];
+                        list.forEach(function (item, index) {
+                            item.active = index ? false : true;
+                        });
+                        taskList = $h.SplitArray(list, that.otherTaskList);
+                        that.where.page = data.page;
+                        that.otherLoaded = list.length < that.where.limit;
+                        that.otherLoadTitle = that.otherLoaded ? '我也是有底线的' : '上拉加载更多';
+                        that.otherLoading = false;
+                        that.$set(that, 'otherTaskList', taskList);
+                        that.$nextTick(function () {
+                            that.bScrollInit();
+                        });
+                    }, function (res) {
+                        that.otherLoading = false;
+                        that.otherLoadTitle = '加载更多';
+                    });
+                },
+                //获取专栏专题素材列表
+                getCloumnTask: function () {
+                    var that = this;
+                    if (this.columnLoading) return;
+                    if (this.columnLoaded) return;
+                    this.columnLoadTitle = '';
+                    this.columnLoading = true;
+                    app.baseGet($h.U({c: 'special', a: 'get_cloumn_task', q: this.where}), function (res) {
+                        var data = res.data.data;
+                        var list = data.list || [];
+                        var taskList = $h.SplitArray(list, that.columnTaskList);
+                        that.where.page = data.page;
+                        that.columnLoaded = list.length < that.where.limit;
+                        that.columnLoadTitle = that.columnLoaded ? '我也是有底线的' : '上拉加载更多';
+                        that.columnLoading = false;
+                        that.$set(that, 'columnTaskList', taskList);
+                        that.$nextTick(function () {
+                            that.bScrollInit();
+                        });
+                    }, function (res) {
+                        that.columnLoading = false;
+                        that.columnLoadTitle = '加载更多';
+                    });
+                },
+                //获取直播回放
+                getLiveTask: function () {
+                    var that = this;
+                    if (this.liveLoading) return;
+                    if (this.liveLoaded) return;
+                    this.liveLoadTitle = '';
+                    this.liveLoading = true;
+                    app.baseGet($h.U({c: 'live', a: 'get_live_record_list', q: {special_id: that.special.id, page: that.where.page, limit: that.where.limit}}), function (res) {
+                        var data = res.data.data.data;
+                        var list = data || [];
+                        var taskList = $h.SplitArray(list, that.liveTaskList);
+                        that.where.page = that.where.page + 1;
+                        that.liveLoaded = list.length < that.where.limit;
+                        that.liveLoadTitle = that.liveLoaded ? '我也是有底线的' : '上拉加载更多';
+                        that.liveLoading = false;
+                        that.$set(that, 'liveTaskList', taskList);
+                        that.$nextTick(function () {
+                            that.bScrollInit();
+                        });
+                    }, function (res) {
+                        that.liveLoading = false;
+                        that.liveLoadTitle = '加载更多';
+                    });
+                },
+                //播放素材
+                goPlayTsak: function (item) {
+                    var that = this;
+                    app.baseGet($h.U({c: 'special', a: 'get_task_link', q: {task_id: item.id, special_id: item.special_id}}), function (res) {
+                        if (that.special.type == 4) {
+                            window.location.href = $h.U({c: 'live', a: 'index', q: {stream_name: item.stream_name, special_id: item.special_id, live_id: item.live_id}});
+                        } else {
+                            app.baseGet($h.U({c: 'special', a: 'play_num', q: {task_id: item.id, special_id: item.special_id}}), function (res) {
+                                if (res.data.code == 200) {
+                                    if (that.special.type == 1 || item.type == 1) {
+                                        window.location.href = $h.U({c: "special", a: "task_text_info", q: {id: item.id, specialId: item.special_id}});
                                     } else {
-                                        strName = {
-                                            hour: "00",
-                                            minute: "00",
-                                            second: "00"
-                                        };
+                                        window.location.href = $h.U({c: "special", a: "task_info", q: {id: item.id, specialId: item.special_id}});
                                     }
-                                    value[i][outputName] = strName;
+                                } else {
+                                    return $h.showMsg('更新数据有误！');
                                 }
-                                that.$set(that, name, value);
+                            });
+                        }
+                    }, function (err) {
+                        return $h.pushMsgOnce(err);
+                    })
+                },
+                //滑动底部加载
+                bScrollInit: function () {
+                    var that = this;
+                    $h.EventUtil.listenTouchDirection(document, function () {
+                        if (that.special.type == 5) {
+                            that.columnLoading == false && that.getCloumnTask();
+                        } else {
+                            that.otherLoading == false && that.getCourseList();
+                        }
+                    }, false);
+                },
+                //收藏和取消收藏
+                collect: function () {
+                    app.baseGet($h.U({c: 'special', a: 'collect', q: {id: this.special.id}}), function (res) {
+                        if (this.special.collect)
+                            $h.pushMsgOnce('取消收藏成功');
+                        else
+                            $h.pushMsgOnce('收藏成功');
+                        this.special.collect = this.special.collect ? false : 1;
+                    }.bind(this));
+                },
+                customerService: function () {
+                    app.baseGet($h.U({c: 'index', a: 'login_user'}), function (res) {
+                        window.location.href = $h.U({c: 'service', a: 'service_list'});
+                    }.bind(this), function (res) {
+                        this.appear = false;
+                    }.bind(this));
+                },
+                //打开支付插件,并检测登录状态,没有登录,打开登录插件
+                OpenPay: function (is_pink) {
+                    this.pay_type_num = is_pink;
+                    app.baseGet("{:url('index/login_user')}", function () {
+                        switch (is_pink) {
+                            case 1:
+                                app.baseGet("{:url('index/user_login')}", function () {
+                                    this.money = this.special.money;
+                                    this.payment = false;
+                                }.bind(this), function () {
+                                    if (isWechat) {
+                                        localStorage.setItem('wx_login_url', window.location.href);
+                                        window.location.assign("{:url('login/index')}");
+                                    } else {
+                                        this.appear = false;
+                                    }
+                                }.bind(this));
+                                break;
+                            case 2:
+                                app.baseGet("{:url('index/user_login')}", function () {
+                                    this.money = this.special.money;
+                                    this.payment = false;
+                                }.bind(this), function () {
+                                    if (isWechat) {
+                                        localStorage.setItem('wx_login_url', window.location.href);
+                                        window.location.assign("{:url('login/index')}");
+                                    } else {
+                                        this.appear = false;
+                                    }
+                                }.bind(this));
+                                break;
+                            case 4:
+                                this.payment = true;
+                                app.baseGet($h.U({c: 'special', a: 'receive_gift', q: {orderId: orderId}}), function (res) {
+                                    $h.showMsg({
+                                        title: res.data.msg,
+                                        icon: 'success',
+                                        success: function () {
+                                            window.location.href = $h.U({c: 'special', a: 'grade_list'});
+                                        }
+                                    })
+                                });
+                                break;
+                            case 5:
+                                location.hash = '#tash';
+                                $('body,html').animate({scrollTop: $(this.$refs.list).offset().top}, 800);
+                                this.is_pay = true;
+                                this.paid = false;
+                                this.active = 1;
+                                break;
+                            case 6:
+                                if (this.liveInfo.studio_pwd && this.special.pay_type == 2) {
+                                    this.password = true;
+                                } else {
+                                    window.location.href = $h.U({
+                                        c: 'live',
+                                        a: 'index',
+                                        q: {stream_name: this.stream_name, record_id: this.RecordId}
+                                    });
+                                }
+                                break;
+                        }
+                    }.bind(this), function () {
+                        if (isWechat) {
+                            localStorage.setItem('wx_login_url', window.location.href);
+                            window.location.assign("{:url('login/index')}");
+                        } else {
+                            if (isWechat) {
+                                localStorage.setItem('wx_login_url', window.location.href);
+                                window.location.assign("{:url('login/index')}");
                             } else {
-                                var intDiff = value[timeName] - Date.parse(new Date()) / 1000;
+                                this.appear = false;
+                            }
+                        }
+                    }.bind(this));
+                },
+                ReceiveGift: function () {
+                    var that = this;
+                    if (!orderId) return;
+                    app.baseGet($h.U({c: 'special', a: 'receive_gift', q: {orderId: orderId}}), function (res) {
+                        $h.showMsg({
+                            title: res.data.msg,
+                            icon: 'success',
+                            success: function () {
+                                window.location.href = $h.U({c: 'index', a: 'index'});
+                            }
+                        })
+                    });
+                },
+                //关闭登录
+                loginClose: function (value) {
+                    this.appear = value;
+                },
+                //关闭支付
+                payClose: function (value) {
+                    this.payment = value;
+                },
+                //登录完成回调事件
+                logComplete: function () {
+                    var that = this;
+                    that.appear = true;
+                    app.baseGet($h.U({c: 'special', a: 'isMember'}), function (res) {
+                        that.now_money = res.data.data.now_money;
+                        switch (that.pay_type_num) {
+                            case 1:
+                                that.money = that.special.money;
+                                break;
+                            case 3:
+                                that.money = that.special.pink_money;
+                                break;
+                        }
+                    });
+                    if (that.pay_type_num != 4) that.payment = false;
+                    if (that.pay_type_num == 6) that.payment = true;
+                },
+                //所有插件回调处理事件
+                changeVal: function (opt) {
+                    if (typeof opt != 'object') opt = {};
+                    var action = opt.action || '';
+                    var value = opt.value || '';
+                    this[action] && this[action](value);
+                },
+                CountDown: function (opt, that) {
+                    if (typeof opt != 'object') opt = {};
+                    var name = opt.name || '', value = null, that = that ? that : this;
+                    if (name.indexOf('.') === -1)
+                        value = that[name];
+                    else {
+                        var nameArray = name.split('.');
+                        value = that[nameArray[0]][nameArray[1]];
+                    }
+                    var tiem = opt.time || 1000, timeName = opt.time_name || 'datatime', strName = {hour: "00", minute: "00", second: "00"},
+                        outputName = opt.output || 'difftime';
+                    if (!name) return false;
+                    if (value === undefined) return false;
+                    opt.nowTime = function () {
+                        if (Array.isArray(value)) {
+                            for (var i = 0; i < value.length; i++) {
+                                var intDiff = value[i][timeName] - Date.parse(new Date()) / 1000;//获取数据中的时间戳的时间差；
                                 var days = 0, hour = 0, minute = 0, second = 0;
                                 if (intDiff > 0) {
                                     hour = Math.floor(intDiff / (60 * 60)) - (days * 24);
@@ -1255,24 +1473,49 @@
                                         second: "00"
                                     };
                                 }
-                                if (name.indexOf('.') === -1)
-                                    that.$set(that[name], outputName, strName);
-                                else {
-                                    var nameArray = name.split('.');
-                                    that.$set(that[nameArray[0]][nameArray[1]], outputName, strName);
-                                }
+                                value[i][outputName] = strName;
                             }
-                        };
-                        opt.nowTime();
-                        setInterval(opt.nowTime, tiem);
-                    },
-                    //播放回放
-                    playBackRecord: function (item) {
-                        this.RecordId = item;
-                        this.OpenPay(6);
-                    },
+                            that.$set(that, name, value);
+                        } else {
+                            var intDiff = value[timeName] - Date.parse(new Date()) / 1000;
+                            var days = 0, hour = 0, minute = 0, second = 0;
+                            if (intDiff > 0) {
+                                hour = Math.floor(intDiff / (60 * 60)) - (days * 24);
+                                minute = Math.floor(intDiff / 60) - (hour * 60);
+                                second = Math.floor(intDiff) - (hour * 60 * 60) - (minute * 60);
+                                if (hour <= 9) hour = '0' + hour;
+                                if (minute <= 9) minute = '0' + minute;
+                                if (second <= 9) second = '0' + second;
+                                strName = {
+                                    hour: hour,
+                                    minute: minute,
+                                    second: second
+                                };
+                            } else {
+                                strName = {
+                                    hour: "00",
+                                    minute: "00",
+                                    second: "00"
+                                };
+                            }
+                            if (name.indexOf('.') === -1)
+                                that.$set(that[name], outputName, strName);
+                            else {
+                                var nameArray = name.split('.');
+                                that.$set(that[nameArray[0]][nameArray[1]], outputName, strName);
+                            }
+                        }
+                    };
+                    opt.nowTime();
+                    setInterval(opt.nowTime, tiem);
                 },
-            });
-        })
+                //播放回放
+                playBackRecord: function (item) {
+                    this.RecordId = item;
+                    this.OpenPay(6);
+                },
+            },
+        });
+    })
 </script>
 {/block}

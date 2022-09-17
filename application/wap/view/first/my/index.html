@@ -48,6 +48,7 @@
         border-radius: 0.5rem;
         margin: 1rem auto;
     }
+
     .user-section {
         border-bottom: .2rem solid #F9F9F9;
     }
@@ -112,7 +113,7 @@
     {include file="public/store_menu"}
 </div>
 <script>
-    var site_name = '{$Auth_site_name}',isyue={$is_yue ? 'true' : 'false'},phone='{$phone}',isWechat='{$isWechat}';
+    var site_name = '{$Auth_site_name}', isyue = {$is_yue? 'true': 'false'}, phone = '{$phone}', isWechat = '{$isWechat}';
     require(['vue', 'helper', 'store', 'layer', '{__WAP_PATH}zsff/js/enter.js'], function (Vue, $h, app, layer) {
         new Vue({
             el: '#app',
@@ -120,7 +121,7 @@
                 appear: true,
                 codeUrl: '',
                 isfollow: false,
-                url: $h.U({ c: 'login', a: 'phone_check' }),
+                url: $h.U({c: 'login', a: 'phone_check'}),
                 site_name: site_name,
                 isyue: isyue,
                 phone: phone,
@@ -137,10 +138,10 @@
                     app.baseGet($h.U({
                         c: 'my',
                         a: 'getPersonalCenterMenu'
-                    }), function(res) {
+                    }), function (res) {
                         $h.loadClear();
                         that.menuList = res.data.data;
-                    }, function(err) {
+                    }, function (err) {
                         $h.loadClear();
                     });
                 },
@@ -161,7 +162,7 @@
                         this.isfollow = true;
                         var qcode_id = data.qcode_id;
                         var interval = setInterval(function () {
-                            app.baseGet($h.U({ c: 'index', a: 'qcode_login', q: { qcode_id: qcode_id } }), function (res) {
+                            app.baseGet($h.U({c: 'index', a: 'qcode_login', q: {qcode_id: qcode_id}}), function (res) {
                                 clearInterval(interval);
                                 that.isfollow = false;
                                 setTimeout(function () {
@@ -174,27 +175,37 @@
                         window.location.reload();
                     }
                 },
-                goUrl: function (item,type) {
+                goUrl: function (item, type) {
                     var that = this;
-                    app.baseGet($h.U({ c: 'index', a: 'login_user' }), function (res) {
-                        if(type==1){
-                            window.location.href =item;
-                        }else{
+                    app.baseGet($h.U({c: 'index', a: 'login_user'}), function (res) {
+                        if (type == 1) {
+                            window.location.href = item;
+                        } else {
                             window.location.href = item.link;
                         }
                     }, function () {
-                        that.appear = false;
+                        if (isWechat) {
+                            localStorage.setItem('wx_login_url', window.location.href);
+                            window.location.assign("{:url('login/index')}");
+                        } else {
+                            that.appear = false;
+                        }
                     });
                 },
-                memberUrl:function(){
+                memberUrl: function () {
                     var that = this;
-                    app.baseGet($h.U({ c: 'index', a: 'login_user' }), function (res) {
+                    app.baseGet($h.U({c: 'index', a: 'login_user'}), function () {
                         window.location.href = $h.U({
                             c: 'special',
                             a: 'member_recharge'
                         });
                     }, function () {
-                        that.appear = false;
+                        if (isWechat) {
+                            localStorage.setItem('wx_login_url', window.location.href);
+                            window.location.assign("{:url('login/index')}");
+                        } else {
+                            that.appear = false;
+                        }
                     });
                 },
                 //所有插件回调处理事件
@@ -217,7 +228,7 @@
                         closeBtn: 0,
                         btn: ['确定', '取消']
                     }, function () {
-                        app.baseGet($h.U({ c: 'my', a: 'logout' }), function (res) {
+                        app.baseGet($h.U({c: 'my', a: 'logout'}), function (res) {
                             $h.pushMsgOnce(res.data.msg, function () {
                                 location.reload();
                             });
