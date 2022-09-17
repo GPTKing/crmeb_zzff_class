@@ -265,10 +265,6 @@
             firstDay : 1
         }
     });
-
-    dateInput.on('cancel.daterangepicker', function(ev, picker) {
-        //$("input[name=limit_time]").val('');
-    });
     dateInput.on('apply.daterangepicker', function(ev, picker) {
         $("input[name=data]").val(picker.startDate.format('YYYY/MM/DD') + ' - ' + picker.endDate.format('YYYY/MM/DD'));
         $('input[name=export]').val(0);

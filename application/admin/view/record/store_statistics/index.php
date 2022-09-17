@@ -234,15 +234,6 @@
                     saveAsImage: {}
                 }
             },
-            //dataZoom: [{
-            //    startValue: '<?php
-            //        $index = count($orderDays) > 30 ? count($orderDays)-30 : 0;
-            //        if(isset($orderDays[$index]))
-            //            echo $orderDays[$index];
-            //        ?>//'
-            //}, {
-            //    type: 'inside'
-            //}],
             visualMap: {
                 top: 10,
                 right: 10,

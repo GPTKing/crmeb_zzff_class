@@ -80,10 +80,6 @@
     <div class="layui-col-md12">
         <div class="layui-card">
             <div class="layui-card-body">
-                <!-- <div class="alert alert-info" role="alert"> -->
-                    <!--列表[排序]可进行快速修改,双击或者单击进入编辑模式,失去焦点可进行自动保存
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>-->
-                <!-- </div> -->
                 <table class="layui-hide" id="List" lay-filter="List"></table>
                 <script type="text/html" id="is_pink">
                     {{# if(d.is_pink){ }}

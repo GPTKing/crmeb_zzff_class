@@ -116,7 +116,6 @@
         }());
 
         window.$f = create();
-//        create();
     })();
 </script>
 </body>
