@@ -146,7 +146,7 @@
                         }
                     }
                     store.baseGet("{:url('index/login_user')}", function () {
-                        app.baseGet("{:url('index/user_login')}", function () {
+                        store.baseGet("{:url('index/user_login')}", function () {
                             that.payHide = false;
                         }, function () {
                             that.loginHide = false;
