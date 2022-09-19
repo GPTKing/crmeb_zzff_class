@@ -101,9 +101,9 @@ class WapBasic extends Controller
     {
         $openid = Session::get('loginOpenid','wap');
         if($openid) return $openid;
-        if(!UtilService::isWechatBrowser()) exit($this->failed('请在微信客户端打开链接'));
+        if(!UtilService::isWechatBrowser()) return WechatUser::setErrorInfo('请在微信客户端打开链接!');
         $errorNum = (int)Cookie::get('_oen');
-        if($errorNum && $errorNum > 3) exit($this->failed('微信用户信息获取失败!!'));
+        if($errorNum && $errorNum > 3) return WechatUser::setErrorInfo('微信用户信息获取失败!!');
         try{
             $original = WechatService::oauthService()->getAccessToken($code);
             if(!isset($original['access_token']) || $original['access_token']=='' || !isset($original['openid']) || $original['openid']==''){
