@@ -157,7 +157,12 @@
                 storeApi.baseGet($h.U({c: 'index', a: 'login_user'}), function (res) {
                     that.getGradeList();
                 }, function () {
-                    that.appear = false;
+                    if (isWechat) {
+                        localStorage.setItem('wx_login_url', window.location.href);
+                        window.location.assign("{:url('login/index')}");
+                    } else {
+                        that.appear = false;
+                    }
                 });
                 if (type == 1) {
                     this.active = 1;

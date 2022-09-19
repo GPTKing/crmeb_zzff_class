@@ -149,12 +149,7 @@
                         app.baseGet("{:url('index/user_login')}", function () {
                             that.payHide = false;
                         }, function () {
-                            if (isWechat) {
-                                localStorage.setItem('wx_login_url', window.location.href);
-                                window.location.assign("{:url('login/index')}");
-                            } else {
-                                that.loginHide = false;
-                            }
+                            that.loginHide = false;
                         });
                     }, function () {
                         if (isWechat) {
