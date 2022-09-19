@@ -63,8 +63,8 @@ class Login extends WapBasic
             ['phone', ''],
             ['code', ''],
         ], $request, true);
-        if (!$phone || !$code) return $this->failed('请输入登录账号');
-        if (!$code) return $this->failed('请输入验证码');
+        if (!$phone || !$code) return JsonService::fail('请输入登录账号');
+        if (!$code) return JsonService::fail('请输入验证码');
         $code = md5('is_phone_code' . $code);
         if (!SmsCode::CheckCode($phone, $code)) return JsonService::fail('验证码验证失败');
         SmsCode::setCodeInvalid($phone, $code);
@@ -78,19 +78,19 @@ class Login extends WapBasic
     public function check(Request $request)
     {
         list($account, $pwd, $ref) = UtilService::postMore(['account', 'pwd', 'ref'], $request, true);
-        if (!$account || !$pwd) return $this->failed('请输入登录账号');
-        if (!$pwd) return $this->failed('请输入登录密码');
-        if (!User::be(['account' => $account])) return $this->failed('登陆账号不存在!');
+        if (!$account || !$pwd) return JsonService::fail('请输入登录账号');
+        if (!$pwd) return JsonService::fail('请输入登录密码');
+        if (!User::be(['account' => $account])) return JsonService::fail('登陆账号不存在!');
         $userInfo = User::where('account', $account)->find();
         $errorInfo = Session::get('login_error_info', 'wap') ?: ['num' => 0];
         $now = time();
         if ($errorInfo['num'] > 5 && $errorInfo['time'] < ($now - 900))
-            return $this->failed('错误次数过多,请稍候再试!');
+            return JsonService::fail('错误次数过多,请稍候再试!');
         if ($userInfo['pwd'] != md5($pwd)) {
             Session::set('login_error_info', ['num' => $errorInfo['num'] + 1, 'time' => $now], 'wap');
-            return $this->failed('账号或密码输入错误!');
+            return JsonService::fail('账号或密码输入错误!');
         }
-        if (!$userInfo['status']) return $this->failed('账号已被锁定,无法登陆!');
+        if (!$userInfo['status']) return JsonService::fail('账号已被锁定,无法登陆!');
         $this->_logout();
         Session::set('loginUid', $userInfo['uid'], 'wap');
         $userInfo['last_time'] = time();
