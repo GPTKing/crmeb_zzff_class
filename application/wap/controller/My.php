@@ -59,8 +59,7 @@ class My extends AuthController
         Cookie::delete('is_bg');
         Cookie::delete('is_login');
         Cookie::delete('__login_phone');
-        Session::delete('__login_phone_num' . $this->uid, 'wap');
-        Session::delete('loginUid', 'wap');
+        Session::clear('wap');
         return JsonService::successful('已退出登录');
     }
 
