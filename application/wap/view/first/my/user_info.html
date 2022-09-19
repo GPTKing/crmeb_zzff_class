@@ -151,7 +151,7 @@
         </div>
         <div class="group">
             <button class="button" type="button" @click="save_user_info">保存</button>
-            <a class="link" href="/wap/my/index.html">返回</a>
+            <a class="link" href="javascript:" @click="logout">退出登录</a>
         </div>
     </div>
     <quick-menu></quick-menu>
@@ -203,6 +203,20 @@
                     }, function (res) {
                         $h.pushMsgOnce(res.data.msg)
                     })
+                },
+                logout: function () {
+                    layer.confirm('确定退出登录？', {
+                        title: false,
+                        closeBtn: false
+                    }, function () {
+                        app.baseGet("{:url('my/logout')}", function (res) {
+                            layer.msg(res.data.msg, {
+                                anim: 0
+                            }, function () {
+                                window.history.back();
+                            });
+                        }); 
+                    });
                 }
             }
         });
