@@ -25,7 +25,6 @@ class UserBehavior
      */
     public static function wechatOauthAfter($openid,$wechatInfo)
     {
-        Cookie::set('is_login',1);
         $spread_uid=$wechatInfo['spread_uid'];
         $wechatInfo['nickname']=filter_emoji($wechatInfo['nickname']);
         if(isset($wechatInfo['unionid']) && $wechatInfo['unionid'] != '' && WechatUser::be(['unionid'=>$wechatInfo['unionid']])){
