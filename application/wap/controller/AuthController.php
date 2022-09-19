@@ -135,7 +135,6 @@ class AuthController extends WapBasic
      */
     protected function NoWechantVisitWhite()
     {
-        if ($this->isWechat) return false;
         list($module, $controller, $action, $className) = $this->getCurrentController();
         if (method_exists($className, 'WhiteList')) {
             $whitelist = $className::WhiteList();
