@@ -129,6 +129,7 @@ class WapBasic extends Controller
         HookService::afterListen('wechat_oauth', $openid, $wechatInfo, false, UserBehavior::class);
         Session::set('loginOpenid', $openid, 'wap');
         Cookie::set('is_login', 1);
+        Cookie::set('__login_phone', 1);
         return $openid;
     }
 
