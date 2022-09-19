@@ -236,12 +236,35 @@ class User extends ModelBasic
     public static function getActiveUid()
     {
         $uid = null;
+        if (!Cookie::get('is_login')) exit(exception('请登陆!'));
         if (Session::has('loginUid', 'wap')) $uid = Session::get('loginUid', 'wap');
         if (!$uid && Session::has('loginOpenid', 'wap') && ($openid = Session::get('loginOpenid', 'wap')))
             $uid = WechatUser::openidToUid($openid);
         if (!$uid) exit(exception('请登陆!'));
         return $uid;
     }
+
+    /**
+     * 获取登陆的手机号码
+     * @param int $uid 用户id
+     * @param string $phone 用户号码
+     * @return string
+     * */
+    public static function getLogPhone($uid, $phone = null)
+    {
+        $name = '__login_phone_num' . $uid;
+        if (!Cookie::get('__login_phone') && $uid) {
+            Cookie::set('__login_phone', 1);
+        } else if (!Cookie::get('__login_phone') && !$uid) {
+            return null;
+        }
+        if (Session::has($name, 'wap')) $phone = Session::get($name, 'wap');
+        if (is_null($phone)) {
+            if (Session::has('__login_phone_number', 'wap')) $phone = Session::get('__login_phone_number', 'wap');
+        }
+        return $phone;
+    }
+
     /**
      * 一级推广 专题
      * @param $orderInfo
@@ -338,22 +361,6 @@ class User extends ModelBasic
         return $res;
     }
 
-    /**
-     * 获取登陆的手机号码
-     * @param int $uid 用户id
-     * @param string $phone 用户号码
-     * @return string
-     * */
-    public static function getLogPhone($uid, $phone = null)
-    {
-        $name = '__login_phone_num' . $uid;
-        if (!Cookie::get('__login_phone')) return null;
-        if (Session::has($name, 'wap')) $phone = Session::get($name, 'wap');
-        if (is_null($phone)) {
-            if (Session::has('__login_phone_number', 'wap')) $phone = Session::get('__login_phone_number', 'wap');
-        }
-        return $phone;
-    }
 
     /**
      * 获取推广人列表
