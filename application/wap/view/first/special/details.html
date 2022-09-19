@@ -817,8 +817,8 @@
         <img :src="wechat_qrcode" alt="" style="width: 5rem;height: 5rem;margin: 0 auto;">
     </div>
     <div class="mask" @touchmove.prevent :hidden="open" @click="open=true"></div>
-    <payment :payment="payment" :money="money" :now_money="now_money" :special_id="special.id" :link_pay_uid="link_pay_uid" :pay_type_num="pay_type_num" :pink-id="pinkId"
-             :is-wechat="isWechat" :is-alipay="is_alipay" :is-balance="is_yue" :template-id="templateId" @change="changeVal"></payment>
+    <payment :payment="payment" :money="money" :now_money="now_money" :special_id="special.id" :link_pay_uid="link_pay_uid" :pay_type_num="pay_type_num" :pink-id="pinkId" :is-wechat="isWechat"
+             :is-alipay="is_alipay" :is-balance="is_yue" :template-id="templateId" @change="changeVal"></payment>
     <enter :appear="appear" @change="changeVal" :url="url" :site_name="site_name"></enter>
     <div class="password" :class="password?'on':''">
         <div class="title">请输入密码</div>
@@ -1308,10 +1308,15 @@
                     }.bind(this));
                 },
                 customerService: function () {
-                    app.baseGet($h.U({c: 'index', a: 'login_user'}), function (res) {
+                    app.baseGet($h.U({c: 'index', a: 'login_user'}), function () {
                         window.location.href = $h.U({c: 'service', a: 'service_list'});
-                    }.bind(this), function (res) {
-                        this.appear = false;
+                    }.bind(this), function () {
+                        if (isWechat) {
+                            localStorage.setItem('wx_login_url', window.location.href);
+                            window.location.assign("{:url('login/index')}");
+                        } else {
+                            this.appear = false;
+                        }
                     }.bind(this));
                 },
                 //打开支付插件,并检测登录状态,没有登录,打开登录插件
@@ -1324,12 +1329,7 @@
                                     this.money = this.special.money;
                                     this.payment = false;
                                 }.bind(this), function () {
-                                    if (isWechat) {
-                                        localStorage.setItem('wx_login_url', window.location.href);
-                                        window.location.assign("{:url('login/index')}");
-                                    } else {
-                                        this.appear = false;
-                                    }
+                                    this.appear = false;
                                 }.bind(this));
                                 break;
                             case 2:
@@ -1337,12 +1337,7 @@
                                     this.money = this.special.money;
                                     this.payment = false;
                                 }.bind(this), function () {
-                                    if (isWechat) {
-                                        localStorage.setItem('wx_login_url', window.location.href);
-                                        window.location.assign("{:url('login/index')}");
-                                    } else {
-                                        this.appear = false;
-                                    }
+                                    this.appear = false;
                                 }.bind(this));
                                 break;
                             case 4:
@@ -1381,12 +1376,7 @@
                             localStorage.setItem('wx_login_url', window.location.href);
                             window.location.assign("{:url('login/index')}");
                         } else {
-                            if (isWechat) {
-                                localStorage.setItem('wx_login_url', window.location.href);
-                                window.location.assign("{:url('login/index')}");
-                            } else {
-                                this.appear = false;
-                            }
+                            this.appear = false;
                         }
                     }.bind(this));
                 },

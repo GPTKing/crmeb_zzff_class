@@ -83,7 +83,7 @@
                         }), function (res) {
                             $h.loadClear();
                             layer.msg(res.data.msg, {anim: 0}, function () {
-                                window.location.assign(localStorage.getItem('login_back_url') || "{:url('index/index')}");
+                                window.location.assign(localStorage.getItem('wx_login_url') || "{:url('index/index')}");
                             });
                         }, function (err) {
                             $h.loadClear();
