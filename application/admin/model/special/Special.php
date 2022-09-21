@@ -147,16 +147,6 @@ class Special extends ModelBasic
             $item['recommend'] = RecommendRelation::where('a.link_id', $item['id'])->where('a.type', 'in', [0, 2,8])->alias('a')
                 ->join('__RECOMMEND__ r', 'a.recommend_id=r.id')->column('a.id,r.title');
             $item['pink_end_time'] = $item['pink_end_time'] ? strtotime($item['pink_end_time']) : 0;
-            $item['sales'] = StoreOrder::where(['paid' => 1, 'cart_id' => $item['id'], 'refund_status' => 0])->count();
-            $liveGoods = LiveGoods::getOne(['special_id' => $item['id'], 'is_delete' => 0]);
-            $item['is_live_goods'] = 0;
-            $item['live_goods_id'] = 0;
-            if ($liveGoods) {
-                $item['live_goods_id'] = $liveGoods->id;
-                if ($liveGoods->is_show == 1) {
-                    $item['is_live_goods'] = 1;
-                }
-            }
             //查看拼团状态,如果已结束关闭拼团
             if ($item['is_pink'] && $item['pink_end_time'] < time()) {
                 self::update(['is_pink' => 0], ['id' => $item['id']]);
@@ -165,18 +155,16 @@ class Special extends ModelBasic
             if(!$item['is_pink']){
                 $item['pink_money'] = 0;
             }
-            $item['stream_name'] = LiveStudio::where('special_id', $item['id'])->value('stream_name');
-            $oldTaskCount = SpecialTask::where('special_id', $item['id'])->where('is_show', 1)->count();
-            $newTaskCount = SpecialSource::where('special_id', $item['id'])->count();
-            $item['task_count'] = $newTaskCount + $oldTaskCount;
-            $item['live_id'] = LiveStudio::where('special_id', $item['id'])->value('id');
-            $item['is_play'] =0;
-            if ($item['live_id']) {
-                $item['online_num'] = LiveStudio::where('id', $item['live_id'])->value('online_num');
-                $item['is_play'] = LiveStudio::where('id', $item['live_id'])->value('is_play') ? 1 : 0;
+            if ($item['type'] == 4) {
+                $studio = LiveStudio::where('special_id', $item['id'])->field('id,stream_name,start_play_time,online_num,is_play')->find();
+                if ($studio) {
+                    $item['stream_name'] = $studio['stream_name'];
+                    $item['live_id'] = $studio['id'];
+                    $item['start_play_time'] = $studio['start_play_time'];
+                    $item['online_num'] = $studio['online_num'];
+                    $item['is_play'] = $studio['is_play'] ? 1 : 0;
+                }
             }
-            $item['buy_user_num'] = StoreOrder::where(['paid' => 1, 'cart_id' => $item['id']])->count('id');
-            $item['start_play_time'] = LiveStudio::where('special_id', $item['id'])->value('start_play_time');
         }
         $count = self::setWhere($where)->where('is_pink',1)->count();
         return compact('data', 'count');
@@ -192,16 +180,6 @@ class Special extends ModelBasic
             $item['recommend'] = RecommendRelation::where('a.link_id', $item['id'])->where('a.type', 'in', [0, 2,8])->alias('a')
                 ->join('__RECOMMEND__ r', 'a.recommend_id=r.id')->column('a.id,r.title');
             $item['pink_end_time'] = $item['pink_end_time'] ? strtotime($item['pink_end_time']) : 0;
-            $item['sales'] = StoreOrder::where(['paid' => 1, 'cart_id' => $item['id'], 'refund_status' => 0])->count();
-            $liveGoods = LiveGoods::getOne(['special_id' => $item['id'], 'is_delete' => 0]);
-            $item['is_live_goods'] = 0;
-            $item['live_goods_id'] = 0;
-            if ($liveGoods) {
-                $item['live_goods_id'] = $liveGoods->id;
-                if ($liveGoods->is_show == 1) {
-                    $item['is_live_goods'] = 1;
-                }
-            }
             //查看拼团状态,如果已结束关闭拼团
             if ($item['is_pink'] && $item['pink_end_time'] < time()) {
                 self::update(['is_pink' => 0], ['id' => $item['id']]);
@@ -210,18 +188,16 @@ class Special extends ModelBasic
             if(!$item['is_pink']){
                 $item['pink_money'] = 0;
             }
-            if ($where['type'] == 4) $item['stream_name'] = LiveStudio::where('special_id', $item['id'])->value('stream_name');
-            $oldTaskCount = SpecialTask::where('special_id', $item['id'])->where('is_show', 1)->count();
-            $newTaskCount = SpecialSource::where('special_id', $item['id'])->count();
-            $item['task_count'] = $newTaskCount + $oldTaskCount;
-            $item['live_id'] = LiveStudio::where('special_id', $item['id'])->value('id');
-            $item['is_play'] =0;
-            if ($item['live_id']) {
-                $item['online_num'] = LiveStudio::where('id', $item['live_id'])->value('online_num');
-                $item['is_play'] = LiveStudio::where('id', $item['live_id'])->value('is_play') ? 1 : 0;
+            if ($where['type'] == 4) {
+                $studio = LiveStudio::where('special_id', $item['id'])->field('id,stream_name,start_play_time,online_num,is_play')->find();
+                if ($studio) {
+                    $item['stream_name'] = $studio['stream_name'];
+                    $item['live_id'] = $studio['id'];
+                    $item['start_play_time'] = $studio['start_play_time'];
+                    $item['online_num'] = $studio['online_num'];
+                    $item['is_play'] = $studio['is_play'] ? 1 : 0;
+                }
             }
-            $item['buy_user_num'] = StoreOrder::where(['paid' => 1, 'cart_id' => $item['id']])->count('id');
-            $item['start_play_time'] = LiveStudio::where('special_id', $item['id'])->value('start_play_time');
         }
         $count = self::setWhere($where)->count();
         return compact('data', 'count');

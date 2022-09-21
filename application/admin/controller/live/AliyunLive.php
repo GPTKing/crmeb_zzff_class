@@ -473,7 +473,6 @@ class AliyunLive extends AuthController
         $specialInfo->is_del = 1;
         $liveInfo->is_del = 1;
         if ($specialInfo->save() && $liveInfo->save()) {
-            LiveStudio::where(['special_id' => $id])->update(['is_del' => 1]);
             return Json::successful('删除成功');
         }else{
             return Json::fail('删除失败');
