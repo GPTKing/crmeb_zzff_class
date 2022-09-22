@@ -74,7 +74,7 @@ INSERT INTO `eb_article_category` (`id`, `pid`, `title`, `intr`, `image`, `statu
 
 CREATE TABLE `eb_article_content` (
   `nid` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '文章id',
-  `content` text COMMENT '文章内容'
+  `content` longtext COMMENT '文章内容'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='文章内容表';
 
 --
@@ -1371,7 +1371,7 @@ CREATE TABLE `eb_special_content` (
   `id` int(11) NOT NULL,
   `special_id` int(11) NOT NULL DEFAULT '0' COMMENT '专栏id',
   `add_time` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
-  `content` text COMMENT '内容'
+  `content` longtext COMMENT '内容'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='专栏内容关联表';
 
 --
@@ -1602,7 +1602,7 @@ CREATE TABLE `eb_special_task` (
   `coures_id` int(11) NOT NULL DEFAULT '0' COMMENT '课程id（1.1版本后废弃）',
   `special_id` int(11) NOT NULL DEFAULT '0' COMMENT '专题id',
   `title` varchar(255) NOT NULL DEFAULT '' COMMENT '素材标题',
-  `content` text COMMENT '内容',
+  `content` longtext COMMENT '内容',
   `detail` text COMMENT '简介',
   `type` tinyint(1) NOT NULL DEFAULT '6' COMMENT '素材类型',
   `pid` int(12) DEFAULT '0' COMMENT '素材分类',
@@ -2661,7 +2661,7 @@ CREATE TABLE `eb_system_config_content` (
   `id` int(11) NOT NULL,
   `title` varchar(255) NOT NULL DEFAULT '' COMMENT '中文标题',
   `config_name` varchar(100) NOT NULL DEFAULT '' COMMENT '配置名',
-  `content` text COMMENT '内容',
+  `content` longtext COMMENT '内容',
   `add_time` int(10) NOT NULL DEFAULT '0' COMMENT '添加时间',
   `is_show` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否隐藏',
   `is_del` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否删除'
