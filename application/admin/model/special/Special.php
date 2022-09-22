@@ -139,8 +139,8 @@ class Special extends ModelBasic
      */
     public static function getPinkList($where)
     {
-        $data = self::setWhere($where, 'A')->field('A.*,T.content,S.name as subject_name')
-            ->join('__SPECIAL_CONTENT__ T', 'T.special_id=A.id','LEFT')->join('__SPECIAL_SUBJECT__ S', 'S.id=A.subject_id','LEFT')
+        $data = self::setWhere($where, 'A')->field('A.*,S.name as subject_name')
+            ->join('__SPECIAL_SUBJECT__ S', 'S.id=A.subject_id','LEFT')
             ->page((int)$where['page'], (int)$where['limit'])->where('A.is_pink',1)->select();
         $data = count($data) ? $data->toArray() : [];
         foreach ($data as &$item) {
@@ -166,14 +166,14 @@ class Special extends ModelBasic
                 }
             }
         }
-        $count = self::setWhere($where)->where('is_pink',1)->count();
+        $count = self::setWhere($where, 'A')->join('__SPECIAL_SUBJECT__ S', 'S.id=A.subject_id','LEFT')->where('is_pink',1)->count();
         return compact('data', 'count');
     }
     //查找专题列表
     public static function getSpecialList($where)
     {
-        $data = self::setWhere($where, 'A')->field('A.*,T.content,S.name as subject_name')
-            ->join('__SPECIAL_CONTENT__ T', 'T.special_id=A.id','LEFT')->join('__SPECIAL_SUBJECT__ S', 'S.id=A.subject_id','LEFT')
+        $data = self::setWhere($where, 'A')->field('A.*,S.name as subject_name')
+            ->join('__SPECIAL_SUBJECT__ S', 'S.id=A.subject_id','LEFT')
             ->page((int)$where['page'], (int)$where['limit'])->select();
         $data = count($data) ? $data->toArray() : [];
         foreach ($data as &$item) {
@@ -199,7 +199,7 @@ class Special extends ModelBasic
                 }
             }
         }
-        $count = self::setWhere($where)->count();
+        $count = self::setWhere($where, 'A')->join('__SPECIAL_SUBJECT__ S', 'S.id=A.subject_id','LEFT')->count();
         return compact('data', 'count');
     }
 }
