@@ -163,15 +163,15 @@
         }
     },"{:Url('get_source_list')}",function (){
         return [
-            {field: 'id', title: '编号', align: 'center',width:60},
+            {field: 'id', title: '编号', align: 'center',width:'6%'},
             {field: 'title', title: '素材名称',align: 'center'},
-            {field: 'types', title: '素材类型',align: 'center'},
-            {field: 'image', title: '素材封面',templet:'#image',align: 'center',style:'height:auto'},
-            {field: 'use', title: '应用次数',align: 'center'},
-            {field: 'is_pay_status_c', title: '是否收费',align: 'center',templet:'#is_pay_status_c'},
-            {field: 'recommend', title: '推荐',templet:'#recommend',align: 'center'},
-            {field: 'is_show', title: '状态',templet:'#is_show',align: 'center'},
-            {field: 'right', title: '操作',align:'center',toolbar:'#act'},
+            {field: 'types', title: '素材类型',align: 'center',width:'8%'},
+            {field: 'image', title: '素材封面',templet:'#image',align: 'center',style:'height:auto',width:'8%'},
+            {field: 'use', title: '应用次数',align: 'center',width:'8%'},
+            {field: 'is_pay_status_c', title: '是否收费',align: 'center',templet:'#is_pay_status_c',width:'8.3%'},
+            {field: 'recommend', title: '推荐',templet:'#recommend',align: 'center',width:'16%'},
+            {field: 'is_show', title: '状态',templet:'#is_show',align: 'center',minWidth:72,width:'8%'},
+            {field: 'right', title: '操作',align:'center',toolbar:'#act',width:'8%'},
         ];
     });
     //下拉框

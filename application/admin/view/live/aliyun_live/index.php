@@ -98,7 +98,7 @@
                                 </li>
                                 <li>
                                     <a href="javascript:;" lay-event='live_user'>
-                                        <i class="fa fa-user"></i> 直播间用户管理
+                                        <i class="fa fa-user"></i> 用户管理
                                     </a>
                                 </li>
                                 <li>
@@ -157,18 +157,18 @@
     //加载列表
     layList.tableList({o:'List', done:function () {}},"{:Url('get_live_list')}",function (){
         return [
-            {field: 'stream_name', title: '直播间ID',align: 'center'},
+            {field: 'stream_name', title: '直播间ID',align: 'center',width:'8%'},
             {field: 'live_title', title: '直播标题',edit:'live_title',align: 'center'},
-            {field: 'live_image', title: '封面',templet:'#image',align: 'center'},
-            {field: 'play_time', title: '每日开播时间',templet:'#play_start_time',align: 'center'},
-            {field: 'play_time', title: '每日停播时间',templet:'#play_stop_time',align: 'center'},
-            {field: 'studio_pwd', title: '直播间密码',align: 'center',width:70},
-            {field: 'online_user_num', title: '在线人数',align: 'center',width:70},
-            {field: 'online_num', title: '虚拟在线人数',edit:'online_num',align: 'center',width:70},
-            {field: 'is_recording', title: '自动录制',templet:'#is_recording',align: 'center',width:70},
-            {field: 'sort', title: '排序',sort: true,event:'sort',edit:'sort',align: 'center',width:60},
-            {field: 'is_play', title: '状态',templet:'#is_play',align: 'center',width:80},
-            {field: 'right', title: '操作',align:'center',toolbar:'#act',width:70},
+            {field: 'live_image', title: '封面',templet:'#image',align: 'center',minWidth:119,width:'8%'},
+            {field: 'play_time', title: '每日开播时间',templet:'#play_start_time',align: 'center',width:'12%'},
+            {field: 'play_time', title: '每日停播时间',templet:'#play_stop_time',align: 'center',width:'12%'},
+            {field: 'studio_pwd', title: '直播间密码',align: 'center',width:'8%'},
+            {field: 'online_user_num', title: '在线人数',align: 'center',width:'6%'},
+            {field: 'online_num', title: '虚拟在线人数',edit:'online_num',align: 'center',width:'6%'},
+            {field: 'is_recording', title: '自动录制',templet:'#is_recording',align: 'center',minWidth:77,width:'6%'},
+            {field: 'sort', title: '排序',sort: true,event:'sort',edit:'sort',align: 'center',width:'6%'},
+            {field: 'is_play', title: '状态',templet:'#is_play',align: 'center',width:'7%'},
+            {field: 'right', title: '操作',align:'center',toolbar:'#act',minWidth:81,width:'8%'},
         ];
     });
     //下拉框
