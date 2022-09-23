@@ -43,10 +43,6 @@ class ArticleCategory extends AuthController
      * */
     public function create(){
         $f = array();
-        $f[] = Form::select('pid','父级id')->setOptions(function(){
-            $menus[] = ['value'=>0,'label'=>'顶级分类'];
-            return $menus;
-        })->filterable(1);
         $f[] = Form::input('title','分类名称');
         $f[] = Form::input('intr','分类简介')->type('textarea');
         $f[] = Form::number('sort','排序',0);
@@ -74,7 +70,6 @@ class ArticleCategory extends AuthController
     public function save(Request $request){
         $data = parent::postMore([
             'title',
-            'pid',
             'intr',
             ['sort',0],
             'status',],$request);
@@ -96,10 +91,6 @@ class ArticleCategory extends AuthController
         $article = ArticleCategoryModel::get($id)->getData();
         if(!$article) return Json::fail('数据不存在!');
         $f = array();
-        $f[] = Form::select('pid','父级id',(string)$article['pid'])->setOptions(function(){
-            $menus[] = ['value'=>0,'label'=>'顶级分类'];
-            return $menus;
-        })->filterable(1);
         $f[] = Form::input('title','分类名称',$article['title']);
         $f[] = Form::input('intr','分类简介',$article['intr'])->type('textarea');
         $f[] = Form::number('sort','排序',$article['sort']);
@@ -117,7 +108,6 @@ class ArticleCategory extends AuthController
     public function update(Request $request, $id)
     {
         $data = parent::postMore([
-            'pid',
             'title',
             'intr',
             ['image',[]],
