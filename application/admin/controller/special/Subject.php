@@ -12,7 +12,6 @@
 namespace app\admin\controller\special;
 
 use app\admin\model\special\SpecialSubject;
-use app\admin\model\special\Grade;
 use app\admin\model\special\Special;
 use think\Url;
 use service\FormBuilder as Form;
@@ -21,7 +20,7 @@ use app\admin\controller\AuthController;
 
 /**
  * 科目控制器
- * Class Grade
+ * Class Subject
  * @package app\admin\controller\special
  */
 class Subject extends AuthController
@@ -36,11 +35,12 @@ class Subject extends AuthController
         $where = parent::getMore([
             ['page', 1],
             ['limit', 20],
-            ['pid',$this->request->param('pid','')],
+            ['pid', $this->request->param('pid', '')],
             ['name', ''],
         ]);
         return Json::successful(SpecialSubject::get_subject_list($where));
     }
+
     /**
      * 创建分类
      * @param int $id
@@ -49,13 +49,14 @@ class Subject extends AuthController
      */
     public function create($id = 0)
     {
-        $cate=[];
-        if ($id){
+        $cate = [];
+        if ($id) {
             $cate = SpecialSubject::get($id);
         }
-        $this->assign(['cate'=>json_encode($cate),'id'=>$id]);
+        $this->assign(['cate' => json_encode($cate), 'id' => $id]);
         return $this->fetch();
     }
+
     /**获取一级分类
      * @param int $sid
      * @throws \think\db\exception\DataNotFoundException
@@ -64,22 +65,23 @@ class Subject extends AuthController
      */
     public function get_cate_list($level = 0)
     {
-        $cate=SpecialSubject::specialCategoryAll(1);
-        $array=[];
-        $oneCate['id']=0;
-        $oneCate['name']='顶级分类';
-        array_push($array,$oneCate);
-        foreach ($cate as $key=>$value){
-            array_push($array,$value);
+        $cate = SpecialSubject::specialCategoryAll(1);
+        $array = [];
+        $oneCate['id'] = 0;
+        $oneCate['name'] = '顶级分类';
+        array_push($array, $oneCate);
+        foreach ($cate as $key => $value) {
+            array_push($array, $value);
         }
         return Json::successful($array);
     }
+
     /**
      * 新增或者修改
      *
      * @return json
      */
-    public function save($id = 0,$sid=0)
+    public function save($id = 0, $sid = 0)
     {
         $post = parent::postMore([
             ['name', ''],
@@ -89,27 +91,28 @@ class Subject extends AuthController
             ['is_show', 0],
         ]);
         if (!$post['name']) return Json::fail('请输入分类名称');
-        if($post['grade_id']){
+        if ($post['grade_id']) {
             if (!$post['pic']) return Json::fail('请选择分类图标');
         }
         if ($id) {
-            $res=SpecialSubject::edit($post,$id);
+            $res = SpecialSubject::edit($post, $id);
             if ($res)
                 return Json::successful('修改成功');
             else
                 return Json::fail('修改失败');
         } else {
             $post['add_time'] = time();
-                if(SpecialSubject::be(['name'=>$post['name'],'is_del'=>0])){
-                    return Json::fail('分类名称已存在！');
-                }
-                $res=SpecialSubject::set($post);
+            if (SpecialSubject::be(['name' => $post['name'], 'is_del' => 0])) {
+                return Json::fail('分类名称已存在！');
+            }
+            $res = SpecialSubject::set($post);
             if ($res)
                 return Json::successful('添加成功');
             else
                 return Json::fail('添加失败');
         }
     }
+
     /**
      * 快速编辑
      *
@@ -139,6 +142,7 @@ class Subject extends AuthController
             return Json::fail($is_show == 1 ? '显示失败' : '隐藏失败');
         }
     }
+
     /**
      * 删除
      *
@@ -147,14 +151,14 @@ class Subject extends AuthController
     public function delete($id = 0)
     {
         if (!$id) return Json::fail('缺少参数');
-        $subject=SpecialSubject::get($id);
-        if($subject['grade_id']){
+        $subject = SpecialSubject::get($id);
+        if ($subject['grade_id']) {
             if (Special::where('subject_id', $id)->where('is_del', 0)->count()) return Json::fail('暂无法删除,请先去除专题关联');
-        }else{
+        } else {
             if (SpecialSubject::where('grade_id', $id)->where('is_del', 0)->count()) return Json::fail('暂无法删除,请删除下级分类');
         }
-        $data['is_del']=1;
-        if (SpecialSubject::update($data,['id'=>$id]))
+        $data['is_del'] = 1;
+        if (SpecialSubject::update($data, ['id' => $id]))
             return Json::successful('删除成功');
         else
             return Json::fail('删除成功');
