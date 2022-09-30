@@ -184,7 +184,7 @@ CRMEB知识付费系统是西安众邦科技旗下的具有自主知识产权的
 #### 技术交流论坛：<https://q.crmeb.net>
 **CRMEB知识付费QQ交流群**：780179818 （<a target="_blank" href="https://qm.qq.com/cgi-bin/qm/qr?k=7oOwLqKCjy3OZLVBWbjuSwqZF6B_6X6X&jump_from=webapi">立即加群</a>）
 
-## 参与开发人员
+### 参与开发人员
 
 - 产品: 全哥
 
