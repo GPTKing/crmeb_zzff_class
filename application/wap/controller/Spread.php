@@ -62,7 +62,7 @@ class Spread extends AuthController
     {
         if (Session::has('form__token__')) Session::delete('form__token__');
         $token = md5(time() . $this->uid . $this->request->ip());
-        Session::set('form__token__', $token);
+        Session::set('form__token__', $token,'wap');
         $now_moeny = User::where('uid', $this->uid)->value('now_money');
         $this->assign('number', floatval($now_moeny));
         $this->assign('token', $token);

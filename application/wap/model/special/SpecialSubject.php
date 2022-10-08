@@ -20,16 +20,17 @@ class SpecialSubject extends ModelBasic
 
     public function children()
     {
-        return $this->hasMany('SpecialSubject', 'grade_id','id')->where(['is_del' => 0,'is_show'=>1])->order('sort DESC,id DESC');
+        return $this->hasMany('SpecialSubject', 'grade_id', 'id')->where(['is_del' => 0, 'is_show' => 1])->order('sort DESC,id DESC');
     }
 
-    public static function wapSpecialCategoryAll($type=0){
-        $model=self::where(['is_del' => 0,'is_show'=>1]);
-        if($type==1){
-            $model=$model->where('grade_id',0);
+    public static function wapSpecialCategoryAll($type = 0)
+    {
+        $model = self::where(['is_del' => 0, 'is_show' => 1]);
+        if ($type == 1) {
+            $model = $model->where('grade_id', 0);
         }
-        $list=$model->order('sort desc,add_time desc')->field('id,name')->select();
-        $list=count($list) > 0 ? $list->toArray() : [];
+        $list = $model->order('sort desc,add_time desc')->field('id,name')->select();
+        $list = count($list) > 0 ? $list->toArray() : [];
         return $list;
     }
 }

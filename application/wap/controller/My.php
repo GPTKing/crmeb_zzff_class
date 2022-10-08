@@ -68,14 +68,13 @@ class My extends AuthController
      */
     public function getPersonalCenterMenu()
     {
-        $uid = $this->uid ? $this->uid : 0;
         $store_brokerage_statu = SystemConfigService::get('store_brokerage_statu');
         if ($store_brokerage_statu == 1) {
             $is_statu = $this->userInfo['is_promoter'] > 0 ? 1 : 0;
         } else if ($store_brokerage_statu == 2) {
             $is_statu = 1;
         }
-        return JsonService::successful(Recommend::getPersonalCenterMenuList($is_statu, $uid));
+        return JsonService::successful(Recommend::getPersonalCenterMenuList($is_statu));
     }
 
     public function my_gift()

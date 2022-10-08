@@ -24,51 +24,56 @@ class SpecialSubject extends ModelBasic
 {
     use ModelTrait;
 
-    public static function specialCategoryAll($type=0){
-        $model=self::where(['is_del' => 0,'is_show'=>1]);
-        if($type==1){
-            $model=$model->where('grade_id',0);
+    public static function specialCategoryAll($type = 0)
+    {
+        $model = self::where(['is_del' => 0, 'is_show' => 1]);
+        if ($type == 1) {
+            $model = $model->where('grade_id', 0);
         }
-        $list=$model->order('sort desc,add_time desc')->select();
-        $list=count($list) > 0 ? $list->toArray() : [];
-        $list=Util::sortListTier($list,0,'grade_id');
+        $list = $model->order('sort desc,add_time desc')->select();
+        $list = count($list) > 0 ? $list->toArray() : [];
+        $list = Util::sortListTier($list, 0, 'grade_id');
         return $list;
     }
-    public static function get_subject_list($where){
-        $data=self::setWhere($where)->column('id,grade_id');
-        $list=[];
-        foreach ($data as $ket=>$item){
-            $cate=self::where('id',$ket)->find();
-            if($cate) {
-                $cate=$cate->toArray();
-            if($item>0){
-                $cate['special_count']=Special::PreWhere()->where('subject_id',$ket)->count();
-            }else{
-                $cate['special_count']=0;
+
+    public static function get_subject_list($where)
+    {
+        $data = self::setWhere($where)->column('id,grade_id');
+        $list = [];
+        foreach ($data as $ket => $item) {
+            $cate = self::where('id', $ket)->find();
+            if ($cate) {
+                $cate = $cate->toArray();
+                if ($item > 0) {
+                    $cate['special_count'] = Special::PreWhere()->where('subject_id', $ket)->count();
+                } else {
+                    $cate['special_count'] = 0;
+                }
+                array_push($list, $cate);
+                unset($cate);
             }
-            array_push($list,$cate);
-            unset($cate);
-        }
-            if($item>0 && !array_key_exists($item,$data)){
-                $cate=self::where('id',$item)->find();
-                if($cate){
-                    $cate=$cate->toArray();
-                $cate['special_count']=0;
-                array_push($list,$cate);
+            if ($item > 0 && !array_key_exists($item, $data)) {
+                $cate = self::where('id', $item)->find();
+                if ($cate) {
+                    $cate = $cate->toArray();
+                    $cate['special_count'] = 0;
+                    array_push($list, $cate);
                 }
             }
         }
         return $list;
     }
 
-    public static function setWhere($where){
-        $model=self::order('sort desc,add_time desc')->where('is_del',0);
-        if($where['name']) $model=$model->where('name','like',"%$where[name]%");
-        if($where['pid']) $model=$model->where('grade_id',$where['pid']);
+    public static function setWhere($where)
+    {
+        $model = self::order('sort desc,add_time desc')->where('is_del', 0);
+        if ($where['name']) $model = $model->where('name', 'like', "%$where[name]%");
+        if ($where['pid']) $model = $model->where('grade_id', $where['pid']);
         return $model;
     }
 
-    public static function getSubjectAll(){
-        return self::order('sort desc,add_time desc')->where(['is_show'=>1,'is_del'=>0])->field('name,id')->select();
+    public static function getSubjectAll()
+    {
+        return self::order('sort desc,add_time desc')->where(['is_show' => 1, 'is_del' => 0])->field('name,id')->select();
     }
 }

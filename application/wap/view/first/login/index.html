@@ -86,15 +86,15 @@
                             p: {spread_uid: spread_uid, code: this.code}
                         }), function (res) {
                             $h.loadClear();
-                            layer.msg(res.data.msg, {anim: 0}, function () {
+                            layer.msg(res.data.msg, {anim: 0,time:2000}, function () {
                                 window.location.assign(localStorage.getItem('wx_login_url') || "{:url('index/index')}");
                             });
                         }, function (err) {
                             $h.loadClear();
-                            layer.msg(err.data.msg, {anim: 0}, function () {
+                            layer.msg(err, {anim: 0,time:2000}, function () {
                                 window.location.replace("{:url('login/index')}");
                             });
-                        });
+                        },true);
                     }
                 },
                 wechat_one_click_login: function () {

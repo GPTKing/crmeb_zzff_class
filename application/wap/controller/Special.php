@@ -358,7 +358,7 @@ class Special extends AuthController
     public function play($task_id = 0)
     {
         if (!$task_id) $this->failed('无法访问', Url::build('index/index'));
-        Session::set('video_token_' . $task_id, md5(time() . $task_id));
+        Session::set('video_token_' . $task_id, md5(time() . $task_id),'wap');
         $tash = SpecialTask::get($task_id);
         if (!$tash) $this->failed('您查看的资源不存在', Url::build('index/index'));
         if ($tash->is_show == 0) $this->failed('您查看的资源已下架', Url::build('index/index'));

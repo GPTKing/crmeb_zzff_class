@@ -119,7 +119,7 @@ class Index extends AuthController
             if ($qcodeInfo->scan_id) {
                 Session::set('loginUid', $qcodeInfo->scan_id, 'wap');
                 Cookie::set('__login_phone', 1);
-                Session::set('__login_phone_num' . $qcodeInfo->scan_id, User::where('uid', $qcodeInfo->scan_id)->value('phone'));
+                Session::set('__login_phone_num' . $qcodeInfo->scan_id, User::where('uid', $qcodeInfo->scan_id)->value('phone'),'wap');
                 return JsonService::successful();
             }
         }

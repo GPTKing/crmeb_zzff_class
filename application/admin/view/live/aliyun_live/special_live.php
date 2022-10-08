@@ -273,18 +273,18 @@
         });
     }},"{:Url('special_list',['subject_id'=>$subject_id, 'special_type'=>$special_type])}",function (){
         return [
-            {field: 'id', title: '编号', width:60,align: 'center'},
+            {field: 'id', title: '编号',width:'6%',align: 'center'},
             {field: 'title', title: '直播标题',align: 'center'},
-            {field: 'subject_name', title: '分类',align: 'center',width:75},
+            {field: 'subject_name', title: '分类',align: 'center',width:'7%'},
             {field: 'admin_name', title: '账号',align: 'center',width:85},
-            {field: 'image', title: '封面',templet:'#image',align: 'center'},
+            {field: 'image', title: '封面',templet:'#image',align: 'center',width:'7%'},
             {field: 'recommend', title: '推荐',templet:'#recommend',align: 'center'},
-            {field: 'browse_count', title: '浏览量',align: 'center',width:60},
-            {field: 'stream_name', title: '直播间ID',align: 'center',width:75},
-            {field: 'money', title: '价格',align: 'center',width:65},
-            {field: 'sort', title: '排序',sort: true,event:'sort',edit:'sort',align: 'center',width:60},
-            {field: 'is_show', title: '状态',templet:'#is_show',align: 'center',width:80},
-            {field: 'right', title: '操作',align:'center',toolbar:'#act',width:70},
+            {field: 'browse_count', title: '浏览量',align: 'center',width:'7%'},
+            {field: 'stream_name', title: '直播间ID',align: 'center',width:'7%'},
+            {field: 'money', title: '价格',align: 'center',width:'7%'},
+            {field: 'sort', title: '排序',sort: true,event:'sort',edit:'sort',align: 'center',width:'7%'},
+            {field: 'is_show', title: '状态',templet:'#is_show',align: 'center',width:'7%'},
+            {field: 'right', title: '操作',align:'center',toolbar:'#act',width:'7%'},
         ];
     });
     //下拉框

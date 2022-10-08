@@ -269,8 +269,8 @@
     layList.tableList('userList',"{:Url('get_user_list')}",function () {
         return [
             {type:'checkbox'},
-            {field: 'uid', title: 'UID', align: 'center',width:60},
-            {field: 'avatar', title: '头像', event:'open_image', align: 'center', templet: '<div><img class="avatar open_image" style="cursor: pointer" height="50" data-image="{{d.avatar}}" src="{{d.avatar}}" alt="{{d.nickname}}"></div>'},
+            {field: 'uid', title: 'UID', align: 'center',width:100},
+            {field: 'avatar', title: '头像', event:'open_image', align: 'center',width:120, templet: '<div><img class="avatar open_image" style="cursor: pointer" height="50" data-image="{{d.avatar}}" src="{{d.avatar}}" alt="{{d.nickname}}"></div>'},
             {field: 'nickname', title: '姓名',templet:"#nickname",align: 'center'},
             {field: 'phone', title: '手机号',align: 'center'},
             {field: 'spread', title: '推荐人',templet:'#spread',align: 'center'},
