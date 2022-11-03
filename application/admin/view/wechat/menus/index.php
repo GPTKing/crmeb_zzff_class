@@ -53,11 +53,9 @@
                                                             <label class="col-sm-2 control-label tips" for="">规则状态</label>
                                                             <div class="group-item col-sm-9">
                                                                 <select class="form-control m-b" name="" id="" v-model="checkedMenu.type">
-                                                                    <?php /*  <option value="text">文字消息</option>  */ ?>
                                                                     <option value="click">关键字</option>
                                                                     <option value="view">跳转网页</option>
-                                                                   <?php /*   <option value="feat">事件功能</option>  */ ?>
-                                                                    <option value="miniprogram">小程序</option>
+<!--                                                                    <option value="miniprogram">小程序</option>-->
                                                                 </select>
                                                             </div>
                                                         </div>
