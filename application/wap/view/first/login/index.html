@@ -29,6 +29,10 @@
         color: #FFFFFF;
     }
 
+    .auth-login>button:disabled {
+        background-color: #A9CEF9;
+    }
+
     .auth-login .tips {
         width: 6.3rem;
         padding: .23rem .25rem .26rem;
@@ -50,7 +54,7 @@
 {block name="content"}
 <div v-cloak id="app" class="auth-login">
     <img src="{__WAP_PATH}zsff/images/auth-login.png" alt="微信一键登录">
-    <button @click="wechat_one_click_login">微信一键登录</button>
+    <button :disabled="code" @click="wechat_one_click_login">微信一键登录</button>
     <div class="tips">
         <div>温馨提示：</div>
         <div>点击一键登录按钮，为保证您正常使用系统，我们将获取您的昵称、头像。</div>
