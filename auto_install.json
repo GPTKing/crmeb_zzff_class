@@ -1,0 +1,16 @@
+{
+        "php_ext":"fileinfo,redis",
+        "chmod":[
+            {"mode":777,"path":"/runtime"},
+            {"mode":777,"path":"/public"},
+            {"mode":777,"path":"/.version"}
+         ],
+        "success_url":"/index.php",
+        "php_versions":"71",
+        "db_config":"",
+        "admin_username":"",
+        "admin_password":"",
+        "run_path":"/public",
+        "remove_file":[],
+        "enable_functions":["pcntl_signal","pcntl_signal_dispatch","pcntl_fork","pcntl_wait","pcntl_alarm","proc_open","shell_exec"]
+}
